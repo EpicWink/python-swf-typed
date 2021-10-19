@@ -43,6 +43,7 @@ class ExecutionId(CurrentExecutionId):
 
 class ExecutionStatus(str, enum.Enum):
     open = "OPEN"
+    started = "OPEN"
     completed = "COMPLETED"
     failed = "FAILED"
     cancelled = "CANCELED"

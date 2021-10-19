@@ -4,6 +4,7 @@
 Typed Python interface to AWS Simple Workflow service
 
 * Type annotations
+* Execution state construction
 * Consistent method/attribute/parameter names (see below)
 * Consistent model struture
 * Automatic flattening of paged-list responses (next-page calls are run concurrently and

@@ -161,3 +161,13 @@ from ._history import WorkflowExecutionTerminatedEvent
 from ._history import WorkflowExecutionTimedOutEvent
 
 from ._history import get_execution_history
+
+from ._state import TaskStatus
+from ._state import TimerStatus
+from ._state import TaskState
+from ._state import ChildExecutionState
+from ._state import TimerState
+from ._state import SignalState
+from ._state import ExecutionState
+
+from ._state import build_state
