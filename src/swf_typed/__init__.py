@@ -67,7 +67,7 @@ from ._executions import terminate_execution
 
 from ._tasks import TaskConfiguration
 from ._tasks import PartialTaskConfiguration
-from ._tasks import Task
+from ._tasks import WorkerTask
 
 from ._tasks import get_number_of_pending_tasks
 from ._tasks import poll_for_task

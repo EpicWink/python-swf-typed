@@ -92,7 +92,7 @@ class PartialTaskConfiguration(TaskConfiguration):
 
 
 @dataclasses.dataclass
-class Task:
+class WorkerTask:
     token: str
     id: str
     activity: "_activities.ActivityId"
@@ -101,7 +101,7 @@ class Task:
     input: str = None
 
     @classmethod
-    def from_api(cls, data: t.Dict[str, t.Any]) -> "Task":
+    def from_api(cls, data: t.Dict[str, t.Any]) -> "WorkerTask":
         from . import _activities
         from . import _executions
 
@@ -135,7 +135,7 @@ def poll_for_task(
     domain: str,
     worker_identity: str = None,
     client: "botocore.client.BaseClient" = None,
-) -> Task:
+) -> WorkerTask:
     client = _common.ensure_client(client)
     kw = {}
     if worker_identity or worker_identity == "":
@@ -146,7 +146,7 @@ def poll_for_task(
             response = client.poll_for_activity_task(
                 domain=domain, task_list=dict(name=task_list), **kw
             )
-    return Task.from_api(response)
+    return WorkerTask.from_api(response)
 
 
 def record_task_heartbeat(
