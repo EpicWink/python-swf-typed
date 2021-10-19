@@ -2,7 +2,6 @@
 
 import abc
 import enum
-import logging
 import datetime
 import warnings
 import functools
@@ -14,8 +13,6 @@ from . import _common
 if t.TYPE_CHECKING:
     import botocore.client
     from . import _workflows
-
-logger = logging.getLogger()
 
 
 @dataclasses.dataclass
