@@ -30,8 +30,9 @@ execution_details = swf_typed.describe_execution(execution, domain="eggs")
 print(execution_details.configuration)
 
 events = swf_typed.get_execution_history(execution, domain="eggs")
-for event in events:
-    print(event.type, event.occured)
+state = swf_typed.build_state(events)
+for task in state.tasks:
+    print(task.status)
 ```
 
 ### Terminology
