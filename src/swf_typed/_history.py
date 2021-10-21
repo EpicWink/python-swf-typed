@@ -1126,6 +1126,7 @@ class TimerStartedEvent(Event):
 @dataclasses.dataclass
 class WorkflowExecutionCancelRequestedEvent(Event):
     type: t.ClassVar[str] = "WorkflowExecutionCancelRequested"
+    cause: ExecutionTerminationCause = None
     source_execution: "_executions.ExecutionId" = None
     source_decision_event_id: int = None
 
@@ -1138,15 +1139,12 @@ class WorkflowExecutionCancelRequestedEvent(Event):
         return cls(
             id=data["eventId"],
             occured=data["eventTimestamp"],
+            cause=attrs.get("cause") and ExecutionTerminationCause(attrs["cause"]),
             source_execution=_executions.ExecutionId.from_api(
                 attrs.get("externalWorkflowExecution")
             ),
             source_decision_event_id=attrs.get("externalInitiatedEventId"),
         )
-
-    @property
-    def cause(self) -> ExecutionTerminationCause:
-        return ExecutionTerminationCause.child_execution_policy_applied
 
 
 @dataclasses.dataclass
