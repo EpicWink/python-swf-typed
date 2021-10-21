@@ -55,7 +55,7 @@ class DomainDetails(_common.Deserialisable):
     def from_api(cls, data) -> "DomainDetails":
         return cls(
             info=DomainInfo.from_api(data["domainInfo"]),
-            configuration=DomainConfiguration.from_api(data["domainInfo"]),
+            configuration=DomainConfiguration.from_api(data["configuration"]),
         )
 
 
