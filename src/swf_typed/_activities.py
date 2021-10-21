@@ -24,7 +24,7 @@ class ActivityId(_common.Deserialisable, _common.Serialisable):
         return cls(data["name"], data["version"])
 
     def to_api(self) -> t.Dict[str, str]:
-        return {"name": self.name, "version": self.name}
+        return {"name": self.name, "version": self.version}
 
 
 @dataclasses.dataclass
