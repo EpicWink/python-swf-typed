@@ -405,7 +405,7 @@ def get_number_of_pending_decision_tasks(
 def poll_for_decision_task(
     task_list: str,
     domain: str,
-    worker_identity: str = None,
+    decider_identity: str = None,
     client: "botocore.client.BaseClient" = None,
 ) -> DecisionTask:
     """Request (poll for) a decision task; blocks until task is received.
@@ -415,7 +415,7 @@ def poll_for_decision_task(
     Args:
         task_list: decision task-list to request from
         domain: domain of task-list
-        worker_identity: decider identity, recorded in execution history
+        decider_identity: decider identity, recorded in execution history
         client: SWF client
 
     Returns:
@@ -434,8 +434,8 @@ def poll_for_decision_task(
 
     client = _common.ensure_client(client)
     kw = {}
-    if worker_identity or worker_identity == "":
-        kw["identity"] = worker_identity
+    if decider_identity or decider_identity == "":
+        kw["identity"] = decider_identity
     call = functools.partial(
         client.poll_for_activity_task,
         domain=domain,
