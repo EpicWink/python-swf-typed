@@ -151,6 +151,8 @@ class Event(_common.Deserialisable, metaclass=abc.ABCMeta):
 
 @dataclasses.dataclass
 class ActivityTaskCancelRequestedEvent(Event):
+    """Activity task cancellated requested workflow execution history event."""
+
     type: t.ClassVar[str] = "ActivityTaskCancelRequested"
     task_id: str
     decision_event_id: int
@@ -168,6 +170,8 @@ class ActivityTaskCancelRequestedEvent(Event):
 
 @dataclasses.dataclass
 class ActivityTaskCancelledEvent(Event):
+    """Activity task cancelled workflow execution history event."""
+
     type: t.ClassVar[str] = "ActivityTaskCanceled"
     task_scheduled_event_id: int
     task_started_event_id: int
@@ -189,6 +193,8 @@ class ActivityTaskCancelledEvent(Event):
 
 @dataclasses.dataclass
 class ActivityTaskCompletedEvent(Event):
+    """Activity task completed workflow execution history event."""
+
     type: t.ClassVar[str] = "ActivityTaskCompleted"
     task_scheduled_event_id: int
     task_started_event_id: int
@@ -208,6 +214,8 @@ class ActivityTaskCompletedEvent(Event):
 
 @dataclasses.dataclass
 class ActivityTaskFailedEvent(Event):
+    """Activity task failed workflow execution history event."""
+
     type: t.ClassVar[str] = "ActivityTaskFailed"
     task_scheduled_event_id: int
     task_started_event_id: int
@@ -229,6 +237,8 @@ class ActivityTaskFailedEvent(Event):
 
 @dataclasses.dataclass
 class ActivityTaskScheduledEvent(Event):
+    """Activity task scheduled workflow execution history event."""
+
     type: t.ClassVar[str] = "ActivityTaskScheduled"
     task_id: str
     activity: "_activities.ActivityId"
@@ -257,6 +267,8 @@ class ActivityTaskScheduledEvent(Event):
 
 @dataclasses.dataclass
 class ActivityTaskStartedEvent(Event):
+    """Activity task started workflow execution history event."""
+
     type: t.ClassVar[str] = "ActivityTaskStarted"
     task_scheduled_event_id: int
     worker_identity: str = None
@@ -274,6 +286,8 @@ class ActivityTaskStartedEvent(Event):
 
 @dataclasses.dataclass
 class ActivityTaskTimedOutEvent(Event):
+    """Activity task timed-out workflow execution history event."""
+
     type: t.ClassVar[str] = "ActivityTaskTimedOut"
     timeout_type: TimeoutType
     task_scheduled_event_id: int
@@ -295,6 +309,8 @@ class ActivityTaskTimedOutEvent(Event):
 
 @dataclasses.dataclass
 class CancelTimerFailedEvent(Event):
+    """Timer cancellation failed workflow execution history event."""
+
     type: t.ClassVar[str] = "CancelTimerFailed"
     timer_id: str
     cause: CancelTimerFailureCause
@@ -314,6 +330,10 @@ class CancelTimerFailedEvent(Event):
 
 @dataclasses.dataclass
 class CancelWorkflowExecutionFailedEvent(Event):
+    """Workflow execution cancellation failed workflow execution history
+    event.
+    """
+
     type: t.ClassVar[str] = "CancelWorkflowExecutionFailed"
     cause: DecisionFailureCause
     decision_event_id: int
@@ -331,6 +351,8 @@ class CancelWorkflowExecutionFailedEvent(Event):
 
 @dataclasses.dataclass
 class ChildWorkflowExecutionCancelledEvent(Event):
+    """Child workflow execution cancelled workflow execution history event."""
+
     type: t.ClassVar[str] = "ChildWorkflowExecutionCanceled"
     execution: "_executions.ExecutionId"
     workflow: "_workflows.WorkflowId"
@@ -357,6 +379,8 @@ class ChildWorkflowExecutionCancelledEvent(Event):
 
 @dataclasses.dataclass
 class ChildWorkflowExecutionCompletedEvent(Event):
+    """Child workflow execution completed workflow execution history event."""
+
     type: t.ClassVar[str] = "ChildWorkflowExecutionCompleted"
     execution: "_executions.ExecutionId"
     workflow: "_workflows.WorkflowId"
@@ -383,6 +407,8 @@ class ChildWorkflowExecutionCompletedEvent(Event):
 
 @dataclasses.dataclass
 class ChildWorkflowExecutionFailedEvent(Event):
+    """Child workflow execution failed workflow execution history event."""
+
     type: t.ClassVar[str] = "ChildWorkflowExecutionFailed"
     execution: "_executions.ExecutionId"
     workflow: "_workflows.WorkflowId"
@@ -411,6 +437,8 @@ class ChildWorkflowExecutionFailedEvent(Event):
 
 @dataclasses.dataclass
 class ChildWorkflowExecutionStartedEvent(Event):
+    """Child workflow execution started workflow execution history event."""
+
     type: t.ClassVar[str] = "ChildWorkflowExecutionStarted"
     execution: "_executions.ExecutionId"
     workflow: "_workflows.WorkflowId"
@@ -433,6 +461,8 @@ class ChildWorkflowExecutionStartedEvent(Event):
 
 @dataclasses.dataclass
 class ChildWorkflowExecutionTerminatedEvent(Event):
+    """Child workflow execution terminated workflow execution history event."""
+
     type: t.ClassVar[str] = "ChildWorkflowExecutionTerminated"
     execution: "_executions.ExecutionId"
     workflow: "_workflows.WorkflowId"
@@ -457,6 +487,8 @@ class ChildWorkflowExecutionTerminatedEvent(Event):
 
 @dataclasses.dataclass
 class ChildWorkflowExecutionTimedOutEvent(Event):
+    """Child workflow execution timed-out workflow execution history event."""
+
     type: t.ClassVar[str] = "ChildWorkflowExecutionTimedOut"
     execution: "_executions.ExecutionId"
     workflow: "_workflows.WorkflowId"
@@ -486,6 +518,8 @@ class ChildWorkflowExecutionTimedOutEvent(Event):
 
 @dataclasses.dataclass
 class CompleteWorkflowExecutionFailedEvent(Event):
+    """Workflow execution completion failed workflow execution history event."""
+
     type: t.ClassVar[str] = "CompleteWorkflowExecutionFailed"
     cause: DecisionFailureCause
     decision_event_id: int
@@ -503,6 +537,10 @@ class CompleteWorkflowExecutionFailedEvent(Event):
 
 @dataclasses.dataclass
 class ContinueAsNewWorkflowExecutionFailedEvent(Event):
+    """Workflow execution continue-as-new failed workflow execution history
+    event.
+    """
+
     type: t.ClassVar[str] = "ContinueAsNewWorkflowExecutionFailed"
     cause: DecisionFailureCause
     decision_event_id: int
@@ -520,6 +558,8 @@ class ContinueAsNewWorkflowExecutionFailedEvent(Event):
 
 @dataclasses.dataclass
 class DecisionTaskCompletedEvent(Event):
+    """Decision task completed workflow execution history event."""
+
     type: t.ClassVar[str] = "DecisionTaskCompleted"
     decision_task_scheduled_event_id: int
     decision_task_started_event_id: int
@@ -539,6 +579,8 @@ class DecisionTaskCompletedEvent(Event):
 
 @dataclasses.dataclass
 class DecisionTaskScheduledEvent(Event):
+    """Decision task scheduled workflow execution history event."""
+
     type: t.ClassVar[str] = "DecisionTaskScheduled"
     decision_task_list: str
     decision_task_timeout: t.Union[datetime.timedelta, None] = _common.unset
@@ -561,6 +603,8 @@ class DecisionTaskScheduledEvent(Event):
 
 @dataclasses.dataclass
 class DecisionTaskStartedEvent(Event):
+    """Decision task started workflow execution history event."""
+
     type: t.ClassVar[str] = "DecisionTaskStarted"
     decision_task_scheduled_event_id: int
     decider_identity: str = None
@@ -578,6 +622,8 @@ class DecisionTaskStartedEvent(Event):
 
 @dataclasses.dataclass
 class DecisionTaskTimedOutEvent(Event):
+    """Decision task timed-out workflow execution history event."""
+
     type: t.ClassVar[str] = "DecisionTaskTimedOut"
     decision_task_scheduled_event_id: int
     decision_task_started_event_id: int
@@ -600,6 +646,10 @@ class DecisionTaskTimedOutEvent(Event):
 
 @dataclasses.dataclass
 class ExternalWorkflowExecutionCancelRequestedEvent(Event):
+    """External workflow execution cancellation requested workflow execution
+    history event.
+    """
+
     type: t.ClassVar[str] = "ExternalWorkflowExecutionCancelRequested"
     execution: "_executions.ExecutionId"
     cancel_request_event_id: int
@@ -619,6 +669,8 @@ class ExternalWorkflowExecutionCancelRequestedEvent(Event):
 
 @dataclasses.dataclass
 class ExternalWorkflowExecutionSignaledEvent(Event):
+    """External workflow execution signaled workflow execution history event."""
+
     type: t.ClassVar[str] = "ExternalWorkflowExecutionSignaled"
     execution: "_executions.ExecutionId"
     signal_event_id: int
@@ -638,6 +690,8 @@ class ExternalWorkflowExecutionSignaledEvent(Event):
 
 @dataclasses.dataclass
 class FailWorkflowExecutionFailedEvent(Event):
+    """Workflow execution failure failed workflow execution history event."""
+
     type: t.ClassVar[str] = "FailWorkflowExecutionFailed"
     cause: DecisionFailureCause
     decision_event_id: int
@@ -655,6 +709,8 @@ class FailWorkflowExecutionFailedEvent(Event):
 
 @dataclasses.dataclass
 class MarkerRecordedEvent(Event):
+    """Marker recorded workflow execution history event."""
+
     type: t.ClassVar[str] = "MarkerRecorded"
     marker_name: str
     decision_event_id: int
@@ -674,6 +730,8 @@ class MarkerRecordedEvent(Event):
 
 @dataclasses.dataclass
 class LambdaFunctionScheduledEvent(Event):
+    """Lambda task scheduled workflow execution history event."""
+
     type: t.ClassVar[str] = "LambdaFunctionScheduled"
     task_id: str
     lambda_function: str
@@ -701,6 +759,8 @@ class LambdaFunctionScheduledEvent(Event):
 
 @dataclasses.dataclass
 class LambdaFunctionStartedEvent(Event):
+    """Lambda task started workflow execution history event."""
+
     type: t.ClassVar[str] = "LambdaFunctionStarted"
     task_scheduled_event_id: int
 
@@ -716,6 +776,8 @@ class LambdaFunctionStartedEvent(Event):
 
 @dataclasses.dataclass
 class LambdaFunctionCompletedEvent(Event):
+    """Lambda task completed workflow execution history event."""
+
     type: t.ClassVar[str] = "LambdaFunctionCompleted"
     task_scheduled_event_id: int
     task_started_event_id: int
@@ -735,6 +797,8 @@ class LambdaFunctionCompletedEvent(Event):
 
 @dataclasses.dataclass
 class LambdaFunctionFailedEvent(Event):
+    """Lambda task failed workflow execution history event."""
+
     type: t.ClassVar[str] = "LambdaFunctionFailed"
     task_scheduled_event_id: int
     task_started_event_id: int
@@ -756,6 +820,8 @@ class LambdaFunctionFailedEvent(Event):
 
 @dataclasses.dataclass
 class LambdaFunctionTimedOutEvent(Event):
+    """Lambda task timed-out workflow execution history event."""
+
     type: t.ClassVar[str] = "LambdaFunctionTimedOut"
     task_scheduled_event_id: int
     task_started_event_id: int
@@ -778,6 +844,8 @@ class LambdaFunctionTimedOutEvent(Event):
 
 @dataclasses.dataclass
 class RecordMarkerFailedEvent(Event):
+    """Marker recording failed workflow execution history event."""
+
     type: t.ClassVar[str] = "RecordMarkerFailed"
     marker_name: str
     decision_event_id: int
@@ -800,6 +868,10 @@ class RecordMarkerFailedEvent(Event):
 
 @dataclasses.dataclass
 class RequestCancelActivityTaskFailedEvent(Event):
+    """Activity task cancellation request failed workflow execution history
+    event.
+    """
+
     type: t.ClassVar[str] = "RequestCancelActivityTaskFailed"
     task_id: str
     cause: CancelTaskFailureCause
@@ -819,6 +891,10 @@ class RequestCancelActivityTaskFailedEvent(Event):
 
 @dataclasses.dataclass
 class RequestCancelExternalWorkflowExecutionFailedEvent(Event):
+    """External workflow execution cancellation request failed workflow
+    execution history event.
+    """
+
     type: t.ClassVar[str] = "RequestCancelExternalWorkflowExecutionFailed"
     execution: "_executions.ExecutionId"
     cause: CancelExecutionFailureCause
@@ -842,6 +918,10 @@ class RequestCancelExternalWorkflowExecutionFailedEvent(Event):
 
 @dataclasses.dataclass
 class RequestCancelExternalWorkflowExecutionInitiatedEvent(Event):
+    """External workflow execution cancellation request initiation workflow
+    execution history event.
+    """
+
     type: t.ClassVar[str] = "RequestCancelExternalWorkflowExecutionInitiated"
     execution: t.Union["_executions.ExecutionId", "_executions.CurrentExecutionId"]
     decision_event_id: int
@@ -861,6 +941,8 @@ class RequestCancelExternalWorkflowExecutionInitiatedEvent(Event):
 
 @dataclasses.dataclass
 class ScheduleActivityTaskFailedEvent(Event):
+    """Activity task scheduling failed workflow execution history event."""
+
     type: t.ClassVar[str] = "ScheduleActivityTaskFailed"
     task_id: str
     activity: "_activities.ActivityId"
@@ -884,6 +966,8 @@ class ScheduleActivityTaskFailedEvent(Event):
 
 @dataclasses.dataclass
 class ScheduleLambdaFunctionFailedEvent(Event):
+    """Lambda task scheduling failed workflow execution history event."""
+
     type: t.ClassVar[str] = "ScheduleLambdaFunctionFailed"
     task_id: str
     lambda_function: str
@@ -905,6 +989,10 @@ class ScheduleLambdaFunctionFailedEvent(Event):
 
 @dataclasses.dataclass
 class SignalExternalWorkflowExecutionFailedEvent(Event):
+    """External workflow execution signalling failed workflow execution
+    history event.
+    """
+
     type: t.ClassVar[str] = "SignalExternalWorkflowExecutionFailed"
     execution: t.Union["_executions.ExecutionId", "_executions.CurrentExecutionId"]
     cause: SignalFailureCause
@@ -928,6 +1016,10 @@ class SignalExternalWorkflowExecutionFailedEvent(Event):
 
 @dataclasses.dataclass
 class SignalExternalWorkflowExecutionInitiatedEvent(Event):
+    """External workflow execution signalling initiated workflow execution
+    history event.
+    """
+
     type: t.ClassVar[str] = "SignalExternalWorkflowExecutionInitiated"
     execution: t.Union["_executions.ExecutionId", "_executions.CurrentExecutionId"]
     signal_name: str
@@ -951,6 +1043,8 @@ class SignalExternalWorkflowExecutionInitiatedEvent(Event):
 
 @dataclasses.dataclass
 class StartActivityTaskFailedEvent(Event):
+    """Activity task starting failed workflow execution history event."""
+
     type: t.ClassVar[str] = "StartActivityTaskFailed"
     task_id: str = None
     cause: str = None
@@ -971,6 +1065,8 @@ class StartActivityTaskFailedEvent(Event):
 
 @dataclasses.dataclass
 class StartLambdaFunctionFailedEvent(Event):
+    """Lambda task starting failed workflow execution history event."""
+
     type: t.ClassVar[str] = "StartLambdaFunctionFailed"
     cause: StartLambdaFailureCause = None
     message: str = None
@@ -990,6 +1086,10 @@ class StartLambdaFunctionFailedEvent(Event):
 
 @dataclasses.dataclass
 class StartChildWorkflowExecutionFailedEvent(Event):
+    """Child workflow execution starting failed workflow execution history
+    event.
+    """
+
     type: t.ClassVar[str] = "StartChildWorkflowExecutionFailed"
     execution: "_executions.CurrentExecutionId"
     workflow: "_workflows.WorkflowId"
@@ -1018,6 +1118,10 @@ class StartChildWorkflowExecutionFailedEvent(Event):
 
 @dataclasses.dataclass
 class StartChildWorkflowExecutionInitiatedEvent(Event):
+    """Child workflow execution starting initiated workflow execution history
+    event.
+    """
+
     type: t.ClassVar[str] = "StartChildWorkflowExecutionInitiated"
     execution: "_executions.CurrentExecutionId"
     workflow: "_workflows.WorkflowId"
@@ -1049,6 +1153,8 @@ class StartChildWorkflowExecutionInitiatedEvent(Event):
 
 @dataclasses.dataclass
 class StartTimerFailedEvent(Event):
+    """Timer starting failed workflow execution history event."""
+
     type: t.ClassVar[str] = "StartTimerFailed"
     timer_id: str
     cause: StartTimerFailureCause
@@ -1068,6 +1174,8 @@ class StartTimerFailedEvent(Event):
 
 @dataclasses.dataclass
 class TimerCancelledEvent(Event):
+    """Timer cancelled workflow execution history event."""
+
     type: t.ClassVar[str] = "TimerCanceled"
     timer_id: str
     timer_started_event_id: int
@@ -1087,6 +1195,8 @@ class TimerCancelledEvent(Event):
 
 @dataclasses.dataclass
 class TimerFiredEvent(Event):
+    """Timer fired workflow execution history event."""
+
     type: t.ClassVar[str] = "TimerFired"
     timer_id: str
     timer_started_event_id: int
@@ -1104,6 +1214,8 @@ class TimerFiredEvent(Event):
 
 @dataclasses.dataclass
 class TimerStartedEvent(Event):
+    """Timer started workflow execution history event."""
+
     type: t.ClassVar[str] = "TimerStarted"
     timer_id: str
     timer_duration: datetime.timedelta
@@ -1125,6 +1237,10 @@ class TimerStartedEvent(Event):
 
 @dataclasses.dataclass
 class WorkflowExecutionCancelRequestedEvent(Event):
+    """Workflow execution cancellation requested workflow execution history
+    event.
+    """
+
     type: t.ClassVar[str] = "WorkflowExecutionCancelRequested"
     cause: ExecutionTerminationCause = None
     source_execution: "_executions.ExecutionId" = None
@@ -1149,6 +1265,8 @@ class WorkflowExecutionCancelRequestedEvent(Event):
 
 @dataclasses.dataclass
 class WorkflowExecutionCancelledEvent(Event):
+    """Workflow execution cancelled workflow execution history event."""
+
     type: t.ClassVar[str] = "WorkflowExecutionCanceled"
     decision_event_id: int
     details: str = None
@@ -1166,6 +1284,8 @@ class WorkflowExecutionCancelledEvent(Event):
 
 @dataclasses.dataclass
 class WorkflowExecutionCompletedEvent(Event):
+    """Workflow execution completed workflow execution history event."""
+
     type: t.ClassVar[str] = "WorkflowExecutionCompleted"
     decision_event_id: int
     execution_result: str = None
@@ -1183,6 +1303,8 @@ class WorkflowExecutionCompletedEvent(Event):
 
 @dataclasses.dataclass
 class WorkflowExecutionContinuedAsNewEvent(Event):
+    """Workflow execution continued as new workflow execution history event."""
+
     type: t.ClassVar[str] = "WorkflowExecutionContinuedAsNew"
     execution_run_id: str
     execution_configuration: "_executions.PartialExecutionConfiguration"
@@ -1212,6 +1334,8 @@ class WorkflowExecutionContinuedAsNewEvent(Event):
 
 @dataclasses.dataclass
 class WorkflowExecutionFailedEvent(Event):
+    """Workflow execution failed workflow execution history event."""
+
     type: t.ClassVar[str] = "WorkflowExecutionFailed"
     decision_event_id: int
     reason: str = None
@@ -1231,6 +1355,8 @@ class WorkflowExecutionFailedEvent(Event):
 
 @dataclasses.dataclass
 class WorkflowExecutionSignaledEvent(Event):
+    """Workflow execution signaled workflow execution history event."""
+
     type: t.ClassVar[str] = "WorkflowExecutionSignaled"
     signal_name: str
     signal_input: str = None
@@ -1254,6 +1380,8 @@ class WorkflowExecutionSignaledEvent(Event):
 
 @dataclasses.dataclass
 class WorkflowExecutionStartedEvent(Event):
+    """Workflow execution started workflow execution history event."""
+
     type: t.ClassVar[str] = "WorkflowExecutionStarted"
     workflow: "_workflows.WorkflowId"
     execution_configuration: "_executions.PartialExecutionConfiguration"
@@ -1288,6 +1416,8 @@ class WorkflowExecutionStartedEvent(Event):
 
 @dataclasses.dataclass
 class WorkflowExecutionTerminatedEvent(Event):
+    """Workflow execution terminated workflow execution history event."""
+
     type: t.ClassVar[str] = "WorkflowExecutionTerminated"
     child_execution_policy: "_executions.ChildExecutionTerminationPolicy"
     cause: ExecutionTerminationCause = None
@@ -1313,6 +1443,8 @@ class WorkflowExecutionTerminatedEvent(Event):
 
 @dataclasses.dataclass
 class WorkflowExecutionTimedOutEvent(Event):
+    """Workflow execution timed-out workflow execution history event."""
+
     type: t.ClassVar[str] = "WorkflowExecutionTimedOut"
     child_execution_policy: "_executions.ChildExecutionTerminationPolicy"
 

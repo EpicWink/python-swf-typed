@@ -7,5 +7,4 @@ swf\_typed
    :inherited-members:
    :imported-members:
    :members:
-   :show-inheritance:
    :undoc-members:
