@@ -14,6 +14,8 @@ if t.TYPE_CHECKING:
     import botocore.client
     from . import _workflows
 
+default_executions_list_time_range = datetime.timedelta(days=90)
+
 
 @dataclasses.dataclass
 class CurrentExecutionId(_common.Deserialisable, _common.Serialisable):
@@ -312,6 +314,15 @@ class CloseStatusExecutionFilter(ExecutionFilter):
         return {"closeStatusFilter": {"status": self.status}}
 
 
+TimeFilter = t.TypeVar("TimeFilter", StartTimeExecutionFilter, CloseTimeExecutionFilter)
+
+
+def _default_time_filter(cls: t.Type[TimeFilter]) -> TimeFilter:
+    """Construct a default execution time-filter."""
+    now = datetime.datetime.now(tz=datetime.timezone.utc)
+    return cls(earliest=now - default_executions_list_time_range)
+
+
 def _get_number_of_executions(
     time_filter: t.Union[StartTimeExecutionFilter, CloseTimeExecutionFilter],
     domain: str,
@@ -335,8 +346,8 @@ def _get_number_of_executions(
 
 
 def get_number_of_closed_executions(
-    time_filter: t.Union[StartTimeExecutionFilter, CloseTimeExecutionFilter],
     domain: str,
+    time_filter: t.Union[StartTimeExecutionFilter, CloseTimeExecutionFilter] = None,
     property_filter: t.Union[
         IdExecutionFilter,
         WorkflowTypeExecutionFilter,
@@ -351,8 +362,9 @@ def get_number_of_closed_executions(
     returned.
 
     Args:
-        time_filter: execution start-time/close-time filter
         domain: domain of executions
+        time_filter: execution start-time/close-time filter, default:
+            executions closed less than 90 days ago
         property_filter: execution
             workflow-ID/workflow-type/tags/close-status filter
         client: SWF client
@@ -362,14 +374,15 @@ def get_number_of_closed_executions(
     """
 
     client = _common.ensure_client(client)
+    time_filter = time_filter or _default_time_filter(CloseTimeExecutionFilter)
     return _get_number_of_executions(
         time_filter, domain, property_filter, client.count_closed_workflow_executions
     )
 
 
 def get_number_of_open_executions(
-    started_filter: StartTimeExecutionFilter,
     domain: str,
+    started_filter: StartTimeExecutionFilter = None,
     property_filter: t.Union[
         IdExecutionFilter,
         WorkflowTypeExecutionFilter,
@@ -383,8 +396,9 @@ def get_number_of_open_executions(
     returned.
 
     Args:
-        started_filter: execution start-time filter
         domain: domain of executions
+        started_filter: execution start-time filter, default: executions
+            opened less than 90 days ago
         property_filter: execution workflow-ID/workflow-type/tags filter
         client: SWF client
 
@@ -393,6 +407,7 @@ def get_number_of_open_executions(
     """
 
     client = _common.ensure_client(client)
+    started_filter = started_filter or _default_time_filter(StartTimeExecutionFilter)
     return _get_number_of_executions(
         started_filter, domain, property_filter, client.count_open_workflow_executions
     )
@@ -422,8 +437,8 @@ def describe_execution(
 
 
 def list_closed_executions(
-    time_filter: t.Union[StartTimeExecutionFilter, CloseTimeExecutionFilter],
     domain: str,
+    time_filter: t.Union[StartTimeExecutionFilter, CloseTimeExecutionFilter] = None,
     property_filter: t.Union[
         IdExecutionFilter,
         WorkflowTypeExecutionFilter,
@@ -436,8 +451,9 @@ def list_closed_executions(
     """List closed workflow executions; retrieved semi-lazily.
 
     Args:
-        time_filter: execution start-time/close-time filter
         domain: domain of executions
+        time_filter: execution start-time/close-time filter, default:
+            executions closed less than 90 days ago
         property_filter: execution
             workflow-ID/workflow-type/tags/close-status filter
         reverse: return results in reverse start/close order
@@ -448,6 +464,7 @@ def list_closed_executions(
     """
 
     client = _common.ensure_client(client)
+    time_filter = time_filter or _default_time_filter(CloseTimeExecutionFilter)
     kw = time_filter.get_api_args()
     if property_filter:
         kw.update(property_filter.get_api_args())
@@ -461,8 +478,8 @@ def list_closed_executions(
 
 
 def list_open_executions(
-    started_filter: StartTimeExecutionFilter,
     domain: str,
+    started_filter: StartTimeExecutionFilter = None,
     property_filter: t.Union[
         IdExecutionFilter,
         WorkflowTypeExecutionFilter,
@@ -474,8 +491,9 @@ def list_open_executions(
     """List open workflow executions; retrieved semi-lazily.
 
     Args:
-        started_filter: execution start-time filter
         domain: domain of executions
+        started_filter: execution start-time filter, default: executions
+            opened less than 90 days ago
         property_filter: execution workflow-ID/workflow-type/tags filter
         reverse: return results in reverse start order
         client: SWF client
@@ -485,6 +503,7 @@ def list_open_executions(
     """
 
     client = _common.ensure_client(client)
+    started_filter = started_filter or _default_time_filter(StartTimeExecutionFilter)
     kw = {}
     if property_filter:
         kw.update(property_filter.get_api_args())
