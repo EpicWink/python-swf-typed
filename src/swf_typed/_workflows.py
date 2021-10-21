@@ -78,12 +78,15 @@ class WorkflowDetails(_common.Deserialisable):
 
 
 @dataclasses.dataclass
-class WorkflowIdFilter(_common.Serialisable):
+class WorkflowIdFilter(_common.Serialisable, _common.SerialisableToArguments):
     """Workflow type filter on workflow name."""
 
     name: str
 
-    def to_api(self) -> t.Dict[str, str]:
+    def to_api(self):
+        return {"name": self.name}
+
+    def get_api_args(self):
         return {"name": self.name}
 
 
@@ -151,7 +154,7 @@ def list_workflows(
     client = _common.ensure_client(client)
     kw = {}
     if workflow_filter:
-        kw["name"] = workflow_filter.name
+        kw.update(workflow_filter.get_api_args())
     call = functools.partial(
         client.list_workflow_types,
         domain=domain,

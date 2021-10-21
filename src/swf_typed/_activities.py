@@ -77,10 +77,13 @@ class ActivityDetails(_common.Deserialisable):
 
 
 @dataclasses.dataclass
-class ActivityIdFilter:
+class ActivityIdFilter(_common.SerialisableToArguments):
     """Activity type filter on activity name."""
 
     name: str
+
+    def get_api_args(self):
+        return {"name": self.name}
 
 
 def deprecate_activity(
@@ -147,7 +150,7 @@ def list_activities(
     client = _common.ensure_client(client)
     kw = {}
     if activity_filter:
-        kw["name"] = activity_filter.name
+        kw.update(activity_filter.get_api_args())
     call = functools.partial(
         client.list_activity_types,
         domain=domain,

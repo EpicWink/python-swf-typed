@@ -243,11 +243,17 @@ class ExecutionFilter(_common.SerialisableToArguments, metaclass=abc.ABCMeta):
 
 
 @dataclasses.dataclass
-class DateTimeFilter:
+class DateTimeFilter(_common.Serialisable):
     """Date-time property filter mix-in."""
 
     oldest: datetime.datetime
     latest: datetime.datetime = None
+
+    def to_api(self):
+        data = {"oldestDate": self.oldest}
+        if self.latest:
+            data["latestDate"] = self.latest
+        return data
 
 
 @dataclasses.dataclass
@@ -255,10 +261,7 @@ class StartTimeExecutionFilter(DateTimeFilter, ExecutionFilter):
     """Workflow execution filter on start-time."""
 
     def get_api_args(self):
-        data = {"startTimeFilter": {"oldestDate": self.oldest}}
-        if self.latest:
-            data["startTimeFilter"]["latestDate"] = self.latest
-        return data
+        return {"startTimeFilter": self.to_api()}
 
 
 @dataclasses.dataclass
@@ -266,10 +269,7 @@ class CloseTimeExecutionFilter(DateTimeFilter, ExecutionFilter):
     """Workflow execution filter on close-time."""
 
     def get_api_args(self):
-        data = {"closeTimeFilter": {"oldestDate": self.oldest}}
-        if self.latest:
-            data["closeTimeFilter"]["latestDate"] = self.latest
-        return data
+        return {"closeTimeFilter": self.to_api()}
 
 
 @dataclasses.dataclass
@@ -485,11 +485,15 @@ def list_open_executions(
     """
 
     client = _common.ensure_client(client)
-    kw = started_filter.get_api_args()
+    kw = {}
     if property_filter:
         kw.update(property_filter.get_api_args())
     call = functools.partial(
-        client.list_open_workflow_executions, domain=domain, reverseOrder=reverse, **kw
+        client.list_open_workflow_executions,
+        domain=domain,
+        startTimeFilter=started_filter.to_api(),
+        reverseOrder=reverse,
+        **kw,
     )
     return _common.iter_paged(call, ExecutionInfo.from_api, "executionInfos")
 
