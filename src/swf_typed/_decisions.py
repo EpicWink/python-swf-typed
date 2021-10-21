@@ -454,7 +454,7 @@ def complete_decision_task(
     client = _common.ensure_client(client)
     kw = {}
     if context or context == "":
-        kw["context"] = context
+        kw["executonContext"] = context
     decisions_data = [d.to_api() for d in decisions]
     client.respond_decision_task_completed(
         taskToken=token, decisions=decisions_data, **kw
