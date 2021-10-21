@@ -65,6 +65,7 @@ from ._executions import signal_execution
 from ._executions import start_execution
 from ._executions import terminate_execution
 
+from ._tasks import Cancelled
 from ._tasks import TaskConfiguration
 from ._tasks import PartialTaskConfiguration
 from ._tasks import WorkerTask
