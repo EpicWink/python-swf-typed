@@ -7,7 +7,7 @@ from ._domains import DomainDetails
 from ._domains import deprecate_domain
 from ._domains import describe_domain
 from ._domains import list_domains
-from ._domains import list_domain_tags
+from ._domains import get_domain_tags
 from ._domains import register_domain
 from ._domains import tag_domain
 from ._domains import undeprecate_domain

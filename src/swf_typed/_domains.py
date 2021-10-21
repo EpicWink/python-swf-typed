@@ -118,7 +118,7 @@ def list_domains(
     return _common.iter_paged(call, DomainInfo.from_api, "domainInfos")
 
 
-def list_domain_tags(
+def get_domain_tags(
     domain_arn: str,
     client: "botocore.client.BaseClient" = None,
 ) -> t.Dict[str, str]:
@@ -159,7 +159,7 @@ def register_domain(
     if description or description == "":
         kw["description"] = description
     if tags:
-        kw["tags"] = [{"key": k, "value": v} for k, v in tags.items()]
+        kw["tags"] = [dict(key=k, value=v) for k, v in tags.items()]
     execution_retention_data = str(configuration.execution_retention.days)
     client.register_domain(
         name=domain,
@@ -182,7 +182,7 @@ def tag_domain(
     """
 
     client = _common.ensure_client(client)
-    tags = [{"key": k, "value": v} for k, v in tags.items()]
+    tags = [dict(key=k, value=v) for k, v in tags.items()]
     client.tag_resource(resourceArn=domain_arn, tags=tags)
 
 
