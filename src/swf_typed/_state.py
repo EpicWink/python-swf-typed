@@ -350,9 +350,9 @@ class _StateBuilder:
             task.status = TaskStatus.timed_out
             task.ended = event.occured
 
-        # elif isinstance(event, _history.StartLambdaFunctionFailedEvent):
-        #     task = self._tasks[event.task_scheduled_event_id]
-        #     task.status = TaskStatus.failed
+        elif isinstance(event, _history.StartLambdaFunctionFailedEvent):
+            task = self._tasks[event.task_scheduled_event_id]
+            task.status = TaskStatus.failed
 
         # Child executions
         elif isinstance(event, _history.StartChildWorkflowExecutionInitiatedEvent):
