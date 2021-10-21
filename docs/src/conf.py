@@ -14,6 +14,5 @@ extensions = [
     "sphinx.ext.napoleon",
     "autodocsumm",
 ]
-autodoc_inherit_docstrings = True
 
 html_theme = "sphinx_rtd_theme"

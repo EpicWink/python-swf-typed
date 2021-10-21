@@ -14,11 +14,13 @@ if t.TYPE_CHECKING:
 
 
 class Cancelled(Exception):
-    pass
+    """Current activity task has been cancelled."""
 
 
 @dataclasses.dataclass
-class TaskConfiguration:
+class TaskConfiguration(_common.Deserialisable):
+    """Activity task configuration."""
+
     task_list: str
     timeout: t.Union[datetime.timedelta, None]
     schedule_timeout: t.Union[datetime.timedelta, None]
@@ -27,7 +29,7 @@ class TaskConfiguration:
     priority: int = None
 
     @classmethod
-    def from_api(cls, data: t.Dict[str, t.Any]) -> "TaskConfiguration":
+    def from_api(cls, data) -> "TaskConfiguration":
         return cls(
             task_list=data["taskList"]["name"],
             timeout=_common.parse_timeout(data["taskStartToCloseTimeout"]),
@@ -39,14 +41,16 @@ class TaskConfiguration:
 
 
 @dataclasses.dataclass
-class PartialTaskConfiguration(TaskConfiguration):
+class PartialTaskConfiguration(TaskConfiguration, _common.SerialisableToArguments):
+    """Partial activity task configuration."""
+
     task_list: str = None
     timeout: t.Union[datetime.timedelta, None] = _common.unset
     schedule_timeout: t.Union[datetime.timedelta, None] = _common.unset
     total_timeout: t.Union[datetime.timedelta, None] = _common.unset
 
     @classmethod
-    def from_api(cls, data: t.Dict[str, t.Any]) -> "PartialTaskConfiguration":
+    def from_api(cls, data) -> "PartialTaskConfiguration":
         return cls(
             task_list=data.get("taskList") and data["taskList"]["name"],
             timeout=(
@@ -68,7 +72,7 @@ class PartialTaskConfiguration(TaskConfiguration):
             priority=data.get("taskPriority") and int(data["taskPriority"]),
         )
 
-    def get_api_args(self) -> t.Dict[str, t.Any]:
+    def get_api_args(self):
         data = {}
 
         if self.task_list or self.task_list == "":
@@ -92,7 +96,9 @@ class PartialTaskConfiguration(TaskConfiguration):
 
 
 @dataclasses.dataclass
-class WorkerTask:
+class WorkerTask(_common.Deserialisable):
+    """Activity worker activity task."""
+
     token: str
     id: str
     activity: "_activities.ActivityId"
@@ -101,7 +107,7 @@ class WorkerTask:
     input: str = None
 
     @classmethod
-    def from_api(cls, data: t.Dict[str, t.Any]) -> "WorkerTask":
+    def from_api(cls, data) -> "WorkerTask":
         from . import _activities
         from . import _executions
 
@@ -120,6 +126,19 @@ def get_number_of_pending_tasks(
     domain: str,
     client: "botocore.client.BaseClient" = None,
 ) -> int:
+    """Get the number of pending activity tasks.
+
+    Warns if the number of pending tasks is greater than what's returned.
+
+    Args:
+        task_list: activity task-list
+        domain: domain of task-list
+        client: SWF client
+
+    Returns:
+        number of pending tasks
+    """
+
     client = _common.ensure_client(client)
     response = client.count_pending_activity_tasks(
         domain=domain,
@@ -136,6 +155,19 @@ def poll_for_task(
     worker_identity: str = None,
     client: "botocore.client.BaseClient" = None,
 ) -> WorkerTask:
+    """Request (poll for) an activity task; blocks until task is received.
+
+    Args:
+        task_list: activity task-list to request from
+        domain: domain of task-list
+        worker_identity: activity worker identity, recorded in execution
+            history
+        client: SWF client
+
+    Returns:
+        activity task
+    """
+
     client = _common.ensure_client(client)
     kw = {}
     if worker_identity or worker_identity == "":
@@ -154,6 +186,17 @@ def record_task_heartbeat(
     details: str = None,
     client: "botocore.client.BaseClient" = None,
 ) -> None:
+    """Send a heartbeat to SWF for the current activity task.
+
+    Args:
+        token: activity task token
+        details: activity task progress message
+        client: SWF client
+
+    Raises:
+        Cancelled: if activity task was cancelled by decider
+    """
+
     client = _common.ensure_client(client)
     kw = {}
     if details or details == "":
@@ -168,6 +211,16 @@ def cancel_task(
     details: str = None,
     client: "botocore.client.BaseClient" = None,
 ) -> None:
+    """Cancel the current activity task.
+
+    Only valid if the activity task is open and has a cancellation request.
+
+    Args:
+        token: activity task token
+        details: extra information
+        client: SWF client
+    """
+
     client = _common.ensure_client(client)
     kw = {}
     if details or details == "":
@@ -180,6 +233,16 @@ def complete_task(
     result: str = None,
     client: "botocore.client.BaseClient" = None,
 ) -> None:
+    """Complete the current activity task.
+
+    Only valid if the activity task is open.
+
+    Args:
+        token: activity task token
+        result: task result
+        client: SWF client
+    """
+
     client = _common.ensure_client(client)
     kw = {}
     if result or result == "":
@@ -193,6 +256,17 @@ def fail_task(
     details: str = None,
     client: "botocore.client.BaseClient" = None,
 ) -> None:
+    """Fail the current activity task.
+
+    Only valid if the activity task is open.
+
+    Args:
+        token: activity task token
+        reason: failure reason, usually for classification
+        details: failure details, usually for messaging
+        client: SWF client
+    """
+
     client = _common.ensure_client(client)
     kw = {}
     if reason or reason == "":

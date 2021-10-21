@@ -1,5 +1,6 @@
 """Common models and methods."""
 
+import abc
 import socket
 import datetime
 import contextlib
@@ -20,6 +21,8 @@ executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
 
 
 class _Sentinel:
+    """Not-provided value sentinel."""
+
     def __repr__(self):
         return f"{self.__class__.__name__}()"
 
@@ -33,9 +36,35 @@ class _Sentinel:
 unset = _Sentinel()
 
 
+class Deserialisable(metaclass=abc.ABCMeta):
+    """Deserialisable from SWF API response data."""
+
+    @classmethod
+    @abc.abstractmethod
+    def from_api(cls, data: t.Dict[str, t.Any]) -> "Deserialisable":
+        """Deserialise from SWF API response data."""
+
+
+class Serialisable(metaclass=abc.ABCMeta):
+    """Serialisable to SWF API request data."""
+
+    @abc.abstractmethod
+    def to_api(self) -> t.Dict[str, t.Any]:
+        """Serialise to SWF API request data."""
+
+
+class SerialisableToArguments(metaclass=abc.ABCMeta):
+    """Serialisable to SWF API request arguments."""
+
+    @abc.abstractmethod
+    def get_api_args(self) -> t.Dict[str, t.Any]:
+        """Serialise to SWF API request arguments."""
+
+
 def ensure_client(
     client: "botocore.client.BaseClient" = None,
 ) -> "botocore.client.BaseClient":
+    """Return or create SWF client."""
     if client:
         return client
 
@@ -45,6 +74,15 @@ def ensure_client(
 
 
 def parse_timeout(timeout_data: str) -> t.Union[datetime.timedelta, None]:
+    """Parse timeout from SWF.
+
+    Args:
+        timeout_data: timeout string
+
+    Returns:
+        timeout
+    """
+
     if timeout_data == "NONE":
         return None
     return datetime.timedelta(seconds=int(timeout_data))
@@ -55,6 +93,22 @@ def iter_paged(
     model: t.Callable[[t.Dict[str, t.Any]], T],
     data_key: str,
 ) -> t.Generator[T, None, None]:
+    """Yield results from paginated method.
+
+    Method is called immediately, then a generator is returned which yields
+    results. If a pagination token is found in the response, retrieval of
+    the next page is immediately scheduled (called in another thread).
+    Further pages are not scheduled until the current page is consumed.
+
+    Args:
+        call: paginated method
+        model: transform results (eg into data model)
+        data_key: response results key
+
+    Returns:
+        method results, transformed
+    """
+
     def iter_() -> t.Generator[T, None, None]:
         nonlocal response
 
@@ -72,6 +126,7 @@ def iter_paged(
 def polling_socket_timeout(
     timeout: datetime.timedelta = datetime.timedelta(seconds=70),
 ) -> None:
+    """Set socket timeout for polling in a context."""
     original_timeout_seconds = socket.getdefaulttimeout()
     socket.setdefaulttimeout(timeout.total_seconds())
     try:

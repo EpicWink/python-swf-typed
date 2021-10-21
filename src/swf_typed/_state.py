@@ -14,6 +14,8 @@ if t.TYPE_CHECKING:
 
 
 class TaskStatus(enum.Enum):
+    """Activity task status."""
+
     scheduled = enum.auto()
     started = enum.auto()
     completed = enum.auto()
@@ -23,6 +25,8 @@ class TaskStatus(enum.Enum):
 
 
 class TimerStatus(enum.Enum):
+    """Timer status."""
+
     started = enum.auto()
     fired = enum.auto()
     cancelled = enum.auto()
@@ -30,12 +34,16 @@ class TimerStatus(enum.Enum):
 
 @dataclasses.dataclass
 class DecisionFailure:
+    """Decision failure event."""
+
     event: "_history.Event"
     is_new: bool = True
 
 
 @dataclasses.dataclass
 class TaskState:
+    """Activity task state."""
+
     id: str
     status: TaskStatus
     activity: "_activities.ActivityId"
@@ -54,11 +62,14 @@ class TaskState:
 
     @property
     def has_ended(self) -> bool:
+        """Activity task has completed/failed/cancelled/timed-out."""
         return self.status not in (TaskStatus.scheduled, TaskStatus.started)
 
 
 @dataclasses.dataclass
 class LambdaTaskState:
+    """Lambda task state."""
+
     id: str
     status: TaskStatus
     lambda_function: str
@@ -74,11 +85,14 @@ class LambdaTaskState:
 
     @property
     def has_ended(self) -> bool:
+        """Lambda task has completed/failed/cancelled/timed-out."""
         return self.status not in (TaskStatus.scheduled, TaskStatus.started)
 
 
 @dataclasses.dataclass
 class ChildExecutionState:
+    """Child workflow execution state."""
+
     execution: "_executions.ExecutionId"
     workflow: "_workflows.WorkflowId"
     status: "_executions.ExecutionStatus"
@@ -95,6 +109,8 @@ class ChildExecutionState:
 
 @dataclasses.dataclass
 class TimerState:
+    """Timer state."""
+
     id: str
     status: TimerStatus
     duraction: datetime.timedelta
@@ -106,6 +122,8 @@ class TimerState:
 
 @dataclasses.dataclass
 class SignalState:
+    """Signal state."""
+
     name: str
     received: datetime.datetime
     input: str = None
@@ -114,6 +132,8 @@ class SignalState:
 
 @dataclasses.dataclass
 class MarkerState:
+    """Marker state."""
+
     name: str
     recorded: datetime.datetime
     details: str = None
@@ -122,6 +142,8 @@ class MarkerState:
 
 @dataclasses.dataclass
 class ExecutionState:
+    """Workflow execution state."""
+
     status: "_executions.ExecutionStatus"
     configuration: "_executions.ExecutionConfiguration"
     started: datetime.datetime
@@ -145,6 +167,8 @@ class ExecutionState:
 
 
 class _StateBuilder:
+    """Workflow execution state builder."""
+
     execution_history: t.Iterable["_history.Event"]
     execution: ExecutionState
     _tasks: t.Dict[int, t.Union[TaskState, LambdaTaskState]]
@@ -159,6 +183,12 @@ class _StateBuilder:
     ]
 
     def __init__(self, execution_history: t.Iterable["_history.Event"]):
+        """Initialise builder.
+
+        Args:
+            execution_history: workflow execution history events
+        """
+
         self.execution_history = execution_history
         self._tasks = {}
         self._child_executions = {}
@@ -167,6 +197,7 @@ class _StateBuilder:
         self._could_be_new = []
 
     def _process_event(self, event: "_history.Event") -> None:
+        """Update workflow execution state with event."""
         from . import _history
         from . import _executions
 
@@ -413,17 +444,28 @@ class _StateBuilder:
             self._could_be_new.append((self._latest_decision_event_id, marker))
 
     def _update_is_new(self) -> None:
+        """Mark execution state which happended after last decision."""
         for prior_decision_event_id, state in self._could_be_new:
             state.is_new = prior_decision_event_id == self._latest_decision_event_id
 
     def build(self) -> None:
+        """Build workflow execution state."""
         for event in self.execution_history:
             self._process_event(event)
         self._update_is_new()
 
 
 def build_state(execution_history: t.Iterable["_history.Event"]) -> ExecutionState:
-    # Must be forward history
+    """Build workflow execution state.
+
+    Args:
+        execution_history: workflow execution history events, earliest
+            events must be first
+
+    Returns:
+        workflow execution state
+    """
+
     builder = _StateBuilder(execution_history)
     builder.build()
     return builder.execution

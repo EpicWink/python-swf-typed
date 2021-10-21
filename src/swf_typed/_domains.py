@@ -12,14 +12,16 @@ if t.TYPE_CHECKING:
 
 
 @dataclasses.dataclass
-class DomainInfo:
+class DomainInfo(_common.Deserialisable):
+    """Domain details."""
+
     name: str
     is_deprecated: bool
     arn: str
     description: str = None
 
     @classmethod
-    def from_api(cls, data: t.Dict[str, t.Any]) -> "DomainInfo":
+    def from_api(cls, data) -> "DomainInfo":
         return cls(
             name=data["name"],
             is_deprecated=_common.is_deprecated_by_registration_status[data["status"]],
@@ -29,11 +31,13 @@ class DomainInfo:
 
 
 @dataclasses.dataclass
-class DomainConfiguration:
+class DomainConfiguration(_common.Deserialisable):
+    """Domain configuration."""
+
     execution_retention: datetime.timedelta
 
     @classmethod
-    def from_api(cls, data: t.Dict[str, t.Any]) -> "DomainConfiguration":
+    def from_api(cls, data) -> "DomainConfiguration":
         execution_retention_data = data["workflowExecutionRetentionPeriodInDays"]
         return cls(
             execution_retention=datetime.timedelta(days=int(execution_retention_data)),
@@ -41,12 +45,14 @@ class DomainConfiguration:
 
 
 @dataclasses.dataclass
-class DomainDetails:
+class DomainDetails(_common.Deserialisable):
+    """Domain details and configuration."""
+
     info: DomainInfo
     configuration: DomainConfiguration
 
     @classmethod
-    def from_api(cls, data: t.Dict[str, t.Any]) -> "DomainDetails":
+    def from_api(cls, data) -> "DomainDetails":
         return cls(
             info=DomainInfo.from_api(data["domainInfo"]),
             configuration=DomainConfiguration.from_api(data["domainInfo"]),
@@ -57,6 +63,13 @@ def deprecate_domain(
     domain: str,
     client: "botocore.client.BaseClient" = None,
 ) -> None:
+    """Deprecate (deactivate) a domain.
+
+    Args:
+        domain: domain to deprecate
+        client: SWF client
+    """
+
     client = _common.ensure_client(client)
     client.deprecate_domain(name=domain)
 
@@ -65,6 +78,16 @@ def describe_domain(
     domain: str,
     client: "botocore.client.BaseClient" = None,
 ) -> DomainDetails:
+    """Describe a domain.
+
+    Args:
+        domain: domain to describe
+        client: SWF client
+
+    Returns:
+        domain details and configuration
+    """
+
     client = _common.ensure_client(client)
     response = client.describe_domain(name=domain)
     return DomainDetails.from_api(response)
@@ -75,6 +98,17 @@ def list_domains(
     reverse: bool = False,
     client: "botocore.client.BaseClient" = None,
 ) -> t.Generator[DomainInfo, None, None]:
+    """List domains; retrieved semi-lazily.
+
+    Args:
+        is_deprecated: list deprecated domains instead of non-deprecated
+        reverse: return results in reverse alphabetical order
+        client: SWF client
+
+    Returns:
+        domains
+    """
+
     client = _common.ensure_client(client)
     call = functools.partial(
         client.list_domains,
@@ -88,6 +122,16 @@ def list_domain_tags(
     domain_arn: str,
     client: "botocore.client.BaseClient" = None,
 ) -> t.Dict[str, str]:
+    """Get a domain's tags.
+
+    Args:
+        domain_arn: domain AWS ARN
+        client: SWF client
+
+    Returns:
+        domain's resource tags
+    """
+
     client = _common.ensure_client(client)
     response = client.list_tags_for_resource(resourceArn=domain_arn)
     return {tag["key"]: tag["value"] for tag in response["tags"]}
@@ -100,6 +144,16 @@ def register_domain(
     tags: t.Dict[str, str] = None,
     client: "botocore.client.BaseClient" = None,
 ) -> None:
+    """Register a new domain.
+
+    Args:
+        domain: domain name
+        configuration: configuration
+        description: domain description
+        tags: domain's resource tags
+        client: SWF client
+    """
+
     client = _common.ensure_client(client)
     kw = {}
     if description or description == "":
@@ -119,6 +173,14 @@ def tag_domain(
     tags: t.Dict[str, str],
     client: "botocore.client.BaseClient" = None,
 ) -> None:
+    """Add tags to domain.
+
+    Args:
+        domain_arn: domain AWS ARN
+        tags: tags to add
+        client: SWF client
+    """
+
     client = _common.ensure_client(client)
     tags = [{"key": k, "value": v} for k, v in tags.items()]
     client.tag_resource(resourceArn=domain_arn, tags=tags)
@@ -128,6 +190,13 @@ def undeprecate_domain(
     domain: str,
     client: "botocore.client.BaseClient" = None,
 ) -> None:
+    """Undeprecate (reactivate) a domain.
+
+    Args:
+        domain: domain to undeprecate
+        client: SWF client
+    """
+
     client = _common.ensure_client(client)
     client.undeprecate_domain(name=domain)
 
@@ -137,5 +206,13 @@ def untag_domain(
     tags: t.List[str],
     client: "botocore.client.BaseClient" = None,
 ) -> None:
+    """Remove tags from a domain.
+
+    Args:
+        domain_arn: domain AWS ARN
+        tags: tags (keys) to remove
+        client: SWF client
+    """
+
     client = _common.ensure_client(client)
     client.untag_resource(resourceArn=domain_arn, tagKeys=tags)

@@ -19,15 +19,19 @@ if t.TYPE_CHECKING:
 
 
 @dataclasses.dataclass
-class Decision(metaclass=abc.ABCMeta):
+class Decision(_common.Serialisable, metaclass=abc.ABCMeta):
+    """Decider decision."""
+
     type: t.ClassVar[str]
 
     @abc.abstractmethod
-    def to_api(self) -> t.Dict[str, t.Any]:
+    def to_api(self):
         return {"decisionType": self.type}
 
 
 class CancelTimerDecision(Decision):
+    """Cancel timer decider decision."""
+
     type: t.ClassVar[str] = "CancelTimer"
     timer_id: str
 
@@ -38,6 +42,8 @@ class CancelTimerDecision(Decision):
 
 
 class CancelWorkflowExecutionDecision(Decision):
+    """Cancel workflow execution decider decision."""
+
     type: t.ClassVar[str] = "CancelWorkflowExecution"
     details: str = None
 
@@ -51,6 +57,8 @@ class CancelWorkflowExecutionDecision(Decision):
 
 
 class CompleteWorkflowExecutionDecision(Decision):
+    """Complete workflow execution decider decision."""
+
     type: t.ClassVar[str] = "CompleteWorkflowExecution"
     execution_result: str = None
 
@@ -64,6 +72,8 @@ class CompleteWorkflowExecutionDecision(Decision):
 
 
 class ContinueAsNewWorkflowExecutionDecision(Decision):
+    """Continue as new workflow execution decider decision."""
+
     type: t.ClassVar[str] = "ContinueAsNewWorkflowExecution"
     execution_input: str = None
     workflow_version: str = None
@@ -91,6 +101,8 @@ class ContinueAsNewWorkflowExecutionDecision(Decision):
 
 
 class FailWorkflowExecutionDecision(Decision):
+    """Fail workflow execution decider decision."""
+
     type: t.ClassVar[str] = "FailWorkflowExecution"
     reason: str = None
     details: str = None
@@ -109,6 +121,8 @@ class FailWorkflowExecutionDecision(Decision):
 
 
 class RecordMarkerDecision(Decision):
+    """Record marker decider decision."""
+
     type: t.ClassVar[str] = "RecordMarker"
     marker_name: str
     details: str = None
@@ -122,6 +136,8 @@ class RecordMarkerDecision(Decision):
 
 
 class RequestCancelActivityTaskDecision(Decision):
+    """Cancel activity task request decider decision."""
+
     type: t.ClassVar[str] = "RequestCancelActivityTask"
     task_id: str
 
@@ -134,6 +150,8 @@ class RequestCancelActivityTaskDecision(Decision):
 
 
 class RequestCancelExternalWorkflowExecutionDecision(Decision):
+    """Cancel external workflow execution request decider decision."""
+
     type: t.ClassVar[str] = "RequestCancelExternalWorkflowExecution"
     execution: t.Union["_executions.ExecutionId", "_executions.CurrentExecutionId"]
     control: str = None
@@ -148,6 +166,8 @@ class RequestCancelExternalWorkflowExecutionDecision(Decision):
 
 
 class ScheduleActivityTaskDecision(Decision):
+    """Schedule activity task decider decision."""
+
     type: t.ClassVar[str] = "ScheduleActivityTask"
     activity: "_activities.ActivityId"
     task_id: str
@@ -176,6 +196,8 @@ class ScheduleActivityTaskDecision(Decision):
 
 
 class ScheduleLambdaFunctionDecision(Decision):
+    """Schedule Lambda function invocation decider decision."""
+
     type: t.ClassVar[str] = "ScheduleLambdaFunction"
     lambda_function: str
     task_id: str
@@ -205,6 +227,8 @@ class ScheduleLambdaFunctionDecision(Decision):
 
 
 class SignalExternalWorkflowExecutionDecision(Decision):
+    """Signal external workflow execution decider decision."""
+
     type: t.ClassVar[str] = "SignalExternalWorkflowExecution"
     execution: t.Union["_executions.ExecutionId", "_executions.CurrentExecutionId"]
     signal: str
@@ -224,6 +248,8 @@ class SignalExternalWorkflowExecutionDecision(Decision):
 
 
 class StartChildWorkflowExecutionDecision(Decision):
+    """Start child workflow execution decider decision."""
+
     type: t.ClassVar[str] = "StartChildWorkflowExecution"
     workflow: "_workflows.WorkflowId"
     execution: "_executions.CurrentExecutionId"
@@ -255,6 +281,8 @@ class StartChildWorkflowExecutionDecision(Decision):
 
 
 class StartTimerDecision(Decision):
+    """Start timer decider decision."""
+
     type: t.ClassVar[str] = "StartTimer"
     timer_id: str
     timer_duration: datetime.timedelta
@@ -272,7 +300,9 @@ class StartTimerDecision(Decision):
 
 
 @dataclasses.dataclass
-class DecisionTask:
+class DecisionTask(_common.Deserialisable):
+    """Decider decision task."""
+
     token: str
     execution: "_executions.ExecutionId"
     workflow: "_workflows.WorkflowId"
@@ -286,10 +316,16 @@ class DecisionTask:
 
     @classmethod
     def from_api(
-        cls,
-        data: t.Dict[str, t.Any],
-        execution_history_iter: t.Iterable["_history.Event"] = None,
+        cls, data, execution_history_iter: t.Iterable["_history.Event"] = None
     ) -> "DecisionTask":
+        """Deserialise decision task from SWF API response data.
+
+        Args:
+            data: SWF API response decision task data
+            execution_history_iter: execution history events, for lazy handling
+                of paginated history. Default: get from response data
+        """
+
         from . import _workflows
         from . import _executions
 
@@ -313,12 +349,14 @@ class DecisionTask:
 
     @property
     def execution_history_iter(self) -> t.Generator["_history.Event", None, None]:
+        """Execution history events iterable."""
         for event in self._execution_history_iter:
             self._execution_history_list.append(event)
             yield event
 
     @property
     def execution_history(self) -> t.List["_history.Event"]:
+        """Execution history events."""
         self._execution_history_list += list(self._execution_history_iter)
         return self._execution_history_list
 
@@ -328,6 +366,19 @@ def get_number_of_pending_decision_tasks(
     domain: str,
     client: "botocore.client.BaseClient" = None,
 ) -> int:
+    """Get the number of pending decision tasks.
+
+    Warns if the number of pending tasks is greater than what's returned.
+
+    Args:
+        task_list: decision task-list
+        domain: domain of task-list
+        client: SWF client
+
+    Returns:
+        number of pending tasks
+    """
+
     client = _common.ensure_client(client)
     response = client.count_pending_decision_tasks(
         domain=domain,
@@ -344,6 +395,20 @@ def poll_for_decision_task(
     worker_identity: str = None,
     client: "botocore.client.BaseClient" = None,
 ) -> DecisionTask:
+    """Request (poll for) a decision task; blocks until task is received.
+
+    Workflow execution history events are retrieved semi-lazily.
+
+    Args:
+        task_list: decision task-list to request from
+        domain: domain of task-list
+        worker_identity: decider identity, recorded in execution history
+        client: SWF client
+
+    Returns:
+        decision task
+    """
+
     from . import _history
 
     def iter_history() -> t.Generator["_history.Event", None, None]:
@@ -374,9 +439,18 @@ def poll_for_decision_task(
 def complete_decision_task(
     token: str,
     decisions: t.List[Decision],
-    client: "botocore.client.BaseClient" = None,
     context: str = None,
-):
+    client: "botocore.client.BaseClient" = None,
+) -> None:
+    """Make decisions for a workflow execution, completing decision task.
+
+    Args:
+        token: decision task identifying token
+        decisions: decisions to make
+        context: workflow execution context to set
+        client: SWF client
+    """
+
     client = _common.ensure_client(client)
     kw = {}
     if context or context == "":

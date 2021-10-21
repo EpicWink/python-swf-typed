@@ -18,6 +18,8 @@ if t.TYPE_CHECKING:
 
 
 class TimeoutType(str, enum.Enum):
+    """Task/execution timeout type."""
+
     runtime = "START_TO_CLOSE"
     schedule = "SCHEDULE_TO_START"
     total = "SCHEDULE_TO_CLOSE"
@@ -25,39 +27,53 @@ class TimeoutType(str, enum.Enum):
 
 
 class ExecutionTerminationCause(str, enum.Enum):
+    """Workflow execution termination cause."""
+
     child_execution_policy_applied = "CHILD_POLICY_APPLIED"
     event_limit_exceeded = "EVENT_LIMIT_EXCEEDED"
     operator_initiated = "OPERATOR_INITIATED"
 
 
 class DecisionFailureCause(str, enum.Enum):
+    """Generic decision failure cause."""
+
     unhandled_decision = "UNHANDLED_DECISION"
     unauthorised = "OPERATION_NOT_PERMITTED"
 
 
 class SignalFailureCause(str, enum.Enum):
+    """Signal workflow execution decision failure cause."""
+
     unknown_execution = "UNKNOWN_EXTERNAL_WORKFLOW_EXECUTION"
     rate_exceeded = "SIGNAL_EXTERNAL_WORKFLOW_EXECUTION_RATE_EXCEEDED"
     unauthorised = "OPERATION_NOT_PERMITTED"
 
 
 class CancelExecutionFailureCause(str, enum.Enum):
+    """Cancel workflow execution decision failure cause."""
+
     unknown_execution = "UNKNOWN_EXTERNAL_WORKFLOW_EXECUTION"
     rate_exceeded = "REQUEST_CANCEL_EXTERNAL_WORKFLOW_EXECUTION_RATE_EXCEEDED"
     unauthorised = "OPERATION_NOT_PERMITTED"
 
 
 class CancelTaskFailureCause(str, enum.Enum):
+    """Cancel activity task decision failure cause."""
+
     unknown_task = "ACTIVITY_ID_UNKNOWN"
     unauthorised = "OPERATION_NOT_PERMITTED"
 
 
 class CancelTimerFailureCause(str, enum.Enum):
+    """Cancel timer decision failure cause."""
+
     unknown_timer = "TIMER_ID_UNKNOWN"
     unauthorised = "OPERATION_NOT_PERMITTED"
 
 
 class StartChildExecutionFailureCause(str, enum.Enum):
+    """Start child workflow execution decision failure cause."""
+
     unknown_workflow = "WORKFLOW_TYPE_DOES_NOT_EXIST"
     workflow_deprecated = "WORKFLOW_TYPE_DEPRECATED"
     open_child_executions_limit_exceeded = "OPEN_CHILDREN_LIMIT_EXCEEDED"
@@ -72,6 +88,8 @@ class StartChildExecutionFailureCause(str, enum.Enum):
 
 
 class ScheduleTaskFailureCause(str, enum.Enum):
+    """Schedule activity task decision failure cause."""
+
     activity_deprecated = "ACTIVITY_TYPE_DEPRECATED"
     unknown_activity = "ACTIVITY_TYPE_DOES_NOT_EXIST"
     task_id_exists = "ACTIVITY_ID_ALREADY_IN_USE"
@@ -86,6 +104,8 @@ class ScheduleTaskFailureCause(str, enum.Enum):
 
 
 class ScheduleLambdaFailureCause(str, enum.Enum):
+    """Schedule Lambda function invocation decision failure cause."""
+
     task_id_exists = "ID_ALREADY_IN_USE"
     open_tasks_limit_exceeded = "OPEN_LAMBDA_FUNCTIONS_LIMIT_EXCEEDED"
     rate_exceeded = "LAMBDA_FUNCTION_CREATION_RATE_EXCEEDED"
@@ -93,10 +113,14 @@ class ScheduleLambdaFailureCause(str, enum.Enum):
 
 
 class StartLambdaFailureCause(str, enum.Enum):
+    """Lambda function invocation failure cause."""
+
     assume_iam_role_failed = "ASSUME_ROLE_FAILED"
 
 
 class StartTimerFailureCause(str, enum.Enum):
+    """Start timer decision failure cause."""
+
     timer_in_use = "TIMER_ID_ALREADY_IN_USE"
     open_timers_limit_exceeded = "OPEN_TIMERS_LIMIT_EXCEEDED"
     rate_exceeded = "TIMER_CREATION_RATE_EXCEEDED"
@@ -104,7 +128,9 @@ class StartTimerFailureCause(str, enum.Enum):
 
 
 @dataclasses.dataclass
-class Event(metaclass=abc.ABCMeta):
+class Event(_common.Deserialisable, metaclass=abc.ABCMeta):
+    """Workflow execution history event."""
+
     type: t.ClassVar[str]
     _types: t.ClassVar[t.List[t.Type["Event"]]] = []
 
@@ -117,7 +143,7 @@ class Event(metaclass=abc.ABCMeta):
 
     @classmethod
     @abc.abstractmethod
-    def from_api(cls, data: t.Dict[str, t.Any]) -> "Event":
+    def from_api(cls, data) -> "Event":
         types = {c.type: c for c in cls._types}
         type_cls = types[data["eventType"]]
         return type_cls.from_api(data)
@@ -1314,6 +1340,7 @@ class WorkflowExecutionTimedOutEvent(Event):
 def _get_execution_from_partial_id(
     data: t.Dict[str, t.Any],
 ) -> t.Union["_executions.ExecutionId", "_executions.CurrentExecutionId"]:
+    """Get workflow execution identifier from SWF API response data."""
     from . import _executions
 
     execution_cls = _executions.CurrentExecutionId
@@ -1328,6 +1355,18 @@ def get_execution_history(
     reverse: bool = False,
     client: "botocore.client.BaseClient" = None,
 ) -> t.Generator[Event, None, None]:
+    """Get workflow execution history; retrieved semi-lazily.
+
+    Args:
+        execution: workflow execution to get history of
+        domain: domain of workflow execution
+        reverse: return latest events first
+        client: SWF client
+
+    Returns:
+        workflow execution history events
+    """
+
     client = _common.ensure_client(client)
     call = functools.partial(
         client.get_workflow_execution_history,
