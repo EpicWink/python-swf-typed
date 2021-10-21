@@ -21,6 +21,8 @@ pip install swf-typed
 ```
 
 ## Usage
+See [the full documentation](https://python-swf-typed.readthedocs.io/).
+
 ### Example
 ```python
 import swf_typed
