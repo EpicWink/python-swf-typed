@@ -402,7 +402,7 @@ def get_number_of_pending_decision_tasks(
     return response["count"]
 
 
-def poll_for_decision_task(
+def request_decision_task(
     task_list: str,
     domain: str,
     decider_identity: str = None,
@@ -449,7 +449,7 @@ def poll_for_decision_task(
     return DecisionTask.from_api(response, iter_history())
 
 
-def complete_decision_task(
+def send_decisions(
     token: str,
     decisions: t.List[Decision],
     context: str = None,

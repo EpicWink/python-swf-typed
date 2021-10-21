@@ -71,8 +71,8 @@ from ._tasks import PartialTaskConfiguration
 from ._tasks import WorkerTask
 
 from ._tasks import get_number_of_pending_tasks
-from ._tasks import poll_for_task
-from ._tasks import record_task_heartbeat
+from ._tasks import request_task
+from ._tasks import send_hearbeat
 from ._tasks import cancel_task
 from ._tasks import complete_task
 from ._tasks import fail_task
@@ -95,8 +95,8 @@ from ._decisions import StartTimerDecision
 from ._decisions import DecisionTask
 
 from ._decisions import get_number_of_pending_decision_tasks
-from ._decisions import poll_for_decision_task
-from ._decisions import complete_decision_task
+from ._decisions import request_decision_task
+from ._decisions import send_decisions
 
 from ._history import TimeoutType
 from ._history import ExecutionTerminationCause

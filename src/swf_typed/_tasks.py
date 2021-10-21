@@ -149,7 +149,7 @@ def get_number_of_pending_tasks(
     return response["count"]
 
 
-def poll_for_task(
+def request_task(
     task_list: str,
     domain: str,
     worker_identity: str = None,
@@ -181,7 +181,7 @@ def poll_for_task(
     return WorkerTask.from_api(response)
 
 
-def record_task_heartbeat(
+def send_hearbeat(
     token: str,
     details: str = None,
     client: "botocore.client.BaseClient" = None,
