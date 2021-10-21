@@ -246,11 +246,11 @@ class ExecutionFilter(_common.SerialisableToArguments, metaclass=abc.ABCMeta):
 class DateTimeFilter(_common.Serialisable):
     """Date-time property filter mix-in."""
 
-    oldest: datetime.datetime
+    earliest: datetime.datetime
     latest: datetime.datetime = None
 
     def to_api(self):
-        data = {"oldestDate": self.oldest}
+        data = {"oldestDate": self.earliest}
         if self.latest:
             data["latestDate"] = self.latest
         return data
