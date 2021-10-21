@@ -29,6 +29,7 @@ class Decision(_common.Serialisable, metaclass=abc.ABCMeta):
         return {"decisionType": self.type}
 
 
+@dataclasses.dataclass
 class CancelTimerDecision(Decision):
     """Cancel timer decider decision."""
 
@@ -41,6 +42,7 @@ class CancelTimerDecision(Decision):
         return data
 
 
+@dataclasses.dataclass
 class CancelWorkflowExecutionDecision(Decision):
     """Cancel workflow execution decider decision."""
 
@@ -56,6 +58,7 @@ class CancelWorkflowExecutionDecision(Decision):
         return data
 
 
+@dataclasses.dataclass
 class CompleteWorkflowExecutionDecision(Decision):
     """Complete workflow execution decider decision."""
 
@@ -71,6 +74,7 @@ class CompleteWorkflowExecutionDecision(Decision):
         return data
 
 
+@dataclasses.dataclass
 class ContinueAsNewWorkflowExecutionDecision(Decision):
     """Continue as new workflow execution decider decision."""
 
@@ -100,6 +104,7 @@ class ContinueAsNewWorkflowExecutionDecision(Decision):
         return data
 
 
+@dataclasses.dataclass
 class FailWorkflowExecutionDecision(Decision):
     """Fail workflow execution decider decision."""
 
@@ -120,6 +125,7 @@ class FailWorkflowExecutionDecision(Decision):
         return data
 
 
+@dataclasses.dataclass
 class RecordMarkerDecision(Decision):
     """Record marker decider decision."""
 
@@ -135,6 +141,7 @@ class RecordMarkerDecision(Decision):
         return data
 
 
+@dataclasses.dataclass
 class RequestCancelActivityTaskDecision(Decision):
     """Cancel activity task request decider decision."""
 
@@ -149,6 +156,7 @@ class RequestCancelActivityTaskDecision(Decision):
         return data
 
 
+@dataclasses.dataclass
 class RequestCancelExternalWorkflowExecutionDecision(Decision):
     """Cancel external workflow execution request decider decision."""
 
@@ -165,6 +173,7 @@ class RequestCancelExternalWorkflowExecutionDecision(Decision):
         return data
 
 
+@dataclasses.dataclass
 class ScheduleActivityTaskDecision(Decision):
     """Schedule activity task decider decision."""
 
@@ -195,6 +204,7 @@ class ScheduleActivityTaskDecision(Decision):
         return data
 
 
+@dataclasses.dataclass
 class ScheduleLambdaFunctionDecision(Decision):
     """Schedule Lambda function invocation decider decision."""
 
@@ -226,6 +236,7 @@ class ScheduleLambdaFunctionDecision(Decision):
         return data
 
 
+@dataclasses.dataclass
 class SignalExternalWorkflowExecutionDecision(Decision):
     """Signal external workflow execution decider decision."""
 
@@ -247,6 +258,7 @@ class SignalExternalWorkflowExecutionDecision(Decision):
         return data
 
 
+@dataclasses.dataclass
 class StartChildWorkflowExecutionDecision(Decision):
     """Start child workflow execution decider decision."""
 
@@ -280,6 +292,7 @@ class StartChildWorkflowExecutionDecision(Decision):
         return data
 
 
+@dataclasses.dataclass
 class StartTimerDecision(Decision):
     """Start timer decider decision."""
 
