@@ -94,14 +94,14 @@ def describe_domain(
 
 
 def list_domains(
-    is_deprecated: bool = False,
+    deprecated: bool = False,
     reverse: bool = False,
     client: "botocore.client.BaseClient" = None,
 ) -> t.Generator[DomainInfo, None, None]:
     """List domains; retrieved semi-lazily.
 
     Args:
-        is_deprecated: list deprecated domains instead of non-deprecated
+        deprecated: list deprecated domains instead of non-deprecated
         reverse: return results in reverse alphabetical order
         client: SWF client
 
@@ -112,7 +112,7 @@ def list_domains(
     client = _common.ensure_client(client)
     call = functools.partial(
         client.list_domains,
-        registrationStatus=_common.registration_status_by_is_deprecated[is_deprecated],
+        registrationStatus=_common.registration_status_by_is_deprecated[deprecated],
         reverseOrder=reverse,
     )
     return _common.iter_paged(call, DomainInfo.from_api, "domainInfos")
