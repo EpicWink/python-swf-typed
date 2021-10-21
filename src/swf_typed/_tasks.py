@@ -22,7 +22,7 @@ class TaskConfiguration(_common.Deserialisable):
     """Activity task configuration."""
 
     task_list: str
-    timeout: t.Union[datetime.timedelta, None]
+    runtime_timeout: t.Union[datetime.timedelta, None]
     schedule_timeout: t.Union[datetime.timedelta, None]
     total_timeout: t.Union[datetime.timedelta, None]
     heartbeat_timeout: t.Union[datetime.timedelta, None] = _common.unset
@@ -32,7 +32,7 @@ class TaskConfiguration(_common.Deserialisable):
     def from_api(cls, data) -> "TaskConfiguration":
         return cls(
             task_list=data["taskList"]["name"],
-            timeout=_common.parse_timeout(data["taskStartToCloseTimeout"]),
+            runtime_timeout=_common.parse_timeout(data["taskStartToCloseTimeout"]),
             schedule_timeout=_common.parse_timeout(data["taskScheduleToStartTimeout"]),
             total_timeout=_common.parse_timeout(data["taskScheduleToCloseTimeout"]),
             heartbeat_timeout=_common.parse_timeout(data["taskHeartbeatTimeout"]),
@@ -45,7 +45,7 @@ class PartialTaskConfiguration(TaskConfiguration, _common.SerialisableToArgument
     """Partial activity task configuration."""
 
     task_list: str = None
-    timeout: t.Union[datetime.timedelta, None] = _common.unset
+    runtime_timeout: t.Union[datetime.timedelta, None] = _common.unset
     schedule_timeout: t.Union[datetime.timedelta, None] = _common.unset
     total_timeout: t.Union[datetime.timedelta, None] = _common.unset
 
@@ -53,7 +53,7 @@ class PartialTaskConfiguration(TaskConfiguration, _common.SerialisableToArgument
     def from_api(cls, data) -> "PartialTaskConfiguration":
         return cls(
             task_list=data.get("taskList") and data["taskList"]["name"],
-            timeout=(
+            runtime_timeout=(
                 data.get("taskStartToCloseTimeout") and
                 _common.parse_timeout(data["taskStartToCloseTimeout"])
             ),
@@ -79,7 +79,7 @@ class PartialTaskConfiguration(TaskConfiguration, _common.SerialisableToArgument
             data["taskList"] = {"name": self.task_list}
 
         for timeout, name in [
-            (self.timeout, "StartToClose"),
+            (self.runtime_timeout, "StartToClose"),
             (self.schedule_timeout, "ScheduleToStart"),
             (self.total_timeout, "ScheduleToClose"),
             (self.heartbeat_timeout, "Heartbeat"),
