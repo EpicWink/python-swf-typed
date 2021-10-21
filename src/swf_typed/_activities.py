@@ -82,9 +82,6 @@ class ActivityIdFilter:
 
     name: str
 
-    def to_api(self) -> t.Dict[str, str]:
-        return {"name": self.name}
-
 
 def deprecate_activity(
     activity: ActivityId,
