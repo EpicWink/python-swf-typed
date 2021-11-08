@@ -4,6 +4,7 @@
 Typed Python interface to AWS Simple Workflow service
 
 * Type annotations
+* Explicit exceptions
 * Execution state construction
 * Consistent method/attribute/parameter names (see below)
 * Consistent model struture
