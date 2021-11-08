@@ -525,9 +525,9 @@ def request_decision_task(
     if decider_identity or decider_identity == "":
         kw["identity"] = decider_identity
     call = functools.partial(
-        client.poll_for_activity_task,
+        client.poll_for_decision_task,
         domain=domain,
-        task_list=dict(name=task_list),
+        taskList=dict(name=task_list),
         **kw,
     )
     with _common.polling_socket_timeout():

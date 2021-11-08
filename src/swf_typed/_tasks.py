@@ -199,7 +199,7 @@ def request_task(
     with _common.polling_socket_timeout():
         while True:
             response = client.poll_for_activity_task(
-                domain=domain, task_list=dict(name=task_list), **kw
+                domain=domain, taskList=dict(name=task_list), **kw
             )
             if response["taskToken"]:
                 break
