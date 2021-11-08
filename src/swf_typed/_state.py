@@ -17,19 +17,35 @@ class TaskStatus(enum.Enum):
     """Activity task status."""
 
     scheduled = enum.auto()
+    """Task has been scheduled."""
+
     started = enum.auto()
+    """Task is running."""
+
     completed = enum.auto()
+    """Task has finished."""
+
     failed = enum.auto()
+    """Task has failed."""
+
     cancelled = enum.auto()
+    """Task has been cancelled."""
+
     timed_out = enum.auto()
+    """Task has timed out."""
 
 
 class TimerStatus(enum.Enum):
     """Timer status."""
 
     started = enum.auto()
+    """Timer has started."""
+
     fired = enum.auto()
+    """Timer has finished."""
+
     cancelled = enum.auto()
+    """Timer has been cancelled."""
 
 
 @dataclasses.dataclass
@@ -37,7 +53,10 @@ class DecisionFailure:
     """Decision failure event."""
 
     event: "_history.Event"
+    """History event for decision failure."""
+
     is_new: bool = True
+    """Most recent decision failed."""
 
 
 @dataclasses.dataclass
@@ -45,20 +64,49 @@ class TaskState:
     """Activity task state."""
 
     id: str
+    """Task ID."""
+
     status: TaskStatus
+    """Task status."""
+
     activity: "_activities.ActivityId"
+    """Task activity."""
+
     configuration: "_tasks.TaskConfiguration"
+    """Task configuration."""
+
     scheduled: datetime.datetime
+    """Task scheduled date."""
+
     started: datetime.datetime = None
+    """Task start date."""
+
     ended: datetime.datetime = None
+    """Task end date."""
+
     input: str = None
+    """Task input."""
+
     worker_identity: str = None
+    """Identity of worker which acquired task."""
+
     cancel_requested: bool = False
+    """Task cancellation has been requested."""
+
     result: str = None
+    """Task result."""
+
     timeout_type: "_history.TimeoutType" = None
+    """Task timeout type."""
+
     failure_reason: str = None
+    """Task failure reason."""
+
     stop_details: str = None
+    """Task ended details."""
+
     decider_control: str = None
+    """Message from decider attached to task."""
 
     @property
     def has_ended(self) -> bool:
@@ -71,17 +119,40 @@ class LambdaTaskState:
     """Lambda task state."""
 
     id: str
+    """Task ID."""
+
     status: TaskStatus
+    """Task status."""
+
     lambda_function: str
+    """Name of Lambda function invoked for task."""
+
     scheduled: datetime.datetime
+    """Task schedule date."""
+
     started: datetime.datetime = None
+    """Lambda function invocation date."""
+
     ended: datetime.datetime = None
+    """Lambda function invocation end date."""
+
     timeout: datetime.timedelta = None
+    """Lambda function invocation timeout."""
+
     input: str = None
+    """Lambda function input."""
+
     result: str = None
+    """Lambda function result."""
+
     failure_reason: str = None
+    """Lambda function error reason."""
+
     stop_details: str = None
+    """Lambda function ended details."""
+
     decider_control: str = None
+    """Message from decider attached to task."""
 
     @property
     def has_ended(self) -> bool:
@@ -94,17 +165,40 @@ class ChildExecutionState:
     """Child workflow execution state."""
 
     execution: "_executions.ExecutionId"
+    """Child execution ID."""
+
     workflow: "_workflows.WorkflowId"
+    """Child execution workflow."""
+
     status: "_executions.ExecutionStatus"
+    """Child execution status."""
+
     configuration: "_executions.ExecutionConfiguration"
+    """Child execution configuration."""
+
     started: datetime.datetime
+    """Child execution start date."""
+
     ended: datetime.datetime = None
+    """Child execution end date."""
+
     input: str = None
+    """Child execution input."""
+
     result: str = None
+    """Child execution result."""
+
     timeout_type: "_history.TimeoutType" = None
+    """Child execution timeout type."""
+
     failure_reason: str = None
+    """Child execution failure reason."""
+
     stop_details: str = None
+    """Child execution ended details."""
+
     decider_control: str = None
+    """Message from decider attached to child execution."""
 
 
 @dataclasses.dataclass
@@ -112,12 +206,25 @@ class TimerState:
     """Timer state."""
 
     id: str
+    """Timer ID."""
+
     status: TimerStatus
+    """Timer status."""
+
     duraction: datetime.timedelta
+    """Timer duration."""
+
     started: datetime.datetime
+    """Timer start date."""
+
     ended: datetime.datetime = None
+    """Timer finish date."""
+
     input: str = None
+    """Timer input."""
+
     decider_control: str = None
+    """Message from decider attached to timer."""
 
 
 @dataclasses.dataclass
@@ -125,9 +232,16 @@ class SignalState:
     """Signal state."""
 
     name: str
+    """Signal name."""
+
     received: datetime.datetime
+    """Signal date."""
+
     input: str = None
+    """Signal input."""
+
     is_new: bool = True
+    """Execution was signalled after most recent decision."""
 
 
 @dataclasses.dataclass
@@ -135,9 +249,16 @@ class MarkerState:
     """Marker state."""
 
     name: str
+    """Marker name."""
+
     recorded: datetime.datetime
+    """Marker record date."""
+
     details: str = None
+    """Marker details."""
+
     is_new: bool = True
+    """Marker was recorded after most recent decision."""
 
 
 @dataclasses.dataclass
@@ -145,25 +266,56 @@ class ExecutionState:
     """Workflow execution state."""
 
     status: "_executions.ExecutionStatus"
+    """Execution status."""
+
     configuration: "_executions.ExecutionConfiguration"
+    """Execution configuration."""
+
     started: datetime.datetime
+    """Execution start date."""
+
     ended: datetime.datetime = None
+    """Execution end date."""
+
     tasks: t.List[t.Union[TaskState, LambdaTaskState]] = dataclasses.field(
         default_factory=list
     )
+    """Execution activity and Lambda function invocation tasks."""
+
     child_executions: t.List[ChildExecutionState] = dataclasses.field(
         default_factory=list
     )
+    """Execution child executions."""
+
     timers: t.List[TimerState] = dataclasses.field(default_factory=list)
+    """Execution timers."""
+
     signals: t.List[SignalState] = dataclasses.field(default_factory=list)
+    """Execution signals."""
+
     markers: t.List[MarkerState] = dataclasses.field(default_factory=list)
+    """Execution markers."""
+
     decision_failures: t.List[DecisionFailure] = dataclasses.field(default_factory=list)
+    """Execution decision failures."""
+
     input: str = None
+    """Execution input."""
+
     cancel_requested: bool = False
+    """Execution cancellation has been requested."""
+
     result: str = None
+    """Execution result."""
+
     failure_reason: str = None
+    """Execution failure reason."""
+
     stop_details: str = None
+    """Execution ended details."""
+
     continuing_execution_run_id: str = None
+    """ID of execution continuing this execution."""
 
 
 class _StateBuilder:

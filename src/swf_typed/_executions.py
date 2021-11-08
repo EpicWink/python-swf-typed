@@ -22,6 +22,7 @@ class CurrentExecutionId(_common.Deserialisable, _common.Serialisable):
     """Current open workflow execution specifier."""
 
     id: str
+    """Execution workflow-ID."""
 
     @classmethod
     def from_api(cls, data) -> "CurrentExecutionId":
@@ -36,6 +37,7 @@ class ExecutionId(CurrentExecutionId):
     """Workflow execution identifier."""
 
     run_id: str
+    """Execution run-ID."""
 
     @classmethod
     def from_api(cls, data) -> "ExecutionId":
@@ -47,17 +49,32 @@ class ExecutionId(CurrentExecutionId):
         return data
 
 
-class ExecutionStatus(str, enum.Enum):
+class ExecutionStatus(enum.Enum):
     """Workflow execution status."""
 
     open = "OPEN"
+    """Execution is in-progress."""
+    
     started = "OPEN"
+    """Execution is in-progress."""
+
     completed = "COMPLETED"
+    """Execution has finished successfully."""
+
     failed = "FAILED"
+    """Execution has failed."""
+
     cancelled = "CANCELED"
+    """Execution has been cancelled."""
+
     terminated = "TERMINATED"
+    """Execution has been terminated."""
+
     continued_as_new = "CONTINUED_AS_NEW"
+    """Execution has been continued as a new execution."""
+
     timed_out = "TIMED_OUT"
+    """Execution has timed out."""
 
 
 @dataclasses.dataclass
@@ -65,13 +82,28 @@ class ExecutionInfo(_common.Deserialisable):
     """Workflow execution details."""
 
     execution: ExecutionId
+    """Execution ID."""
+
     workflow: "_workflows.WorkflowId"
+    """Execution workflow."""
+
     started: datetime.datetime
+    """Execution start-date."""
+
     status: ExecutionStatus
+    """Execution status."""
+
     cancel_requested: bool
+    """Execution cancellation has been requested."""
+
     closed: datetime.datetime = None
+    """Execution end-date."""
+
     parent: ExecutionId = None
+    """Parent execution ID."""
+
     tags: t.List[str] = None
+    """Execution tags."""
 
     @classmethod
     def from_api(cls, data) -> "ExecutionInfo":
@@ -93,11 +125,16 @@ class ExecutionInfo(_common.Deserialisable):
 
 
 class ChildExecutionTerminationPolicy(str, enum.Enum):
-    """Child workflow execution termination policy on parent termination."""
+    """Child workflow execution ending policy on parent termination."""
 
     terminate = "TERMINATE"
+    """Terminate child executions."""
+
     request_cancel = "REQUEST_CANCEL"
+    """Request for child execution cancellation."""
+
     abandon = "ABANDON"
+    """Abandon child executions."""
 
 
 @dataclasses.dataclass
@@ -105,11 +142,22 @@ class ExecutionConfiguration(_common.Deserialisable):
     """Workflow execution configuration."""
 
     timeout: t.Union[datetime.timedelta, None]
+    """Execution run-time timeout."""
+
     decision_task_timeout: t.Union[datetime.timedelta, None]
+    """Decision task timeout."""
+
     decision_task_list: str
+    """Decision task task-list."""
+
     decision_task_priority: int
+    """Decision task priority."""
+
     child_execution_policy_on_termination: ChildExecutionTerminationPolicy
+    """Child workflow execution ending policy on termination."""
+
     lambda_iam_role_arn: str = None
+    """Execution IAM role ARN for Lambda invocations."""
 
     @classmethod
     def from_api(cls, data) -> "ExecutionConfiguration":
@@ -194,13 +242,22 @@ class PartialExecutionConfiguration(
 
 @dataclasses.dataclass
 class ExecutionOpenCounts:
-    """Counts of workflow exectuions' open tasks/timers/children."""
+    """Counts of workflow executions' open tasks/timers/children."""
 
     activity_tasks: int = None
+    """Number of scheduled/started activity tasks."""
+
     decision_tasks: int = None
+    """Number of scheduled/started decision tasks."""
+
     timers: int = None
+    """Number of started timers."""
+
     child_executions: int = None
+    """Number of started child executions."""
+
     lambda_tasks: int = None
+    """Number of scheduled/started Lambda invocations."""
 
     @classmethod
     def from_api(cls, data) -> "ExecutionOpenCounts":
@@ -218,10 +275,19 @@ class ExecutionDetails:
     """Workflow execution details, configuration, open-counts and snapshot."""
 
     info: ExecutionInfo
+    """Execution details."""
+
     configuration: ExecutionConfiguration = None
+    """Execution configuration."""
+
     n_open: ExecutionOpenCounts = None
+    """Counts of open tasks/timers/children in execution."""
+
     latest_activity_task_scheduled: datetime.datetime = None
+    """Most recent activity task's scheduled's date."""
+
     latest_context: str = None
+    """Most recent decision's execution context."""
 
     @classmethod
     def from_api(cls, data) -> "ExecutionDetails":
@@ -249,7 +315,10 @@ class DateTimeFilter(_common.Serialisable):
     """Date-time property filter mix-in."""
 
     earliest: datetime.datetime
+    """Earliest date."""
+
     latest: datetime.datetime = None
+    """Latest date."""
 
     def to_api(self):
         data = {"oldestDate": self.earliest}
@@ -279,6 +348,7 @@ class IdExecutionFilter(ExecutionFilter, metaclass=abc.ABCMeta):
     """Workflow execution filter on execution workflow-ID."""
 
     execution: CurrentExecutionId
+    """Execution ID."""
 
     def get_api_args(self):
         return {"executionFilter": self.execution.to_api()}
@@ -289,6 +359,7 @@ class WorkflowTypeExecutionFilter(ExecutionFilter, metaclass=abc.ABCMeta):
     """Workflow execution filter on execution workflow-type."""
 
     workflow: t.Union["_workflows.WorkflowId", "_workflows.WorkflowIdFilter"]
+    """Execution workflow."""
 
     def get_api_args(self):
         return {"typeFilter": self.workflow.to_api()}
@@ -299,6 +370,7 @@ class TagExecutionFilter(ExecutionFilter):
     """Workflow execution filter on execution tags."""
 
     tag: str
+    """Execution tag."""
 
     def get_api_args(self):
         return {"tagFilter": {"tag": self.tag}}
@@ -309,6 +381,7 @@ class CloseStatusExecutionFilter(ExecutionFilter):
     """Workflow execution filter on execution close-status."""
 
     status: str
+    """Execution status."""
 
     def get_api_args(self):
         return {"closeStatusFilter": {"status": self.status}}
@@ -621,7 +694,7 @@ def terminate_execution(
         execution: workflow execution to close
         domain: domain od execution
         reason: termination reason, usually for classification
-        details: termination details, usually for messaging
+        details: termination details, usually for explanation
         child_execution_policy: how to handle open child workflow
             executions, default: use default for workflow type
         client: SWF client

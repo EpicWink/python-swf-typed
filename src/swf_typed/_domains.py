@@ -16,9 +16,16 @@ class DomainInfo(_common.Deserialisable):
     """Domain details."""
 
     name: str
+    """Domain name."""
+
     is_deprecated: bool
+    """Domain is deprecated and not active."""
+
     arn: str
+    """Domain ARN."""
+
     description: str = None
+    """Domain description."""
 
     @classmethod
     def from_api(cls, data) -> "DomainInfo":
@@ -35,6 +42,7 @@ class DomainConfiguration(_common.Deserialisable):
     """Domain configuration."""
 
     execution_retention: datetime.timedelta
+    """Maximum age of retained executions."""
 
     @classmethod
     def from_api(cls, data) -> "DomainConfiguration":
@@ -49,7 +57,10 @@ class DomainDetails(_common.Deserialisable):
     """Domain details and configuration."""
 
     info: DomainInfo
+    """Domain details."""
+
     configuration: DomainConfiguration
+    """Domain configuration."""
 
     @classmethod
     def from_api(cls, data) -> "DomainDetails":

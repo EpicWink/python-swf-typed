@@ -22,11 +22,22 @@ class TaskConfiguration(_common.Deserialisable):
     """Activity task configuration."""
 
     task_list: str
+    """Task task-list."""
+
     runtime_timeout: t.Union[datetime.timedelta, None]
+    """Finish timeout."""
+
     schedule_timeout: t.Union[datetime.timedelta, None]
+    """Start timeout."""
+
     total_timeout: t.Union[datetime.timedelta, None]
+    """Total finish timeout."""
+
     heartbeat_timeout: t.Union[datetime.timedelta, None] = _common.unset
+    """Heartbeat timeout."""
+
     priority: int = None
+    """Task priority."""
 
     @classmethod
     def from_api(cls, data) -> "TaskConfiguration":
@@ -100,11 +111,22 @@ class WorkerTask(_common.Deserialisable):
     """Activity worker activity task."""
 
     token: str
+    """Task token, provided by SWF."""
+
     id: str
+    """Task ID."""
+
     activity: "_activities.ActivityId"
+    """Task activity."""
+
     execution: "_executions.ExecutionId"
+    """Task execution."""
+
     task_started_execution_history_event_id: int
+    """History event ID for task start."""
+
     input: str = None
+    """Task input."""
 
     @classmethod
     def from_api(cls, data) -> "WorkerTask":
@@ -267,7 +289,7 @@ def fail_task(
     Args:
         token: activity task token
         reason: failure reason, usually for classification
-        details: failure details, usually for messaging
+        details: failure details, usually for explanation
         client: SWF client
     """
 

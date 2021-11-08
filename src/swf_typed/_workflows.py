@@ -17,7 +17,10 @@ class WorkflowId(_common.Deserialisable, _common.Serialisable):
     """Workflow type identifier."""
 
     name: str
+    """Workflow name."""
+
     version: str
+    """Workflow version."""
 
     @classmethod
     def from_api(cls, data) -> "WorkflowId":
@@ -32,10 +35,19 @@ class WorkflowInfo(_common.Deserialisable):
     """Workflow type details."""
 
     workflow: WorkflowId
+    """Workflow ID."""
+
     is_deprecated: bool
+    """Workflow is deprecated and not active."""
+
     created: datetime.datetime
+    """Creation date."""
+
     description: str = None
+    """Workflow description."""
+
     deprecated: datetime.datetime = None
+    """Deprecation date."""
 
     @classmethod
     def from_api(cls, data) -> "WorkflowInfo":
@@ -66,7 +78,10 @@ class WorkflowDetails(_common.Deserialisable):
     """Workflow type details and default workflow execution configuration."""
 
     info: WorkflowInfo
+    """Workflow details."""
+
     default_execution_configuration: DefaultExecutionConfiguration
+    """Default execution configuration, can be overriden when starting."""
 
     @classmethod
     def from_api(cls, data) -> "WorkflowDetails":
@@ -82,6 +97,7 @@ class WorkflowIdFilter(_common.Serialisable, _common.SerialisableToArguments):
     """Workflow type filter on workflow name."""
 
     name: str
+    """Workflow name."""
 
     def to_api(self):
         return {"name": self.name}

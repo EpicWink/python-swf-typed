@@ -23,6 +23,7 @@ class Decision(_common.Serialisable, metaclass=abc.ABCMeta):
     """Decider decision."""
 
     type: t.ClassVar[str]
+    """Decision type name."""
 
     @abc.abstractmethod
     def to_api(self):
@@ -34,7 +35,9 @@ class CancelTimerDecision(Decision):
     """Cancel timer decider decision."""
 
     type: t.ClassVar[str] = "CancelTimer"
+
     timer_id: str
+    """Timer ID."""
 
     def to_api(self):
         data = super().to_api()
@@ -47,7 +50,9 @@ class CancelWorkflowExecutionDecision(Decision):
     """Cancel workflow execution decider decision."""
 
     type: t.ClassVar[str] = "CancelWorkflowExecution"
+
     details: str = None
+    """Execution cancellation details, usually for explanation."""
 
     def to_api(self):
         data = super().to_api()
@@ -63,7 +68,9 @@ class CompleteWorkflowExecutionDecision(Decision):
     """Complete workflow execution decider decision."""
 
     type: t.ClassVar[str] = "CompleteWorkflowExecution"
+
     execution_result: str = None
+    """Execution result."""
 
     def to_api(self):
         data = super().to_api()
@@ -79,10 +86,18 @@ class ContinueAsNewWorkflowExecutionDecision(Decision):
     """Continue as new workflow execution decider decision."""
 
     type: t.ClassVar[str] = "ContinueAsNewWorkflowExecution"
+
     execution_input: str = None
+    """Continuing execution input."""
+
     workflow_version: str = None
+    """Continuing execution workflow version."""
+
     execution_configuration: "_executions.PartialExecutionConfiguration" = None
+    """Continuing execution configuration overrides."""
+
     tags: t.List[str] = None
+    """Continuing execution tags."""
 
     def to_api(self):
         data = super().to_api()
@@ -109,8 +124,12 @@ class FailWorkflowExecutionDecision(Decision):
     """Fail workflow execution decider decision."""
 
     type: t.ClassVar[str] = "FailWorkflowExecution"
+
     reason: str = None
+    """Execution failure reason, usually for classification."""
+
     details: str = None
+    """Execution failure details, usually for explanation."""
 
     def to_api(self):
         data = super().to_api()
@@ -130,8 +149,12 @@ class RecordMarkerDecision(Decision):
     """Record marker decider decision."""
 
     type: t.ClassVar[str] = "RecordMarker"
+
     marker_name: str
+    """Marker name."""
+
     details: str = None
+    """Marker recording details, usually for explanation."""
 
     def to_api(self):
         data = super().to_api()
@@ -146,7 +169,9 @@ class RequestCancelActivityTaskDecision(Decision):
     """Cancel activity task request decider decision."""
 
     type: t.ClassVar[str] = "RequestCancelActivityTask"
+
     task_id: str
+    """ID of task to cancel."""
 
     def to_api(self):
         data = super().to_api()
@@ -161,8 +186,12 @@ class RequestCancelExternalWorkflowExecutionDecision(Decision):
     """Cancel external workflow execution request decider decision."""
 
     type: t.ClassVar[str] = "RequestCancelExternalWorkflowExecution"
+
     execution: t.Union["_executions.ExecutionId", "_executions.CurrentExecutionId"]
+    """ID of execution to cancel."""
+
     control: str = None
+    """Message for future deciders."""
 
     def to_api(self):
         data = super().to_api()
@@ -178,11 +207,21 @@ class ScheduleActivityTaskDecision(Decision):
     """Schedule activity task decider decision."""
 
     type: t.ClassVar[str] = "ScheduleActivityTask"
+
     activity: "_activities.ActivityId"
+    """Task activity."""
+
     task_id: str
+    """Task ID."""
+
     task_input: str = None
+    """Task input."""
+
     control: str = None
+    """Message for future deciders."""
+
     task_configuration: "_tasks.PartialTaskConfiguration" = None
+    """Task configuration overrides."""
 
     def to_api(self):
         data = super().to_api()
@@ -209,11 +248,21 @@ class ScheduleLambdaFunctionDecision(Decision):
     """Schedule Lambda function invocation decider decision."""
 
     type: t.ClassVar[str] = "ScheduleLambdaFunction"
+
     lambda_function: str
+    """Lambda function name or ARN (latest/version/alias)."""
+
     task_id: str
+    """Task ID."""
+
     task_input: str = None
+    """Lambda function input."""
+
     control: str = None
+    """Message for future deciders."""
+
     task_timeout: datetime.timedelta = _common.unset
+    """Lambda function invocation timeout."""
 
     def to_api(self):
         data = super().to_api()
@@ -241,10 +290,18 @@ class SignalExternalWorkflowExecutionDecision(Decision):
     """Signal external workflow execution decider decision."""
 
     type: t.ClassVar[str] = "SignalExternalWorkflowExecution"
+
     execution: t.Union["_executions.ExecutionId", "_executions.CurrentExecutionId"]
+    """ID of execution to signal."""
+
     signal: str
+    """Signal name."""
+
     signal_input: str = None
+    """Signal input."""
+
     control: str = None
+    """Message for future deciders."""
 
     def to_api(self):
         data = super().to_api()
@@ -263,12 +320,24 @@ class StartChildWorkflowExecutionDecision(Decision):
     """Start child workflow execution decider decision."""
 
     type: t.ClassVar[str] = "StartChildWorkflowExecution"
+
     workflow: "_workflows.WorkflowId"
+    """Child execution workflow."""
+
     execution: "_executions.CurrentExecutionId"
+    """Child execution workflow-ID."""
+
     execution_input: str = None
+    """Child execution input."""
+
     execution_configuration: "_executions.PartialExecutionConfiguration" = None
+    """Child execution configuration overrides."""
+
     control: str = None
+    """Message for future deciders."""
+
     tags: t.List[str] = None
+    """Child execution tags"""
 
     def to_api(self):
         data = super().to_api()
@@ -297,9 +366,15 @@ class StartTimerDecision(Decision):
     """Start timer decider decision."""
 
     type: t.ClassVar[str] = "StartTimer"
+
     timer_id: str
+    """Timer ID."""
+
     timer_duration: datetime.timedelta
+    """Timer duration."""
+
     control: str = None
+    """Message for future deciders."""
 
     def to_api(self):
         data = super().to_api()
@@ -317,11 +392,22 @@ class DecisionTask(_common.Deserialisable):
     """Decider decision task."""
 
     token: str
+    """Task token, provided by SWF."""
+
     execution: "_executions.ExecutionId"
+    """Execution which decisions are being made for."""
+
     workflow: "_workflows.WorkflowId"
+    """Execution workflow."""
+
     _execution_history_iter: t.Iterable["_history.Event"]
+
     decision_task_started_execution_history_event_id: int
+    """History event ID for decision-task start."""
+
     previous_decision_task_started_execution_history_event_id: int = None
+    """History event ID for previous decision-task start."""
+
     _execution_history_list: t.List["_history.Event"] = dataclasses.field(init=False)
 
     def __post_init__(self):

@@ -17,7 +17,10 @@ class ActivityId(_common.Deserialisable, _common.Serialisable):
     """Activity type identifier."""
 
     name: str
+    """Activity name."""
+
     version: str
+    """Activity version."""
 
     @classmethod
     def from_api(cls, data) -> "ActivityId":
@@ -32,10 +35,19 @@ class ActivityInfo(_common.Deserialisable):
     """Activity type details."""
 
     activity: ActivityId
+    """Activity name/version."""
+
     is_deprecated: bool
+    """Activity is deprecated and not active."""
+
     created: datetime.datetime
+    """Creation date."""
+
     description: str = None
+    """Activity description."""
+
     deprecated: datetime.datetime = None
+    """Deprecation date."""
 
     @classmethod
     def from_api(cls, data) -> "ActivityInfo":
@@ -66,7 +78,10 @@ class ActivityDetails(_common.Deserialisable):
     """Activity type details and default activity task configuration."""
 
     info: ActivityInfo
+    """Activity details."""
+
     default_task_configuration: DefaultTaskConfiguration
+    """Default task configuration, can be overriden when scheduling."""
 
     @classmethod
     def from_api(cls, data) -> "ActivityDetails":
@@ -81,6 +96,7 @@ class ActivityIdFilter(_common.SerialisableToArguments):
     """Activity type filter on activity name."""
 
     name: str
+    """Activity name."""
 
     def get_api_args(self):
         return {"name": self.name}
