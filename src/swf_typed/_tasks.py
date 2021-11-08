@@ -153,6 +153,7 @@ def request_task(
     task_list: str,
     domain: str,
     worker_identity: str = None,
+    no_tasks_callback: t.Callable[[], None] = None,
     client: "botocore.client.BaseClient" = None,
 ) -> WorkerTask:
     """Request (poll for) an activity task; blocks until task is received.
@@ -162,6 +163,7 @@ def request_task(
         domain: domain of task-list
         worker_identity: activity worker identity, recorded in execution
             history
+        no_tasks_callback: called after no tasks were provided by SWF
         client: SWF client
 
     Returns:
@@ -173,11 +175,13 @@ def request_task(
     if worker_identity or worker_identity == "":
         kw["identity"] = worker_identity
     with _common.polling_socket_timeout():
-        response = {"taskToken": ""}
-        while not response["taskToken"]:
+        while True:
             response = client.poll_for_activity_task(
                 domain=domain, task_list=dict(name=task_list), **kw
             )
+            if response["taskToken"]:
+                break
+            no_tasks_callback()
     return WorkerTask.from_api(response)
 
 
