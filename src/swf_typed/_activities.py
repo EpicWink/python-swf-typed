@@ -54,9 +54,9 @@ class ActivityInfo(_common.Deserialisable):
         return cls(
             activity=ActivityId.from_api(data["activityType"]),
             is_deprecated=_common.is_deprecated_by_registration_status[data["status"]],
-            created=data["createdDate"],
+            created=data["creationDate"],
             description=data.get("description"),
-            deprecated=data["deprecationDate"],
+            deprecated=data.get("deprecationDate"),
         )
 
 
