@@ -175,3 +175,27 @@ from ._state import MarkerState
 from ._state import ExecutionState
 
 from ._state import build_state
+
+from ._exceptions import SwfError
+from ._exceptions import AccessDeniedException
+from ._exceptions import DefaultUndefinedFault
+from ._exceptions import DomainAlreadyExistsFault
+from ._exceptions import DomainDeprecatedFault
+from ._exceptions import InternalFailureError
+from ._exceptions import InvalidClientTokenIdError
+from ._exceptions import InvalidParameterCombinationError
+from ._exceptions import InvalidParameterValueError
+from ._exceptions import LimitExceededFault
+from ._exceptions import MissingActionError
+from ._exceptions import NotAuthorizedError
+from ._exceptions import OperationNotPermittedFault
+from ._exceptions import OptInRequiredError
+from ._exceptions import RequestExpiredError
+from ._exceptions import ServiceUnavailableError
+from ._exceptions import ThrottlingException
+from ._exceptions import TooManyTagsFault
+from ._exceptions import TypeAlreadyExistsFault
+from ._exceptions import TypeDeprecatedFault
+from ._exceptions import UnknownResourceFault
+from ._exceptions import ValidationError
+from ._exceptions import WorkflowExecutionAlreadyStartedFault

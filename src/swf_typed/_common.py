@@ -7,6 +7,8 @@ import contextlib
 import typing as t
 import concurrent.futures
 
+from . import _exceptions
+
 if t.TYPE_CHECKING:
     import botocore.client
 
@@ -66,11 +68,14 @@ def ensure_client(
 ) -> "botocore.client.BaseClient":
     """Return or create SWF client."""
     if client:
+        _exceptions.redirect_exceptions_in_swf_client(client)
         return client
 
     import boto3
 
-    return boto3.client("swf")
+    client = boto3.client("swf")
+    _exceptions.redirect_exceptions_in_swf_client(client)
+    return client
 
 
 def parse_timeout(timeout_data: str) -> t.Union[datetime.timedelta, None]:
