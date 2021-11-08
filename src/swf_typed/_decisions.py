@@ -492,6 +492,7 @@ def request_decision_task(
     task_list: str,
     domain: str,
     decider_identity: str = None,
+    no_tasks_callback: t.Callable[[], None] = None,
     client: "botocore.client.BaseClient" = None,
 ) -> DecisionTask:
     """Request (poll for) a decision task; blocks until task is received.
@@ -502,6 +503,7 @@ def request_decision_task(
         task_list: decision task-list to request from
         domain: domain of task-list
         decider_identity: decider identity, recorded in execution history
+        no_tasks_callback: called after no tasks were provided by SWF
         client: SWF client
 
     Returns:
@@ -529,9 +531,11 @@ def request_decision_task(
         **kw,
     )
     with _common.polling_socket_timeout():
-        response = {"taskToken": ""}
-        while not response["taskToken"]:
+        while True:
             response = call()
+            if response["taskToken"]:
+                break
+            no_tasks_callback()
     return DecisionTask.from_api(response, iter_history())
 
 
