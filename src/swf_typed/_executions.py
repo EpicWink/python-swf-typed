@@ -647,6 +647,7 @@ def start_execution(
     workflow: "_workflows.WorkflowId",
     execution: CurrentExecutionId,
     domain: str,
+    input: str = None,
     configuration: PartialExecutionConfiguration = None,
     tags: t.List[str] = None,
     client: "botocore.client.BaseClient" = None,
@@ -657,6 +658,7 @@ def start_execution(
         workflow: workflow type for execution
         execution: execution workflow-ID
         domain: domain for execution
+        input: execution input
         configuration: execution configuration, default: use defaults for
             workflow type
         tags: execution tags
@@ -669,6 +671,8 @@ def start_execution(
     client = _common.ensure_client(client)
     configuration = configuration or PartialExecutionConfiguration()
     kw = configuration.get_api_args()
+    if input or input == "":
+        kw["input"] = input
     if tags or tags == []:
         kw["tagList"] = tags
     response = client.start_workflow_execution(
