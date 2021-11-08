@@ -1,5 +1,7 @@
+"""Explicit exceptions for SWF faults/errors."""
 
 import functools
+import dataclasses
 import typing as t
 
 if t.TYPE_CHECKING:
@@ -208,20 +210,25 @@ class WorkflowExecutionAlreadyStartedFault(SwfError):
     """
 
 
-def _redirect_exceptions(f: t.Callable[..., T]) -> t.Callable[..., T]:
-    """Convert ``botocore`` client-error exceptions to custom exceptions."""
-    import botocore.exceptions
+@dataclasses.dataclass
+class ExceptionRedirectMethodWrapper(t.Generic[T]):
+    _f: t.Callable[..., T]
 
-    @functools.wraps(f)
-    def wrapper(*args, **kwargs) -> T:
+    def __post_init__(self):
+        functools.update_wrapper(self, self._f)
+
+    def __call__(self, *args, **kwargs) -> T:
+        import botocore.exceptions
+
         try:
-            return f(*args, **kwargs)
+            return self._f(*args, **kwargs)
         except botocore.exceptions.ClientError as e:
             if e.response["Error"]["Code"] in _pass_through_exceptions:
                 raise
             raise SwfError.from_botocore_exception(e) from None
 
-    return wrapper
+    def __getattr__(self, item: str):
+        return getattr(self._f, item)
 
 
 def redirect_exceptions_in_swf_client(swf_client: "botocore.client.BaseClient") -> None:
@@ -233,5 +240,5 @@ def redirect_exceptions_in_swf_client(swf_client: "botocore.client.BaseClient") 
 
     for name in _swf_client_methods:
         attr = getattr(swf_client, name)
-        attr = _redirect_exceptions(attr)
+        attr = ExceptionRedirectMethodWrapper(attr)
         setattr(swf_client, name, attr)
