@@ -195,8 +195,8 @@ def register_activity(
 
 
 def undeprecate_activity(
-    domain: str,
     activity: ActivityId,
+    domain: str,
     client: "botocore.client.BaseClient" = None,
 ) -> None:
     """Undeprecate (reactivate) an activity type.
