@@ -72,7 +72,7 @@ from ._tasks import WorkerTask
 
 from ._tasks import get_number_of_pending_tasks
 from ._tasks import request_task
-from ._tasks import send_hearbeat
+from ._tasks import send_heartbeat
 from ._tasks import cancel_task
 from ._tasks import complete_task
 from ._tasks import fail_task

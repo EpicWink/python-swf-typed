@@ -185,7 +185,7 @@ def request_task(
     return WorkerTask.from_api(response)
 
 
-def send_hearbeat(
+def send_heartbeat(
     token: str,
     details: str = None,
     client: "botocore.client.BaseClient" = None,
