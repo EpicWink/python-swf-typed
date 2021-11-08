@@ -217,11 +217,11 @@ class ScheduleActivityTaskDecision(Decision):
     task_input: str = None
     """Task input."""
 
-    control: str = None
-    """Message for future deciders."""
-
     task_configuration: "_tasks.PartialTaskConfiguration" = None
     """Task configuration overrides."""
+
+    control: str = None
+    """Message for future deciders."""
 
     def to_api(self):
         data = super().to_api()
@@ -258,11 +258,11 @@ class ScheduleLambdaFunctionDecision(Decision):
     task_input: str = None
     """Lambda function input."""
 
-    control: str = None
-    """Message for future deciders."""
-
     task_timeout: datetime.timedelta = _common.unset
     """Lambda function invocation timeout."""
+
+    control: str = None
+    """Message for future deciders."""
 
     def to_api(self):
         data = super().to_api()
@@ -333,11 +333,11 @@ class StartChildWorkflowExecutionDecision(Decision):
     execution_configuration: "_executions.PartialExecutionConfiguration" = None
     """Child execution configuration overrides."""
 
-    control: str = None
-    """Message for future deciders."""
-
     tags: t.List[str] = None
     """Child execution tags"""
+
+    control: str = None
+    """Message for future deciders."""
 
     def to_api(self):
         data = super().to_api()
