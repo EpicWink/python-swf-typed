@@ -300,7 +300,7 @@ class ActivityTaskTimedOutEvent(Event):
         return cls(
             id=data["eventId"],
             occured=data["eventTimestamp"],
-            timeout_type=TimeoutType(attrs["reason"]),
+            timeout_type=TimeoutType(attrs["timeoutType"]),
             task_scheduled_event_id=attrs["scheduledEventId"],
             task_started_event_id=attrs["startedEventId"],
             details=attrs.get("details"),
