@@ -243,7 +243,7 @@ def cancel_task(
 
     Args:
         token: activity task token
-        details: extra information
+        details: extra information, usually for explanation
         client: SWF client
     """
 

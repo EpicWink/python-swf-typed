@@ -132,10 +132,15 @@ class Event(_common.Deserialisable, metaclass=abc.ABCMeta):
     """Workflow execution history event."""
 
     type: t.ClassVar[str]
+    """Event type."""
+
     _types: t.ClassVar[t.List[t.Type["Event"]]] = []
 
     id: int
+    """Event ID."""
+
     occured: datetime.datetime
+    """Event occured date."""
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
@@ -154,8 +159,12 @@ class ActivityTaskCancelRequestedEvent(Event):
     """Activity task cancellated requested workflow execution history event."""
 
     type: t.ClassVar[str] = "ActivityTaskCancelRequested"
+
     task_id: str
+    """ID of task whose cancellation was requested."""
+
     decision_event_id: int
+    """Task cancellation decision event ID."""
 
     @classmethod
     def from_api(cls, data):
@@ -173,10 +182,18 @@ class ActivityTaskCancelledEvent(Event):
     """Activity task cancelled workflow execution history event."""
 
     type: t.ClassVar[str] = "ActivityTaskCanceled"
+
     task_scheduled_event_id: int
+    """Task schedule event ID."""
+
     task_started_event_id: int
+    """Task start event ID."""
+
     task_cancel_requested_event_id: int = None
+    """Task cancellation request event ID."""
+
     details: str = None
+    """Cancellation details, usually for explanation."""
 
     @classmethod
     def from_api(cls, data):
@@ -196,9 +213,15 @@ class ActivityTaskCompletedEvent(Event):
     """Activity task completed workflow execution history event."""
 
     type: t.ClassVar[str] = "ActivityTaskCompleted"
+
     task_scheduled_event_id: int
+    """Task schedule event ID."""
+
     task_started_event_id: int
+    """Task start event ID."""
+
     task_result: str = None
+    """Task result."""
 
     @classmethod
     def from_api(cls, data):
@@ -217,10 +240,18 @@ class ActivityTaskFailedEvent(Event):
     """Activity task failed workflow execution history event."""
 
     type: t.ClassVar[str] = "ActivityTaskFailed"
+
     task_scheduled_event_id: int
+    """Task schedule event ID."""
+
     task_started_event_id: int
+    """Task start event ID."""
+
     reason: str = None
+    """Failure reason, usually for classification."""
+
     details: str = None
+    """Failure details, usually for explanation."""
 
     @classmethod
     def from_api(cls, data):
@@ -240,12 +271,24 @@ class ActivityTaskScheduledEvent(Event):
     """Activity task scheduled workflow execution history event."""
 
     type: t.ClassVar[str] = "ActivityTaskScheduled"
+
     task_id: str
+    """Scheduled task ID."""
+
     activity: "_activities.ActivityId"
+    """Task activity type."""
+
     task_configuration: "_tasks.PartialTaskConfiguration"
+    """Task configuration (task-list guaranteed)."""
+
     decision_event_id: int
+    """Task schedule decision event ID."""
+
     task_input: str = None
+    """Task input."""
+
     control: str = None
+    """Message from task scheduling decider."""
 
     @classmethod
     def from_api(cls, data):
@@ -270,8 +313,12 @@ class ActivityTaskStartedEvent(Event):
     """Activity task started workflow execution history event."""
 
     type: t.ClassVar[str] = "ActivityTaskStarted"
+
     task_scheduled_event_id: int
+    """Task schedule event ID."""
+
     worker_identity: str = None
+    """Identity of worker which acquired task."""
 
     @classmethod
     def from_api(cls, data):
@@ -289,10 +336,18 @@ class ActivityTaskTimedOutEvent(Event):
     """Activity task timed-out workflow execution history event."""
 
     type: t.ClassVar[str] = "ActivityTaskTimedOut"
+
     timeout_type: TimeoutType
+    """Task timeout type."""
+
     task_scheduled_event_id: int
+    """Task schedule event ID."""
+
     task_started_event_id: int
+    """Task start event ID."""
+
     details: str = None
+    """Most recent progress message from worker (see ``send_heartbeat``)."""
 
     @classmethod
     def from_api(cls, data):
@@ -312,9 +367,15 @@ class CancelTimerFailedEvent(Event):
     """Timer cancellation failed workflow execution history event."""
 
     type: t.ClassVar[str] = "CancelTimerFailed"
+
     timer_id: str
+    """ID of timer whose cancellation failed."""
+
     cause: CancelTimerFailureCause
+    """Failure cause."""
+
     decision_event_id: int
+    """Timer cancellation decision event ID."""
 
     @classmethod
     def from_api(cls, data):
@@ -335,8 +396,12 @@ class CancelWorkflowExecutionFailedEvent(Event):
     """
 
     type: t.ClassVar[str] = "CancelWorkflowExecutionFailed"
+
     cause: DecisionFailureCause
+    """Failure cause."""
+
     decision_event_id: int
+    """Execution cancellation decision event ID."""
 
     @classmethod
     def from_api(cls, data):
@@ -354,11 +419,21 @@ class ChildWorkflowExecutionCancelledEvent(Event):
     """Child workflow execution cancelled workflow execution history event."""
 
     type: t.ClassVar[str] = "ChildWorkflowExecutionCanceled"
+
     execution: "_executions.ExecutionId"
+    """Cancelled execution."""
+
     workflow: "_workflows.WorkflowId"
+    """Child execution workflow type."""
+
     execution_initiated_event_id: int
+    """Child execution start start event ID."""
+
     execution_started_event_id: int
+    """Child execution start event ID."""
+
     details: str = None
+    """Cancellation details, usually for explanation."""
 
     @classmethod
     def from_api(cls, data):
@@ -382,11 +457,21 @@ class ChildWorkflowExecutionCompletedEvent(Event):
     """Child workflow execution completed workflow execution history event."""
 
     type: t.ClassVar[str] = "ChildWorkflowExecutionCompleted"
+
     execution: "_executions.ExecutionId"
+    """Completed execution."""
+
     workflow: "_workflows.WorkflowId"
+    """Child execution workflow type."""
+
     execution_initiated_event_id: int
+    """Child execution start start event ID."""
+
     execution_started_event_id: int
+    """Child execution start event ID."""
+
     execution_result: str = None
+    """Child execution result."""
 
     @classmethod
     def from_api(cls, data):
@@ -410,12 +495,24 @@ class ChildWorkflowExecutionFailedEvent(Event):
     """Child workflow execution failed workflow execution history event."""
 
     type: t.ClassVar[str] = "ChildWorkflowExecutionFailed"
+
     execution: "_executions.ExecutionId"
+    """Failed execution."""
+
     workflow: "_workflows.WorkflowId"
+    """Child execution workflow type."""
+
     execution_initiated_event_id: int
+    """Child execution start start event ID."""
+
     execution_started_event_id: int
+    """Child execution start event ID."""
+
     reason: str = None
+    """Failure reason, usually for classification."""
+
     details: str = None
+    """Failure details, usually for explanation."""
 
     @classmethod
     def from_api(cls, data):
@@ -440,9 +537,15 @@ class ChildWorkflowExecutionStartedEvent(Event):
     """Child workflow execution started workflow execution history event."""
 
     type: t.ClassVar[str] = "ChildWorkflowExecutionStarted"
+
     execution: "_executions.ExecutionId"
+    """Started execution."""
+
     workflow: "_workflows.WorkflowId"
+    """Child execution workflow type."""
+
     execution_initiated_event_id: int
+    """Child execution start start event ID."""
 
     @classmethod
     def from_api(cls, data):
@@ -464,10 +567,18 @@ class ChildWorkflowExecutionTerminatedEvent(Event):
     """Child workflow execution terminated workflow execution history event."""
 
     type: t.ClassVar[str] = "ChildWorkflowExecutionTerminated"
+
     execution: "_executions.ExecutionId"
+    """Terminated execution."""
+
     workflow: "_workflows.WorkflowId"
+    """Child execution workflow type."""
+
     execution_initiated_event_id: int
+    """Child execution start start event ID."""
+
     execution_started_event_id: int
+    """Child execution start event ID."""
 
     @classmethod
     def from_api(cls, data):
@@ -490,10 +601,18 @@ class ChildWorkflowExecutionTimedOutEvent(Event):
     """Child workflow execution timed-out workflow execution history event."""
 
     type: t.ClassVar[str] = "ChildWorkflowExecutionTimedOut"
+
     execution: "_executions.ExecutionId"
+    """Timed-out execution."""
+
     workflow: "_workflows.WorkflowId"
+    """Child execution workflow type."""
+
     execution_initiated_event_id: int
+    """Child execution start start event ID."""
+
     execution_started_event_id: int
+    """Child execution start event ID."""
 
     @classmethod
     def from_api(cls, data):
@@ -513,6 +632,7 @@ class ChildWorkflowExecutionTimedOutEvent(Event):
 
     @property
     def timeout_type(self) -> TimeoutType:
+        """Timeout type."""
         return TimeoutType.runtime
 
 
@@ -521,8 +641,12 @@ class CompleteWorkflowExecutionFailedEvent(Event):
     """Workflow execution completion failed workflow execution history event."""
 
     type: t.ClassVar[str] = "CompleteWorkflowExecutionFailed"
+
     cause: DecisionFailureCause
+    """Failure cause."""
+
     decision_event_id: int
+    """Execution complete decision event ID."""
 
     @classmethod
     def from_api(cls, data):
@@ -542,8 +666,12 @@ class ContinueAsNewWorkflowExecutionFailedEvent(Event):
     """
 
     type: t.ClassVar[str] = "ContinueAsNewWorkflowExecutionFailed"
+
     cause: DecisionFailureCause
+    """Failure cause."""
+
     decision_event_id: int
+    """Continue as new execution decision event ID."""
 
     @classmethod
     def from_api(cls, data):
@@ -561,9 +689,15 @@ class DecisionTaskCompletedEvent(Event):
     """Decision task completed workflow execution history event."""
 
     type: t.ClassVar[str] = "DecisionTaskCompleted"
+
     decision_task_scheduled_event_id: int
+    """Decision task schedule event ID."""
+
     decision_task_started_event_id: int
+    """Decision task start event ID."""
+
     decision_context: str = None
+    """Context provided by decider, accessible when describing execution."""
 
     @classmethod
     def from_api(cls, data):
@@ -582,9 +716,15 @@ class DecisionTaskScheduledEvent(Event):
     """Decision task scheduled workflow execution history event."""
 
     type: t.ClassVar[str] = "DecisionTaskScheduled"
+
     decision_task_list: str
+    """Task-list which decision task was placed on."""
+
     decision_task_timeout: t.Union[datetime.timedelta, None] = _common.unset
+    """Decision runtime timeout."""
+
     decision_task_priority: int = None
+    """Decision task priority."""
 
     @classmethod
     def from_api(cls, data):
@@ -606,8 +746,12 @@ class DecisionTaskStartedEvent(Event):
     """Decision task started workflow execution history event."""
 
     type: t.ClassVar[str] = "DecisionTaskStarted"
+
     decision_task_scheduled_event_id: int
+    """Decision task schedule event ID."""
+
     decider_identity: str = None
+    """Identity of decider which acquired task."""
 
     @classmethod
     def from_api(cls, data):
@@ -625,8 +769,12 @@ class DecisionTaskTimedOutEvent(Event):
     """Decision task timed-out workflow execution history event."""
 
     type: t.ClassVar[str] = "DecisionTaskTimedOut"
+
     decision_task_scheduled_event_id: int
+    """Decision task schedule event ID."""
+
     decision_task_started_event_id: int
+    """Decision task start event ID."""
 
     @classmethod
     def from_api(cls, data):
@@ -641,6 +789,7 @@ class DecisionTaskTimedOutEvent(Event):
 
     @property
     def timeout_type(self) -> TimeoutType:
+        """Timeout type."""
         return TimeoutType.runtime
 
 
@@ -651,8 +800,12 @@ class ExternalWorkflowExecutionCancelRequestedEvent(Event):
     """
 
     type: t.ClassVar[str] = "ExternalWorkflowExecutionCancelRequested"
+
     execution: "_executions.ExecutionId"
+    """Execution whose cancellation is requested."""
+
     cancel_request_event_id: int
+    """Execution cancellation start event ID."""
 
     @classmethod
     def from_api(cls, data):
@@ -672,8 +825,12 @@ class ExternalWorkflowExecutionSignaledEvent(Event):
     """External workflow execution signaled workflow execution history event."""
 
     type: t.ClassVar[str] = "ExternalWorkflowExecutionSignaled"
+
     execution: "_executions.ExecutionId"
+    """Signalled execution."""
+
     signal_event_id: int
+    """External workflow signal start event ID."""
 
     @classmethod
     def from_api(cls, data):
@@ -693,8 +850,12 @@ class FailWorkflowExecutionFailedEvent(Event):
     """Workflow execution failure failed workflow execution history event."""
 
     type: t.ClassVar[str] = "FailWorkflowExecutionFailed"
+
     cause: DecisionFailureCause
+    """Failure cause."""
+
     decision_event_id: int
+    """Workflow fail decision event ID."""
 
     @classmethod
     def from_api(cls, data):
@@ -712,9 +873,15 @@ class MarkerRecordedEvent(Event):
     """Marker recorded workflow execution history event."""
 
     type: t.ClassVar[str] = "MarkerRecorded"
+
     marker_name: str
+    """Marker name."""
+
     decision_event_id: int
+    """Marker record decision event ID."""
+
     details: str = None
+    """Attached marker data."""
 
     @classmethod
     def from_api(cls, data):
@@ -733,12 +900,24 @@ class LambdaFunctionScheduledEvent(Event):
     """Lambda task scheduled workflow execution history event."""
 
     type: t.ClassVar[str] = "LambdaFunctionScheduled"
+
     task_id: str
+    """Scheduled task ID."""
+
     lambda_function: str
+    """Name or ARN (latest/version/alias) of Lambda function to be invoked."""
+
     decision_event_id: int
+    """Task schedule event ID."""
+
     task_input: str = None
+    """Lambda function input."""
+
     task_timeout: datetime.timedelta = _common.unset
+    """Lambda function invocation timeout."""
+
     control: str = None
+    """Message from task scheduling decider."""
 
     @classmethod
     def from_api(cls, data):
@@ -762,7 +941,9 @@ class LambdaFunctionStartedEvent(Event):
     """Lambda task started workflow execution history event."""
 
     type: t.ClassVar[str] = "LambdaFunctionStarted"
+
     task_scheduled_event_id: int
+    """Task schedule event ID."""
 
     @classmethod
     def from_api(cls, data):
@@ -779,9 +960,15 @@ class LambdaFunctionCompletedEvent(Event):
     """Lambda task completed workflow execution history event."""
 
     type: t.ClassVar[str] = "LambdaFunctionCompleted"
+
     task_scheduled_event_id: int
+    """Task schedule event ID."""
+
     task_started_event_id: int
+    """Task start event ID."""
+
     task_result: str = None
+    """Lambda function invocation result."""
 
     @classmethod
     def from_api(cls, data):
@@ -800,10 +987,18 @@ class LambdaFunctionFailedEvent(Event):
     """Lambda task failed workflow execution history event."""
 
     type: t.ClassVar[str] = "LambdaFunctionFailed"
+
     task_scheduled_event_id: int
+    """Task schedule event ID."""
+
     task_started_event_id: int
+    """Task start event ID."""
+
     reason: str = None
+    """Failure reason, usually for classification."""
+
     details: str = None
+    """Failure details, usually for explanation."""
 
     @classmethod
     def from_api(cls, data):
@@ -823,8 +1018,12 @@ class LambdaFunctionTimedOutEvent(Event):
     """Lambda task timed-out workflow execution history event."""
 
     type: t.ClassVar[str] = "LambdaFunctionTimedOut"
+
     task_scheduled_event_id: int
+    """Task schedule event ID."""
+
     task_started_event_id: int
+    """Task start event ID."""
 
     @classmethod
     def from_api(cls, data):
@@ -839,6 +1038,7 @@ class LambdaFunctionTimedOutEvent(Event):
 
     @property
     def timeout_type(self) -> TimeoutType:
+        """Timeout type."""
         return TimeoutType.runtime
 
 
@@ -847,8 +1047,11 @@ class RecordMarkerFailedEvent(Event):
     """Marker recording failed workflow execution history event."""
 
     type: t.ClassVar[str] = "RecordMarkerFailed"
+
     marker_name: str
+
     decision_event_id: int
+    """Marker record decision event ID."""
 
     @classmethod
     def from_api(cls, data):
@@ -863,6 +1066,7 @@ class RecordMarkerFailedEvent(Event):
 
     @property
     def cause(self) -> DecisionFailureCause:
+        """Failure cause."""
         return DecisionFailureCause.operation_not_permitted
 
 
@@ -873,9 +1077,15 @@ class RequestCancelActivityTaskFailedEvent(Event):
     """
 
     type: t.ClassVar[str] = "RequestCancelActivityTaskFailed"
+
     task_id: str
+    """ID of task whose cancellation was requested."""
+
     cause: CancelTaskFailureCause
+    """Failure cause."""
+
     decision_event_id: int
+    """Task cancellation request decision event ID."""
 
     @classmethod
     def from_api(cls, data):
@@ -896,11 +1106,21 @@ class RequestCancelExternalWorkflowExecutionFailedEvent(Event):
     """
 
     type: t.ClassVar[str] = "RequestCancelExternalWorkflowExecutionFailed"
+
     execution: "_executions.ExecutionId"
+    """Execution whose cancellation was requested."""
+
     cause: CancelExecutionFailureCause
+    """Failure cause."""
+
     request_cancel_event_id: int
+    """Cancellation request start event ID."""
+
     decision_event_id: int
+    """Cancellation request decision event ID."""
+
     control: str = None
+    """Message from cancellation requesting decider."""
 
     @classmethod
     def from_api(cls, data):
@@ -923,9 +1143,15 @@ class RequestCancelExternalWorkflowExecutionInitiatedEvent(Event):
     """
 
     type: t.ClassVar[str] = "RequestCancelExternalWorkflowExecutionInitiated"
+
     execution: t.Union["_executions.ExecutionId", "_executions.CurrentExecutionId"]
+    """Execution whose cancellation was requested."""
+
     decision_event_id: int
+    """Cancellation request decision event ID."""
+
     control: str = None
+    """Message from cancellation requesting decider."""
 
     @classmethod
     def from_api(cls, data):
@@ -944,10 +1170,18 @@ class ScheduleActivityTaskFailedEvent(Event):
     """Activity task scheduling failed workflow execution history event."""
 
     type: t.ClassVar[str] = "ScheduleActivityTaskFailed"
+
     task_id: str
+    """ID of task to be scheduled."""
+
     activity: "_activities.ActivityId"
+    """Task activity type."""
+
     cause: ScheduleTaskFailureCause
+    """Failure cause."""
+
     decision_event_id: int
+    """Task schedule decision event ID."""
 
     @classmethod
     def from_api(cls, data):
@@ -969,10 +1203,18 @@ class ScheduleLambdaFunctionFailedEvent(Event):
     """Lambda task scheduling failed workflow execution history event."""
 
     type: t.ClassVar[str] = "ScheduleLambdaFunctionFailed"
+
     task_id: str
+    """ID of task to be scheduled."""
+
     lambda_function: str
+    """Name or ARN (latest/version/alias) of Lambda function to be invoked."""
+
     cause: ScheduleLambdaFailureCause
+    """Failure cause."""
+
     decision_event_id: int
+    """Task schedule decision event ID."""
 
     @classmethod
     def from_api(cls, data):
@@ -994,11 +1236,21 @@ class SignalExternalWorkflowExecutionFailedEvent(Event):
     """
 
     type: t.ClassVar[str] = "SignalExternalWorkflowExecutionFailed"
+
     execution: t.Union["_executions.ExecutionId", "_executions.CurrentExecutionId"]
+    """Execution to be signalled."""
+
     cause: SignalFailureCause
+    """Failure cause."""
+
     signal_event_id: int
+    """External workflow signal start event ID."""
+
     decision_event_id: int
+    """External workflow signal decision event ID."""
+
     control: str = None
+    """Message from signalling decider."""
 
     @classmethod
     def from_api(cls, data):
@@ -1021,11 +1273,21 @@ class SignalExternalWorkflowExecutionInitiatedEvent(Event):
     """
 
     type: t.ClassVar[str] = "SignalExternalWorkflowExecutionInitiated"
+
     execution: t.Union["_executions.ExecutionId", "_executions.CurrentExecutionId"]
+    """Execution to be signalled."""
+
     signal_name: str
+    """Signal name."""
+
     decision_event_id: int
+    """External workflow signal decision event ID."""
+
     signal_input: str = None
+    """Attached signal data."""
+
     control: str = None
+    """Message from signalling decider."""
 
     @classmethod
     def from_api(cls, data):
@@ -1046,9 +1308,15 @@ class StartActivityTaskFailedEvent(Event):
     """Activity task starting failed workflow execution history event."""
 
     type: t.ClassVar[str] = "StartActivityTaskFailed"
+
     task_id: str = None
+    """ID of task to be started."""
+
     cause: str = None
+    """Failure cause."""
+
     task_scheduled_event_id: int = None
+    """Task schedule decision event ID."""
 
     @classmethod
     def from_api(cls, data):
@@ -1068,9 +1336,15 @@ class StartLambdaFunctionFailedEvent(Event):
     """Lambda task starting failed workflow execution history event."""
 
     type: t.ClassVar[str] = "StartLambdaFunctionFailed"
+
     cause: StartLambdaFailureCause = None
+    """Failure cause."""
+
     message: str = None
+    """Failure explanation."""
+
     task_scheduled_event_id: int = None
+    """Task schedule decision event ID."""
 
     @classmethod
     def from_api(cls, data):
@@ -1091,12 +1365,24 @@ class StartChildWorkflowExecutionFailedEvent(Event):
     """
 
     type: t.ClassVar[str] = "StartChildWorkflowExecutionFailed"
+
     execution: "_executions.CurrentExecutionId"
+    """Execution to be started."""
+
     workflow: "_workflows.WorkflowId"
+    """Child execution workflow type."""
+
     cause: StartChildExecutionFailureCause
+    """Failure cause."""
+
     start_child_execution_event_id: int
+    """Child execution start start event ID."""
+
     decision_event_id: int
+    """Child workflow start decision event ID."""
+
     control: str = None
+    """Message from child execution starting decider."""
 
     @classmethod
     def from_api(cls, data):
@@ -1123,13 +1409,29 @@ class StartChildWorkflowExecutionInitiatedEvent(Event):
     """
 
     type: t.ClassVar[str] = "StartChildWorkflowExecutionInitiated"
+
     execution: "_executions.CurrentExecutionId"
+    """Execution to be started."""
+
     workflow: "_workflows.WorkflowId"
+    """Child execution workflow type."""
+
     execution_configuration: "_executions.PartialExecutionConfiguration"
+    """Child execution configuration (termination policy and decision
+    task-list guaranteed).
+    """
+
     decision_event_id: int
+    """Child execution start decision event ID."""
+
     execution_input: str = None
+    """Child execution input."""
+
     execution_tags: t.List[str] = None
+    """Child execution tags."""
+
     control: str = None
+    """Message from child execution starting decider."""
 
     @classmethod
     def from_api(cls, data):
@@ -1156,9 +1458,15 @@ class StartTimerFailedEvent(Event):
     """Timer starting failed workflow execution history event."""
 
     type: t.ClassVar[str] = "StartTimerFailed"
+
     timer_id: str
+    """Timer ID."""
+
     cause: StartTimerFailureCause
+    """Failure cause."""
+
     decision_event_id: int
+    """Timer start decision event ID."""
 
     @classmethod
     def from_api(cls, data):
@@ -1177,9 +1485,15 @@ class TimerCancelledEvent(Event):
     """Timer cancelled workflow execution history event."""
 
     type: t.ClassVar[str] = "TimerCanceled"
+
     timer_id: str
+    """Cancelled timer ID."""
+
     timer_started_event_id: int
+    """Timer start event ID."""
+
     decision_event_id: int
+    """Timer start decision event ID."""
 
     @classmethod
     def from_api(cls, data):
@@ -1198,8 +1512,12 @@ class TimerFiredEvent(Event):
     """Timer fired workflow execution history event."""
 
     type: t.ClassVar[str] = "TimerFired"
+
     timer_id: str
+    """Fired timer ID."""
+
     timer_started_event_id: int
+    """Timer start event ID."""
 
     @classmethod
     def from_api(cls, data):
@@ -1217,10 +1535,18 @@ class TimerStartedEvent(Event):
     """Timer started workflow execution history event."""
 
     type: t.ClassVar[str] = "TimerStarted"
+
     timer_id: str
+    """Started timer ID."""
+
     timer_duration: datetime.timedelta
+    """Timer duration."""
+
     decision_event_id: int
+    """Timer start decision event ID."""
+
     control: str = None
+    """Message from timer starting decider."""
 
     @classmethod
     def from_api(cls, data):
@@ -1242,9 +1568,17 @@ class WorkflowExecutionCancelRequestedEvent(Event):
     """
 
     type: t.ClassVar[str] = "WorkflowExecutionCancelRequested"
+
     cause: ExecutionTerminationCause = None
+    """Cancellation request cause."""
+
     source_execution: "_executions.ExecutionId" = None
+    """Execution which requested the cancellation."""
+
     source_decision_event_id: int = None
+    """Cancellation request decision event ID in execution which requested the
+    cancellation.
+    """
 
     @classmethod
     def from_api(cls, data):
@@ -1268,8 +1602,12 @@ class WorkflowExecutionCancelledEvent(Event):
     """Workflow execution cancelled workflow execution history event."""
 
     type: t.ClassVar[str] = "WorkflowExecutionCanceled"
+
     decision_event_id: int
+    """Execution cancel decision event ID."""
+
     details: str = None
+    """Execution cancellation details, usually for explanation."""
 
     @classmethod
     def from_api(cls, data):
@@ -1287,8 +1625,12 @@ class WorkflowExecutionCompletedEvent(Event):
     """Workflow execution completed workflow execution history event."""
 
     type: t.ClassVar[str] = "WorkflowExecutionCompleted"
+
     decision_event_id: int
+    """Execution complete decision event ID."""
+
     execution_result: str = None
+    """Execution result."""
 
     @classmethod
     def from_api(cls, data):
@@ -1306,12 +1648,26 @@ class WorkflowExecutionContinuedAsNewEvent(Event):
     """Workflow execution continued as new workflow execution history event."""
 
     type: t.ClassVar[str] = "WorkflowExecutionContinuedAsNew"
+
     execution_run_id: str
+    """New execution run ID."""
+
     execution_configuration: "_executions.PartialExecutionConfiguration"
+    """New execution configuration (termination policy and decision task-list
+    guaranteed).
+    """
+
     workflow: "_workflows.WorkflowId"
+    """New execution workflow type."""
+
     decision_event_id: int
+    """Continue as new execution decision event ID."""
+
     execution_input: str = None
+    """New execution input."""
+
     execution_tags: t.List[str] = None
+    """New execution tags."""
 
     @classmethod
     def from_api(cls, data):
@@ -1337,9 +1693,15 @@ class WorkflowExecutionFailedEvent(Event):
     """Workflow execution failed workflow execution history event."""
 
     type: t.ClassVar[str] = "WorkflowExecutionFailed"
+
     decision_event_id: int
+    """Execution fail decision event ID."""
+
     reason: str = None
+    """Failure reason, usually for classification."""
+
     details: str = None
+    """Failure details, usually for explanation."""
 
     @classmethod
     def from_api(cls, data):
@@ -1358,10 +1720,18 @@ class WorkflowExecutionSignaledEvent(Event):
     """Workflow execution signaled workflow execution history event."""
 
     type: t.ClassVar[str] = "WorkflowExecutionSignaled"
+
     signal_name: str
+    """Signal name."""
+
     signal_input: str = None
+    """Attached signal data."""
+
     source_execution: "_executions.ExecutionId" = None
+    """Execution which sent the signal."""
+
     source_decision_event_id: int = None
+    """Signal decision event ID in execution which sent the signal."""
 
     @classmethod
     def from_api(cls, data):
@@ -1383,13 +1753,30 @@ class WorkflowExecutionStartedEvent(Event):
     """Workflow execution started workflow execution history event."""
 
     type: t.ClassVar[str] = "WorkflowExecutionStarted"
+
     workflow: "_workflows.WorkflowId"
+    """Execution workflow type."""
+
     execution_configuration: "_executions.PartialExecutionConfiguration"
+    """Execution configuration (termination policy and decision task-list
+    guaranteed).
+    """
+
     execution_input: str = None
+    """Execution input."""
+
     execution_tags: t.List[str] = None
+    """Execution tags."""
+
     continued_execution_run_id: str = None
+    """Run ID of execution which this execution continues from."""
+
     parent_execution: "_executions.ExecutionId" = None
+    """Parent execution (which started this execution)."""
+
     parent_decision_event_id: int = None
+    """ID of event in parent execution which begins the starting of this
+    execution."""
 
     @classmethod
     def from_api(cls, data):
@@ -1419,10 +1806,18 @@ class WorkflowExecutionTerminatedEvent(Event):
     """Workflow execution terminated workflow execution history event."""
 
     type: t.ClassVar[str] = "WorkflowExecutionTerminated"
+
     child_execution_policy: "_executions.ChildExecutionTerminationPolicy"
+    """Child execution policy (how open child executions were handled)."""
+
     cause: ExecutionTerminationCause = None
+    """Failure cause."""
+
     reason: str = None
+    """Termination reason, usually for classification."""
+
     details: str = None
+    """Termination details, usually for explanation."""
 
     @classmethod
     def from_api(cls, data):
@@ -1446,7 +1841,9 @@ class WorkflowExecutionTimedOutEvent(Event):
     """Workflow execution timed-out workflow execution history event."""
 
     type: t.ClassVar[str] = "WorkflowExecutionTimedOut"
+
     child_execution_policy: "_executions.ChildExecutionTerminationPolicy"
+    """Child execution policy (how open child executions were handled)."""
 
     @classmethod
     def from_api(cls, data):
@@ -1464,6 +1861,7 @@ class WorkflowExecutionTimedOutEvent(Event):
 
     @property
     def timeout_type(self) -> TimeoutType:
+        """Timeout type."""
         return TimeoutType.runtime
 
 

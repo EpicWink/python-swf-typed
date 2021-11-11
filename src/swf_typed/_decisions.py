@@ -154,7 +154,7 @@ class RecordMarkerDecision(Decision):
     """Marker name."""
 
     details: str = None
-    """Marker recording details, usually for explanation."""
+    """Attached marker data."""
 
     def to_api(self):
         data = super().to_api()
@@ -250,7 +250,7 @@ class ScheduleLambdaFunctionDecision(Decision):
     type: t.ClassVar[str] = "ScheduleLambdaFunction"
 
     lambda_function: str
-    """Lambda function name or ARN (latest/version/alias)."""
+    """Lambda function name or ARN (latest/version/alias) to invoke."""
 
     task_id: str
     """Task ID."""
