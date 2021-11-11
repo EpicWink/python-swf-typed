@@ -512,12 +512,12 @@ class _StateBuilder:
         elif isinstance(event, _history.ChildWorkflowExecutionStartedEvent):
             events = (
                 e for e in self._child_execution_initiation_events
-                if e.id == event.execution_initiated_event_id
+                if e.id == event.initiated_event_id
             )
             try:
                 initiation_event, = events
             except ValueError:
-                raise LookupError(event.execution_initiated_event_id) from None
+                raise LookupError(event.initiated_event_id) from None
 
             execution = ChildExecutionState(
                 execution=event.execution,
@@ -531,27 +531,27 @@ class _StateBuilder:
             self.execution.child_executions.append(execution)
             self._child_executions[initiation_event.id] = execution
         elif isinstance(event, _history.ChildWorkflowExecutionCompletedEvent):
-            execution = self._child_executions[event.execution_initiated_event_id]
+            execution = self._child_executions[event.initiated_event_id]
             execution.status = _executions.ExecutionStatus.completed
             execution.ended = event.occured
             execution.result = event.execution_result
         elif isinstance(event, _history.ChildWorkflowExecutionFailedEvent):
-            execution = self._child_executions[event.execution_initiated_event_id]
+            execution = self._child_executions[event.initiated_event_id]
             execution.status = _executions.ExecutionStatus.failed
             execution.ended = event.occured
             execution.failure_reason = event.reason
             execution.stop_details = event.details
         elif isinstance(event, _history.ChildWorkflowExecutionCancelledEvent):
-            execution = self._child_executions[event.execution_initiated_event_id]
+            execution = self._child_executions[event.initiated_event_id]
             execution.status = _executions.ExecutionStatus.cancelled
             execution.ended = event.occured
             execution.stop_details = event.details
         elif isinstance(event, _history.ChildWorkflowExecutionTerminatedEvent):
-            execution = self._child_executions[event.execution_initiated_event_id]
+            execution = self._child_executions[event.initiated_event_id]
             execution.status = _executions.ExecutionStatus.terminated
             execution.ended = event.occured
         elif isinstance(event, _history.ChildWorkflowExecutionTimedOutEvent):
-            execution = self._child_executions[event.execution_initiated_event_id]
+            execution = self._child_executions[event.initiated_event_id]
             execution.status = _executions.ExecutionStatus.terminated
             execution.ended = event.occured
 

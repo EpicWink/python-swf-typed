@@ -440,8 +440,8 @@ class ChildWorkflowExecutionCancelledEvent(Event):
     workflow: "_workflows.WorkflowId"
     """Child execution workflow type."""
 
-    execution_initiated_event_id: int
-    """Child execution start start event ID."""
+    initiated_event_id: int
+    """Child execution start begun event ID."""
 
     execution_started_event_id: int
     """Child execution start event ID."""
@@ -460,7 +460,7 @@ class ChildWorkflowExecutionCancelledEvent(Event):
             occured=data["eventTimestamp"],
             execution=_executions.ExecutionId.from_api(attrs["workflowExecution"]),
             workflow=_workflows.WorkflowId.from_api(attrs["workflowType"]),
-            execution_initiated_event_id=attrs["initiatedEventId"],
+            initiated_event_id=attrs["initiatedEventId"],
             execution_started_event_id=attrs["startedEventId"],
             details=attrs.get("details"),
         )
@@ -478,8 +478,8 @@ class ChildWorkflowExecutionCompletedEvent(Event):
     workflow: "_workflows.WorkflowId"
     """Child execution workflow type."""
 
-    execution_initiated_event_id: int
-    """Child execution start start event ID."""
+    initiated_event_id: int
+    """Child execution start begun event ID."""
 
     execution_started_event_id: int
     """Child execution start event ID."""
@@ -498,7 +498,7 @@ class ChildWorkflowExecutionCompletedEvent(Event):
             occured=data["eventTimestamp"],
             execution=_executions.ExecutionId.from_api(attrs["workflowExecution"]),
             workflow=_workflows.WorkflowId.from_api(attrs["workflowType"]),
-            execution_initiated_event_id=attrs["initiatedEventId"],
+            initiated_event_id=attrs["initiatedEventId"],
             execution_started_event_id=attrs["startedEventId"],
             execution_result=attrs.get("result"),
         )
@@ -516,8 +516,8 @@ class ChildWorkflowExecutionFailedEvent(Event):
     workflow: "_workflows.WorkflowId"
     """Child execution workflow type."""
 
-    execution_initiated_event_id: int
-    """Child execution start start event ID."""
+    initiated_event_id: int
+    """Child execution start begun event ID."""
 
     execution_started_event_id: int
     """Child execution start event ID."""
@@ -539,7 +539,7 @@ class ChildWorkflowExecutionFailedEvent(Event):
             occured=data["eventTimestamp"],
             execution=_executions.ExecutionId.from_api(attrs["workflowExecution"]),
             workflow=_workflows.WorkflowId.from_api(attrs["workflowType"]),
-            execution_initiated_event_id=attrs["initiatedEventId"],
+            initiated_event_id=attrs["initiatedEventId"],
             execution_started_event_id=attrs["startedEventId"],
             reason=attrs.get("reason"),
             details=attrs.get("details"),
@@ -558,8 +558,8 @@ class ChildWorkflowExecutionStartedEvent(Event):
     workflow: "_workflows.WorkflowId"
     """Child execution workflow type."""
 
-    execution_initiated_event_id: int
-    """Child execution start start event ID."""
+    initiated_event_id: int
+    """Child execution start begun event ID."""
 
     @classmethod
     def from_api(cls, data):
@@ -572,7 +572,7 @@ class ChildWorkflowExecutionStartedEvent(Event):
             occured=data["eventTimestamp"],
             execution=_executions.ExecutionId.from_api(attrs["workflowExecution"]),
             workflow=_workflows.WorkflowId.from_api(attrs["workflowType"]),
-            execution_initiated_event_id=attrs["initiatedEventId"],
+            initiated_event_id=attrs["initiatedEventId"],
         )
 
 
@@ -588,8 +588,8 @@ class ChildWorkflowExecutionTerminatedEvent(Event):
     workflow: "_workflows.WorkflowId"
     """Child execution workflow type."""
 
-    execution_initiated_event_id: int
-    """Child execution start start event ID."""
+    initiated_event_id: int
+    """Child execution start begun event ID."""
 
     execution_started_event_id: int
     """Child execution start event ID."""
@@ -605,7 +605,7 @@ class ChildWorkflowExecutionTerminatedEvent(Event):
             occured=data["eventTimestamp"],
             execution=_executions.ExecutionId.from_api(attrs["workflowExecution"]),
             workflow=_workflows.WorkflowId.from_api(attrs["workflowType"]),
-            execution_initiated_event_id=attrs["initiatedEventId"],
+            initiated_event_id=attrs["initiatedEventId"],
             execution_started_event_id=attrs["startedEventId"],
         )
 
@@ -622,8 +622,8 @@ class ChildWorkflowExecutionTimedOutEvent(Event):
     workflow: "_workflows.WorkflowId"
     """Child execution workflow type."""
 
-    execution_initiated_event_id: int
-    """Child execution start start event ID."""
+    initiated_event_id: int
+    """Child execution start begun event ID."""
 
     execution_started_event_id: int
     """Child execution start event ID."""
@@ -640,7 +640,7 @@ class ChildWorkflowExecutionTimedOutEvent(Event):
             occured=data["eventTimestamp"],
             execution=_executions.ExecutionId.from_api(attrs["workflowExecution"]),
             workflow=_workflows.WorkflowId.from_api(attrs["workflowType"]),
-            execution_initiated_event_id=attrs["initiatedEventId"],
+            initiated_event_id=attrs["initiatedEventId"],
             execution_started_event_id=attrs["startedEventId"],
         )
 
@@ -818,8 +818,8 @@ class ExternalWorkflowExecutionCancelRequestedEvent(Event):
     execution: "_executions.ExecutionId"
     """Execution whose cancellation is requested."""
 
-    cancel_request_event_id: int
-    """Execution cancellation start event ID."""
+    initiated_event_id: int
+    """Execution cancellation begun event ID."""
 
     @classmethod
     def from_api(cls, data):
@@ -830,7 +830,7 @@ class ExternalWorkflowExecutionCancelRequestedEvent(Event):
             id=data["eventId"],
             occured=data["eventTimestamp"],
             execution=_executions.ExecutionId.from_api(attrs["workflowExecution"]),
-            cancel_request_event_id=attrs["initiatedEventId"],
+            initiated_event_id=attrs["initiatedEventId"],
         )
 
 
@@ -843,8 +843,8 @@ class ExternalWorkflowExecutionSignaledEvent(Event):
     execution: "_executions.ExecutionId"
     """Signalled execution."""
 
-    signal_event_id: int
-    """External workflow signal start event ID."""
+    initiated_event_id: int
+    """External workflow signal begun event ID."""
 
     @classmethod
     def from_api(cls, data):
@@ -855,7 +855,7 @@ class ExternalWorkflowExecutionSignaledEvent(Event):
             id=data["eventId"],
             occured=data["eventTimestamp"],
             execution=_executions.ExecutionId.from_api(attrs["workflowExecution"]),
-            signal_event_id=attrs["initiatedEventId"],
+            initiated_event_id=attrs["initiatedEventId"],
         )
 
 
@@ -1127,8 +1127,8 @@ class RequestCancelExternalWorkflowExecutionFailedEvent(Event):
     cause: CancelExecutionFailureCause
     """Failure cause."""
 
-    request_cancel_event_id: int
-    """Cancellation request start event ID."""
+    initiated_event_id: int
+    """Cancellation request begun event ID."""
 
     decision_event_id: int
     """Cancellation request decision event ID."""
@@ -1144,7 +1144,7 @@ class RequestCancelExternalWorkflowExecutionFailedEvent(Event):
             occured=data["eventTimestamp"],
             execution=_get_execution_from_partial_id(data),
             cause=CancelExecutionFailureCause(attrs["cause"]),
-            request_cancel_event_id=data["initiatedEventId"],
+            initiated_event_id=data["initiatedEventId"],
             decision_event_id=attrs["decisionTaskCompletedEventId"],
             control=attrs.get("control"),
         )
@@ -1257,8 +1257,8 @@ class SignalExternalWorkflowExecutionFailedEvent(Event):
     cause: SignalFailureCause
     """Failure cause."""
 
-    signal_event_id: int
-    """External workflow signal start event ID."""
+    initiated_event_id: int
+    """External workflow signal begun event ID."""
 
     decision_event_id: int
     """External workflow signal decision event ID."""
@@ -1274,7 +1274,7 @@ class SignalExternalWorkflowExecutionFailedEvent(Event):
             occured=data["eventTimestamp"],
             execution=_get_execution_from_partial_id(data),
             cause=SignalFailureCause(attrs["cause"]),
-            signal_event_id=attrs["initiatedEventId"],
+            initiated_event_id=attrs["initiatedEventId"],
             decision_event_id=attrs["decisionTaskCompletedEventId"],
             control=attrs.get("control"),
         )
@@ -1389,8 +1389,8 @@ class StartChildWorkflowExecutionFailedEvent(Event):
     cause: StartChildExecutionFailureCause
     """Failure cause."""
 
-    start_child_execution_event_id: int
-    """Child execution start start event ID."""
+    initiated_event_id: int
+    """Child execution start begun event ID."""
 
     decision_event_id: int
     """Child workflow start decision event ID."""
@@ -1410,7 +1410,7 @@ class StartChildWorkflowExecutionFailedEvent(Event):
             execution=_executions.CurrentExecutionId.from_api(attrs),
             workflow=_workflows.WorkflowId.from_api(attrs["workflowType"]),
             cause=StartChildExecutionFailureCause(attrs["cause"]),
-            start_child_execution_event_id=attrs["initiatedEventId"],
+            initiated_event_id=attrs["initiatedEventId"],
             decision_event_id=attrs["decisionTaskCompletedEventId"],
             control=attrs.get("control"),
         )
@@ -1788,7 +1788,7 @@ class WorkflowExecutionStartedEvent(Event):
     parent_execution: "_executions.ExecutionId" = None
     """Parent execution (which started this execution)."""
 
-    parent_decision_event_id: int = None
+    parent_initiated_event_id: int = None
     """ID of event in parent execution which begins the starting of this
     execution."""
 
@@ -1811,7 +1811,7 @@ class WorkflowExecutionStartedEvent(Event):
                 attrs.get("parentWorkflowExecution") and
                 _executions.ExecutionId.from_api(attrs["parentWorkflowExecution"])
             ),
-            parent_decision_event_id=attrs.get("parentInitiatedEventId"),
+            parent_initiated_event_id=attrs.get("parentInitiatedEventId"),
         )
 
 
