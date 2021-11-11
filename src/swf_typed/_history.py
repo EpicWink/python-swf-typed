@@ -1586,10 +1586,10 @@ class WorkflowExecutionCancelRequestedEvent(Event):
     cause: ExecutionTerminationCause = None
     """Cancellation request cause."""
 
-    source_execution: "_executions.ExecutionId" = None
+    cancelling_execution: "_executions.ExecutionId" = None
     """Execution which requested the cancellation."""
 
-    source_decision_event_id: int = None
+    cancel_decision_event_id: int = None
     """Cancellation request decision event ID in execution which requested the
     cancellation.
     """
@@ -1604,10 +1604,10 @@ class WorkflowExecutionCancelRequestedEvent(Event):
             id=data["eventId"],
             occured=data["eventTimestamp"],
             cause=attrs.get("cause") and ExecutionTerminationCause(attrs["cause"]),
-            source_execution=_executions.ExecutionId.from_api(
+            cancelling_execution=_executions.ExecutionId.from_api(
                 attrs.get("externalWorkflowExecution")
             ),
-            source_decision_event_id=attrs.get("externalInitiatedEventId"),
+            cancel_decision_event_id=attrs.get("externalInitiatedEventId"),
         )
 
 
@@ -1741,10 +1741,10 @@ class WorkflowExecutionSignaledEvent(Event):
     signal_input: str = None
     """Attached signal data."""
 
-    source_execution: "_executions.ExecutionId" = None
+    signalling_execution: "_executions.ExecutionId" = None
     """Execution which sent the signal."""
 
-    source_decision_event_id: int = None
+    signal_decision_event_id: int = None
     """Signal decision event ID in execution which sent the signal."""
 
     @classmethod
@@ -1755,10 +1755,10 @@ class WorkflowExecutionSignaledEvent(Event):
             occured=data["eventTimestamp"],
             signal_name=attrs["signalName"],
             signal_input=attrs.get("input"),
-            source_execution=_executions.ExecutionId.from_api(
+            signalling_execution=_executions.ExecutionId.from_api(
                 attrs.get("externalWorkflowExecution")
             ),
-            source_decision_event_id=attrs.get("externalInitiatedEventId"),
+            signal_decision_event_id=attrs.get("externalInitiatedEventId"),
         )
 
 
