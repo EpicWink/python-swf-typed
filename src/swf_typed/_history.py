@@ -41,6 +41,20 @@ class DecisionFailureCause(str, enum.Enum):
     unauthorised = "OPERATION_NOT_PERMITTED"
 
 
+class ContinueAsNewWorkflowExecutionFailureCause(str, enum.Enum):
+    """Continue as new workflow execution decision failure cause."""
+
+    unhandled_decision = "UNHANDLED_DECISION"
+    workflow_deprecated = "WORKFLOW_TYPE_DEPRECATED"
+    unknown_workflow = "WORKFLOW_TYPE_DOES_NOT_EXIST"
+    timeout_undefined = "DEFAULT_EXECUTION_START_TO_CLOSE_TIMEOUT_UNDEFINED"
+    decision_task_timeout_undefined = "DEFAULT_TASK_START_TO_CLOSE_TIMEOUT_UNDEFINED"
+    task_list_undefined = "DEFAULT_TASK_LIST_UNDEFINED"
+    child_execution_policy_undefined = "DEFAULT_CHILD_POLICY_UNDEFINED"
+    rate_exceeded = "CONTINUE_AS_NEW_WORKFLOW_EXECUTION_RATE_EXCEEDED"
+    unauthorised = "OPERATION_NOT_PERMITTED"
+
+
 class SignalFailureCause(str, enum.Enum):
     """Signal workflow execution decision failure cause."""
 
@@ -667,7 +681,7 @@ class ContinueAsNewWorkflowExecutionFailedEvent(Event):
 
     type: t.ClassVar[str] = "ContinueAsNewWorkflowExecutionFailed"
 
-    cause: DecisionFailureCause
+    cause: ContinueAsNewWorkflowExecutionFailureCause  # TODO: commit
     """Failure cause."""
 
     decision_event_id: int
@@ -679,7 +693,7 @@ class ContinueAsNewWorkflowExecutionFailedEvent(Event):
         return cls(
             id=data["eventId"],
             occured=data["eventTimestamp"],
-            cause=DecisionFailureCause(attrs["cause"]),
+            cause=ContinueAsNewWorkflowExecutionFailureCause(attrs["cause"]),
             decision_event_id=attrs["decisionTaskCompletedEventId"],
         )
 
