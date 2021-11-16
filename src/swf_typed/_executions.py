@@ -296,7 +296,7 @@ class ExecutionDetails:
             info=ExecutionInfo.from_api(data["executionInfo"]),
             configuration=config,
             n_open=ExecutionOpenCounts.from_api(data["openCounts"]),
-            latest_activity_task_scheduled=data["latestActivityTaskTimestamp"],
+            latest_activity_task_scheduled=data.get("latestActivityTaskTimestamp"),
             latest_context=data.get("latestExecutionContext"),
         )
 
