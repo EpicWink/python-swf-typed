@@ -681,7 +681,7 @@ class ContinueAsNewWorkflowExecutionFailedEvent(Event):
 
     type: t.ClassVar[str] = "ContinueAsNewWorkflowExecutionFailed"
 
-    cause: ContinueAsNewWorkflowExecutionFailureCause  # TODO: commit
+    cause: ContinueAsNewWorkflowExecutionFailureCause
     """Failure cause."""
 
     decision_event_id: int
@@ -1063,6 +1063,7 @@ class RecordMarkerFailedEvent(Event):
     type: t.ClassVar[str] = "RecordMarkerFailed"
 
     marker_name: str
+    """Marker name."""
 
     decision_event_id: int
     """Marker record decision event ID."""
@@ -1081,7 +1082,7 @@ class RecordMarkerFailedEvent(Event):
     @property
     def cause(self) -> DecisionFailureCause:
         """Failure cause."""
-        return DecisionFailureCause.operation_not_permitted
+        return DecisionFailureCause.unauthorised
 
 
 @dataclasses.dataclass
