@@ -1917,3 +1917,30 @@ def get_execution_history(
         reverseOrder=reverse,
     )
     return _common.iter_paged(call, Event.from_api, "events")
+
+
+def get_last_execution_history_event(
+    execution: "_executions.ExecutionId",
+    domain: str,
+    client: "botocore.client.BaseClient" = None,
+) -> Event:
+    """Get last workflow execution history event.
+
+    Args:
+        execution: workflow execution to get history event of
+        domain: domain of workflow execution
+        client: SWF client
+
+    Returns:
+        most recent workflow execution history event
+    """
+
+    client = _common.ensure_client(client)
+    response = client.get_workflow_execution_history(
+        domain=domain,
+        execution=execution.to_api(),
+        reverseOrder=True,
+        maximumPageSize=1,
+    )
+    last_event_data = response["events"][0]  # all executions have events
+    return Event.from_api(last_event_data)

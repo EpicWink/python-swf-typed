@@ -162,6 +162,7 @@ from ._history import WorkflowExecutionTerminatedEvent
 from ._history import WorkflowExecutionTimedOutEvent
 
 from ._history import get_execution_history
+from ._history import get_last_execution_history_event
 
 from ._state import TaskStatus
 from ._state import TimerStatus
