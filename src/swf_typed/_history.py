@@ -1605,8 +1605,9 @@ class WorkflowExecutionCancelRequestedEvent(Event):
             id=data["eventId"],
             occured=data["eventTimestamp"],
             cause=attrs.get("cause") and ExecutionTerminationCause(attrs["cause"]),
-            cancelling_execution=_executions.ExecutionId.from_api(
+            cancelling_execution=(
                 attrs.get("externalWorkflowExecution")
+                and _executions.ExecutionId.from_api(attrs["externalWorkflowExecution"])
             ),
             cancel_decision_event_id=attrs.get("externalInitiatedEventId"),
         )
@@ -1756,8 +1757,9 @@ class WorkflowExecutionSignaledEvent(Event):
             occured=data["eventTimestamp"],
             signal_name=attrs["signalName"],
             signal_input=attrs.get("input"),
-            signalling_execution=_executions.ExecutionId.from_api(
+            signalling_execution=(
                 attrs.get("externalWorkflowExecution")
+                and _executions.ExecutionId.from_api(attrs["externalWorkflowExecution"])
             ),
             signal_decision_event_id=attrs.get("externalInitiatedEventId"),
         )
