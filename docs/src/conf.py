@@ -19,11 +19,13 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx.ext.napoleon",
     "sphinx.ext.autosummary",
+    "sphinx.ext.intersphinx",
 ]
 
 html_theme = "sphinx_rtd_theme"
 
 autosummary_generate = False
+intersphinx_mapping = {'python': ('https://docs.python.org/3', None)}
 
 
 def _generate_api_docs() -> None:
