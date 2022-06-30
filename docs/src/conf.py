@@ -1,9 +1,10 @@
 """Sphinx documentation generation configuration."""
 
+import datetime
 import importlib.metadata
 
 project = "swf-typed"
-copyright = "2021, Laurie O"
+copyright = f"{datetime.date.today().year}, Laurie O"
 author = "Laurie O"
 release = importlib.metadata.version("swf-typed")  # full version
 version = ".".join(release.split(".")[:2])  # short X.Y version
