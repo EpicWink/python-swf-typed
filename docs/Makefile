@@ -20,4 +20,4 @@ html: .deps
 	pip install -r requirements.txt
 
 clean:
-	rm -rvf build
+	rm -rvf build src/swf_typed*.rst
