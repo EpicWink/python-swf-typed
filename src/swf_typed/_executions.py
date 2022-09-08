@@ -54,7 +54,7 @@ class ExecutionStatus(enum.Enum):
 
     open = "OPEN"
     """Execution is in-progress."""
-    
+
     started = "OPEN"
     """Execution is in-progress."""
 
@@ -150,11 +150,11 @@ class ExecutionConfiguration(_common.Deserialisable):
     decision_task_list: str
     """Decision task task-list."""
 
-    decision_task_priority: int
-    """Decision task priority."""
-
     child_execution_policy_on_termination: ChildExecutionTerminationPolicy
     """Child workflow execution ending policy on termination."""
+
+    decision_task_priority: int = None
+    """Decision task priority."""
 
     lambda_iam_role_arn: str = None
     """Execution IAM role ARN for Lambda invocations."""
@@ -167,7 +167,9 @@ class ExecutionConfiguration(_common.Deserialisable):
             timeout=_common.parse_timeout(data["executionStartToCloseTimeout"]),
             decision_task_timeout=decision_task_timeout,
             decision_task_list=data["taskList"]["name"],
-            decision_task_priority=int(data["taskPriority"]),
+            decision_task_priority=(
+                data.get("taskPriority") and int(data["taskPriority"])
+            ),
             child_execution_policy_on_termination=child_policy,
             lambda_iam_role_arn=data.get("lambdaRole"),
         )
