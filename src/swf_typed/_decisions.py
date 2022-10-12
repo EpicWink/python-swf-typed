@@ -480,8 +480,7 @@ def get_number_of_pending_decision_tasks(
 
     client = _common.ensure_client(client)
     response = client.count_pending_decision_tasks(
-        domain=domain,
-        task_list=dict(name=task_list),
+        domain=domain, taskList=dict(name=task_list)
     )
     if response["truncated"]:
         warnings.warn("Actual task count greater than returned amount")
