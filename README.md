@@ -10,6 +10,12 @@ Typed Python interface to AWS Simple Workflow service
   * next-page calls are run concurrently and on-demand
 * Better execution filtering
 
+The most interesting part is state construction: given an execution history, this
+library can build a full state of the execution and all of its tasks with all details;
+see [`swf_typed.build_state`](
+  https://python-swf-typed.readthedocs.io/en/latest/swf_typed._state.html#swf_typed.build_state
+). The rest of the API simply mirror's SWF's.
+
 ### See also
 * [py-swf](https://pypi.org/project/py-swf/) - typed and object-oriented interface layer
 * [mypy-boto3-swf](https://pypi.org/project/mypy-boto3-swf/) - type-annotated layer
