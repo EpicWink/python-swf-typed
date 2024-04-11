@@ -19,8 +19,6 @@ registration_status_by_is_deprecated = {
     v: k for k, v in is_deprecated_by_registration_status.items()
 }
 
-executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
-
 
 class _Sentinel:
     """Not-provided value sentinel."""
@@ -123,6 +121,7 @@ def iter_paged(
             response = future.result()
         yield from (model(d) for d in response.get(data_key) or [])
 
+    executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
     response = call()
     return iter_()
 
