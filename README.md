@@ -14,7 +14,7 @@ The most interesting part is state construction: given an execution history, thi
 library can build a full state of the execution and all of its tasks with all details;
 see [`swf_typed.build_state`](
   https://python-swf-typed.readthedocs.io/en/latest/swf_typed._state.html#swf_typed.build_state
-). The rest of the API simply mirror's SWF's.
+). The rest of the API simply wraps and closely matches AWS's SWF API.
 
 ### See also
 * [py-swf](https://pypi.org/project/py-swf/) - typed and object-oriented interface layer
