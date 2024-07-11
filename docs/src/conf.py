@@ -1,5 +1,6 @@
 """Sphinx documentation generation configuration."""
 
+import enum
 import types
 import inspect
 import pathlib
@@ -22,7 +23,7 @@ extensions = [
     "sphinx.ext.intersphinx",
 ]
 
-html_theme = "sphinx_rtd_theme"
+html_theme = "furo"
 
 autosummary_generate = False
 intersphinx_mapping = {'python': ('https://docs.python.org/3', None)}
@@ -75,8 +76,9 @@ def _generate_api_docs() -> None:
 
             lines += ["", f".. auto{type_name}:: {name}"]
             if type_name == "class":
+                if not issubclass(export, enum.Enum):
+                    lines += ["   :inherited-members:"]
                 lines += [
-                    "   :inherited-members:",
                     "   :members:",
                     "   :undoc-members:",
                 ]
@@ -84,10 +86,14 @@ def _generate_api_docs() -> None:
                 lines += ["   :members:"]
             lines += [""]
 
+        module_rst = "\n".join(lines)
+
         module_rst_reference = f"swf_typed.{module_name}"
         module_rst_references.append(module_rst_reference)
+
         module_path = source_dir / f"{module_rst_reference}.rst"
-        module_path.write_text("\n".join(lines))
+        if not module_path.is_file() or module_path.read_text() != module_rst:
+            module_path.write_text(module_rst)
 
     lines = [
         r"swf\_typed",
@@ -102,8 +108,11 @@ def _generate_api_docs() -> None:
     lines += [f"   {n}" for n in module_rst_references]
     lines += [""]
 
+    api_docs_rst = "\n".join(lines)
+
     api_docs_path = source_dir / f"swf_typed.rst"
-    api_docs_path.write_text("\n".join(lines))
+    if not api_docs_path.is_file() or api_docs_path.read_text() != api_docs_rst:
+        api_docs_path.write_text(api_docs_rst)
 
 
 _generate_api_docs()
