@@ -1,8 +1,36 @@
 [build-system]
 build-backend = "setuptools.build_meta"
 requires = [
-    "setuptools >= 42.0",
+    "setuptools >= 61.0",
     "setuptools-scm[toml] >= 3.4",
 ]
+
+[project]
+name = "swf-typed"
+
+authors = [
+    { name = "Laurie", email = "laurie_opperman@hotmail.com" },
+]
+dependencies = [
+    "boto3 ~= 1.18",
+]
+description = "Typed Python interface to AWS Simple Workflow service"
+keywords = ["swf", "typed"]
+license = { text = "MIT" }
+readme = "README.md"
+requires-python = "~= 3.7"
+
+dynamic = ["version"]
+
+[project.urls]
+Changelog = "https://github.com/EpicWink/python-swf-typed/releases"
+Documentation = "https://python-swf-typed.readthedocs.io/"
+Source = "https://github.com/EpicWink/python-swf-typed"
+Tracker = "https://github.com/EpicWink/python-swf-typed/issues"
+
+[tool.setuptools]
+include-package-data = false
+package-dir = { "" = "src" }
+packages = { find = { namespaces = false, where = ["src"] } }
 
 [tool.setuptools_scm]
