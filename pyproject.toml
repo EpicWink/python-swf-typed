@@ -11,6 +11,16 @@ name = "swf-typed"
 authors = [
     { name = "Laurie", email = "laurie_opperman@hotmail.com" },
 ]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Software Development",
+    "Typing :: Typed",
+]
 dependencies = [
     "boto3 ~= 1.18",
 ]
