@@ -1,7 +1,7 @@
 *swf-typed* - Python interface to SWF
 =====================================
 
-Typed Python interface to AWS Simple Workflow service
+Typed Python interface to `AWS Simple Workflow Service <https://aws.amazon.com/swf/>`_.
 
 * Type annotations
 * Explicit exceptions
@@ -64,7 +64,9 @@ Example
 Terminology
 ^^^^^^^^^^^
 
-This library uses a slight terminology change from SWF SDKs/APIs:
+This library has a slight change in terminology from AWS `SDKs
+<https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/swf.html>`_/`APIs
+<https://docs.aws.amazon.com/amazonswf/latest/apireference/Welcome.html>`_/`docs <https://docs.aws.amazon.com/amazonswf/latest/developerguide/swf-welcome.html>`_:
 
 * Workflow type -> workflow
 * Workflow execution -> execution
@@ -73,3 +75,5 @@ This library uses a slight terminology change from SWF SDKs/APIs:
 * Activity task -> task
 * Activity worker -> worker
 * Activity task ``activityId`` -> task ID
+
+This is to simplify symbol names.
