@@ -16,6 +16,12 @@ Run the example from the README and make sure the output looks correct.
 make -C docs
 ```
 
+View with a static file server, eg (hosting at http://127.0.0.1:8042/):
+
+```shell
+python3 -m http.server -d docs/build/html/ -b 127.0.0.1 8042
+```
+
 ## Building package
 ```shell
 pip install build
