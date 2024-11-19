@@ -191,17 +191,26 @@ def request_task(
         activity task
     """
 
+    import botocore.exceptions
+
     client = _common.ensure_client(client)
     kw = {}
     if worker_identity or worker_identity == "":
         kw["identity"] = worker_identity
-    with _common.polling_socket_timeout():
-        while True:
+    while True:
+        try:
             response = client.poll_for_activity_task(
                 domain=domain, taskList=dict(name=task_list), **kw
             )
+        except (
+            botocore.exceptions.ReadTimeoutError,
+            botocore.exceptions.ConnectionClosedError,
+        ):
+            pass
+        else:
             if response["taskToken"]:
                 break
+        if no_tasks_callback:
             no_tasks_callback()
     return WorkerTask.from_api(response)
 

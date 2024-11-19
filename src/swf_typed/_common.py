@@ -1,9 +1,7 @@
 """Common models and methods."""
 
 import abc
-import socket
 import datetime
-import contextlib
 import typing as t
 import concurrent.futures
 
@@ -70,8 +68,12 @@ def ensure_client(
         return client
 
     import boto3
+    import botocore.config
 
-    client = boto3.client("swf")
+    client = boto3.client(
+        service_name="swf",
+        config=botocore.config.Config(read_timeout=70.0, retries=dict(mode="adaptive")),
+    )
     _exceptions.redirect_exceptions_in_swf_client(client)
     return client
 
@@ -124,16 +126,3 @@ def iter_paged(
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
     response = call()
     return iter_()
-
-
-@contextlib.contextmanager
-def polling_socket_timeout(
-    timeout: datetime.timedelta = datetime.timedelta(seconds=70),
-) -> None:
-    """Set socket timeout for polling in a context."""
-    original_timeout_seconds = socket.getdefaulttimeout()
-    socket.setdefaulttimeout(timeout.total_seconds())
-    try:
-        yield
-    finally:
-        socket.setdefaulttimeout(original_timeout_seconds)

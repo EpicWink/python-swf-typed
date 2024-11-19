@@ -509,6 +509,8 @@ def request_decision_task(
         decision task
     """
 
+    import botocore.exceptions
+
     from . import _history
 
     def iter_history() -> t.Generator["_history.Event", None, None]:
@@ -529,11 +531,18 @@ def request_decision_task(
         taskList=dict(name=task_list),
         **kw,
     )
-    with _common.polling_socket_timeout():
-        while True:
+    while True:
+        try:
             response = call()
+        except (
+            botocore.exceptions.ReadTimeoutError,
+            botocore.exceptions.ConnectionClosedError,
+        ):
+            pass
+        else:
             if response["taskToken"]:
                 break
+        if no_tasks_callback:
             no_tasks_callback()
     return DecisionTask.from_api(response, iter_history())
 
