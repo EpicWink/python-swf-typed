@@ -271,6 +271,9 @@ class ExecutionState:
     configuration: "_executions.ExecutionConfiguration"
     """Execution configuration."""
 
+    workflow: "_workflows.WorkflowId"
+    """Execution workflow type."""
+
     started: datetime.datetime
     """Execution start date."""
 
@@ -387,6 +390,7 @@ class _StateBuilder:
                 configuration=event.execution_configuration,
                 started=event.occured,
                 input=event.execution_input,
+                workflow=event.workflow,
             )
         elif isinstance(event, _history.WorkflowExecutionCompletedEvent):
             self.execution.status = _executions.ExecutionStatus.completed
