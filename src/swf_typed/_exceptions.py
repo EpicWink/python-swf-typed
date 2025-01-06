@@ -240,5 +240,7 @@ def redirect_exceptions_in_swf_client(swf_client: "botocore.client.BaseClient") 
 
     for name in _swf_client_methods:
         attr = getattr(swf_client, name)
+        if isinstance(attr, ExceptionRedirectMethodWrapper):
+            continue
         attr = ExceptionRedirectMethodWrapper(attr)
         setattr(swf_client, name, attr)
