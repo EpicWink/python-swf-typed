@@ -322,7 +322,7 @@ class StartChildWorkflowExecutionDecision(Decision):
 
     type: t.ClassVar[str] = "StartChildWorkflowExecution"
 
-    workflow: "_workflows.WorkflowId"
+    workflow_type: "_workflows.WorkflowTypeReference"
     """Child execution workflow."""
 
     execution: "_executions.CurrentExecutionId"
@@ -343,7 +343,7 @@ class StartChildWorkflowExecutionDecision(Decision):
     def to_api(self):
         data = super().to_api()
         data["startChildWorkflowExecutionDecisionAttributes"] = decision_attributes = {
-            "workflowType": self.workflow.to_api(),
+            "workflowType": self.workflow_type.to_api(),
             "workflowId": self.execution.id,
         }
 
@@ -398,7 +398,7 @@ class DecisionTask(_common.Deserialisable):
     execution: "_executions.ExecutionId"
     """Execution which decisions are being made for."""
 
-    workflow: "_workflows.WorkflowId"
+    workflow_type: "_workflows.WorkflowTypeReference"
     """Execution workflow."""
 
     _execution_history_iter: t.Iterable["_history.Event"]
@@ -439,7 +439,9 @@ class DecisionTask(_common.Deserialisable):
         return cls(
             token=data["taskToken"],
             execution=_executions.ExecutionId.from_api(data["workflowExecution"]),
-            workflow=_workflows.WorkflowId.from_api(data["workflowType"]),
+            workflow_type=_workflows.WorkflowTypeReference.from_api(
+                data["workflowType"],
+            ),
             _execution_history_iter=execution_history_iter,
             decision_task_started_execution_history_event_id=data["startedEventId"],
             previous_decision_task_started_execution_history_event_id=data.get(

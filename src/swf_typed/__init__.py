@@ -13,18 +13,18 @@ from ._domains import tag_domain
 from ._domains import undeprecate_domain
 from ._domains import untag_domain
 
-from ._workflows import WorkflowIdFilter
-from ._workflows import WorkflowId
-from ._workflows import WorkflowInfo
+from ._workflows import WorkflowTypeFilter
+from ._workflows import WorkflowTypeReference
+from ._workflows import WorkflowTypeInfo
 from ._workflows import DefaultExecutionConfiguration
-from ._workflows import WorkflowDetails
+from ._workflows import WorkflowTypeDetails
 
-from ._workflows import delete_workflow
-from ._workflows import deprecate_workflow
-from ._workflows import describe_workflow
-from ._workflows import list_workflows
-from ._workflows import register_workflow
-from ._workflows import undeprecate_workflow
+from ._workflows import delete_workflow_type
+from ._workflows import deprecate_workflow_type
+from ._workflows import describe_workflow_type
+from ._workflows import list_workflow_types
+from ._workflows import register_workflow_type
+from ._workflows import undeprecate_workflow_type
 
 from ._activities import ActivityIdFilter
 from ._activities import ActivityId
