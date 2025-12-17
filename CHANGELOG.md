@@ -8,6 +8,7 @@
 ### Features
 
 * Workflow and activity type deletion (type must be deprecated)
+* Execution state workflow type reference
 
 ### Fixes
 

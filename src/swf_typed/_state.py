@@ -265,6 +265,9 @@ class MarkerState:
 class ExecutionState:
     """Workflow execution state."""
 
+    workflow: "_workflows.WorkflowId"
+    """Child execution workflow."""
+
     status: "_executions.ExecutionStatus"
     """Execution status."""
 
@@ -383,6 +386,7 @@ class _StateBuilder:
         # Execution
         elif isinstance(event, _history.WorkflowExecutionStartedEvent):
             self.execution = ExecutionState(
+                workflow=event.workflow,
                 status=_executions.ExecutionStatus.started,
                 configuration=event.execution_configuration,
                 started=event.occured,
