@@ -33,9 +33,13 @@ jobs:
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v5
       with:
+        cache: pip
         python-version: ${{ matrix.python-version }}
     - name: Install package
-      run: pip install --requirement ./tests/requirements.txt pytest .
+      run: pip install
+        --requirement ./tests/requirements.txt
+        pytest 'darker[isort,black]' .
     - name: Test package
       run: pytest -vvra
-    # TODO: add linting?
+    - name: Lint package
+      run: darker --verbose --check --diff --isort ./docs/src ./src ./tests

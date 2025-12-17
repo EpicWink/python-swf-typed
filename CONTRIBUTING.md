@@ -5,7 +5,7 @@ Please follow the [code of conduct](./CODE_OF_CONDUCT.md).
 
 ## Development environment set-up
 ```shell
-pip install -e . -r tests/requirements.txt
+pip install -e . -r tests/requirements.txt 'darker[isort,black]'
 ```
 
 ## Testing
@@ -14,6 +14,11 @@ Run the example from the README and make sure the output looks correct.
 Also run test suite:
 ```shell
 pytest -vvra
+```
+
+## Styling
+```shell
+darker -i src/ tests/
 ```
 
 ## Building documentation
