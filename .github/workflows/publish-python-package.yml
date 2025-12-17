@@ -5,13 +5,8 @@ on:
     types: [created]
 
 jobs:
-  release:
+  build:
     runs-on: ubuntu-latest
-    environment:
-      name: pypi
-      url: https://pypi.org/p/swf-typed
-    permissions:
-      id-token: write
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python
@@ -20,5 +15,29 @@ jobs:
       run: pip install build
     - name: Build package
       run: python -m build
+    - name: Upload package
+      uses: actions/upload-artifact@v4
+      with:
+        name: packages
+        path: dist/
+        if-no-files-found: error
+        compression-level: 0
+
+  release:
+    runs-on: ubuntu-latest
+    needs:
+    - build
+    environment:
+      name: pypi
+      url: https://pypi.org/p/swf-typed
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+    - name: Download package
+      uses: actions/download-artifact@v4
+      with:
+        name: packages
+        path: dist/
     - name: Publish distribution
       uses: pypa/gh-action-pypi-publish@release/v1
