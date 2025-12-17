@@ -1899,7 +1899,7 @@ def get_execution_history(
     domain: str,
     reverse: bool = False,
     client: "botocore.client.BaseClient" = None,
-) -> t.Generator[Event, None, None]:
+) -> _common.PageConsumer[Event]:
     """Get workflow execution history; retrieved semi-lazily.
 
     Args:

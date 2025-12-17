@@ -522,7 +522,7 @@ def list_closed_executions(
     ] = None,
     reverse: bool = False,
     client: "botocore.client.BaseClient" = None,
-) -> t.Generator[ExecutionInfo, None, None]:
+) -> _common.PageConsumer[ExecutionInfo]:
     """List closed workflow executions; retrieved semi-lazily.
 
     Args:
@@ -562,7 +562,7 @@ def list_open_executions(
     ] = None,
     reverse: bool = False,
     client: "botocore.client.BaseClient" = None,
-) -> t.Generator[ExecutionInfo, None, None]:
+) -> _common.PageConsumer[ExecutionInfo]:
     """List open workflow executions; retrieved semi-lazily.
 
     Args:

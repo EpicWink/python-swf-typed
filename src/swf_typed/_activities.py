@@ -165,7 +165,7 @@ def list_activities(
     activity_filter: ActivityIdFilter = None,
     reverse: bool = False,
     client: "botocore.client.BaseClient" = None,
-) -> t.Generator[ActivityInfo, None, None]:
+) -> _common.PageConsumer[ActivityInfo]:
     """List activity types; retrieved semi-lazily.
 
     Args:
