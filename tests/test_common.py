@@ -57,10 +57,13 @@ def test_ensure_client(client: t.Union[unittest.mock.Mock, None]) -> None:
         result = swf_typed._common.ensure_client(client)
 
     if client:
-        assert result is client
+        assert result is client or result.foo() is client.foo()  # wrapped
         boto3_client_mock.assert_not_called()
     else:
-        assert result is boto3_client_mock.return_value
+        assert (
+            result is boto3_client_mock.return_value
+            or result.foo() is boto3_client_mock.return_value.foo()  # wrapped
+        )
         boto3_client_mock.assert_called_once_with("swf")
 
 

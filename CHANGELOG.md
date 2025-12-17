@@ -19,6 +19,11 @@
   * Lambda task count is optional
 * Execution workflow ID and workflow type filter models are now concrete, not abstract
 
+### Improvements
+
+* Don't modify provided SWF client
+* Handle unknown AWS SDK client methods and exceptions
+
 ### Miscellaneous
 
 * Move Python project metadata and configuration to [pyproject.toml](./pyproject.toml)
