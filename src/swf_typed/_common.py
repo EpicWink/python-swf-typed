@@ -62,7 +62,7 @@ class SerialisableToArguments(metaclass=abc.ABCMeta):
 
 
 def ensure_client(
-    client: "botocore.client.BaseClient" = None,
+    client: t.Union["botocore.client.BaseClient", None] = None,
 ) -> "botocore.client.BaseClient":
     """Return or create SWF client."""
     if client:

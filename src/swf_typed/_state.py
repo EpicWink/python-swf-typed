@@ -78,34 +78,34 @@ class TaskState:
     scheduled: datetime.datetime
     """Task scheduled date."""
 
-    started: datetime.datetime = None
+    started: t.Union[datetime.datetime, None] = None
     """Task start date."""
 
-    ended: datetime.datetime = None
+    ended: t.Union[datetime.datetime, None] = None
     """Task end date."""
 
-    input: str = None
+    input: t.Union[str, None] = None
     """Task input."""
 
-    worker_identity: str = None
+    worker_identity: t.Union[str, None] = None
     """Identity of worker which acquired task."""
 
     cancel_requested: bool = False
     """Task cancellation has been requested."""
 
-    result: str = None
+    result: t.Union[str, None] = None
     """Task result."""
 
-    timeout_type: "_history.TimeoutType" = None
+    timeout_type: t.Union["_history.TimeoutType", None] = None
     """Task timeout type."""
 
-    failure_reason: str = None
+    failure_reason: t.Union[str, None] = None
     """Task failure reason."""
 
-    stop_details: str = None
+    stop_details: t.Union[str, None] = None
     """Task ended details."""
 
-    decider_control: str = None
+    decider_control: t.Union[str, None] = None
     """Message from decider attached to task."""
 
     @property
@@ -130,28 +130,28 @@ class LambdaTaskState:
     scheduled: datetime.datetime
     """Task schedule date."""
 
-    started: datetime.datetime = None
+    started: t.Union[datetime.datetime, None] = None
     """Lambda function invocation date."""
 
-    ended: datetime.datetime = None
+    ended: t.Union[datetime.datetime, None] = None
     """Lambda function invocation end date."""
 
-    timeout: datetime.timedelta = None
+    timeout: t.Union[datetime.timedelta, None] = None
     """Lambda function invocation timeout."""
 
-    input: str = None
+    input: t.Union[str, None] = None
     """Lambda function input."""
 
-    result: str = None
+    result: t.Union[str, None] = None
     """Lambda function result."""
 
-    failure_reason: str = None
+    failure_reason: t.Union[str, None] = None
     """Lambda function error reason."""
 
-    stop_details: str = None
+    stop_details: t.Union[str, None] = None
     """Lambda function ended details."""
 
-    decider_control: str = None
+    decider_control: t.Union[str, None] = None
     """Message from decider attached to task."""
 
     @property
@@ -179,25 +179,25 @@ class ChildExecutionState:
     started: datetime.datetime
     """Child execution start date."""
 
-    ended: datetime.datetime = None
+    ended: t.Union[datetime.datetime, None] = None
     """Child execution end date."""
 
-    input: str = None
+    input: t.Union[str, None] = None
     """Child execution input."""
 
-    result: str = None
+    result: t.Union[str, None] = None
     """Child execution result."""
 
-    timeout_type: "_history.TimeoutType" = None
+    timeout_type: t.Union["_history.TimeoutType", None] = None
     """Child execution timeout type."""
 
-    failure_reason: str = None
+    failure_reason: t.Union[str, None] = None
     """Child execution failure reason."""
 
-    stop_details: str = None
+    stop_details: t.Union[str, None] = None
     """Child execution ended details."""
 
-    decider_control: str = None
+    decider_control: t.Union[str, None] = None
     """Message from decider attached to child execution."""
 
 
@@ -217,13 +217,13 @@ class TimerState:
     started: datetime.datetime
     """Timer start date."""
 
-    ended: datetime.datetime = None
+    ended: t.Union[datetime.datetime, None] = None
     """Timer finish date."""
 
-    input: str = None
+    input: t.Union[str, None] = None
     """Timer input."""
 
-    decider_control: str = None
+    decider_control: t.Union[str, None] = None
     """Message from decider attached to timer."""
 
 
@@ -237,7 +237,7 @@ class SignalState:
     received: datetime.datetime
     """Signal date."""
 
-    input: str = None
+    input: t.Union[str, None] = None
     """Signal input."""
 
     is_new: bool = True
@@ -254,7 +254,7 @@ class MarkerState:
     recorded: datetime.datetime
     """Marker record date."""
 
-    details: str = None
+    details: t.Union[str, None] = None
     """Marker details."""
 
     is_new: bool = True
@@ -277,7 +277,7 @@ class ExecutionState:
     started: datetime.datetime
     """Execution start date."""
 
-    ended: datetime.datetime = None
+    ended: t.Union[datetime.datetime, None] = None
     """Execution end date."""
 
     tasks: t.List[t.Union[TaskState, LambdaTaskState]] = dataclasses.field(
@@ -302,22 +302,22 @@ class ExecutionState:
     decision_failures: t.List[DecisionFailure] = dataclasses.field(default_factory=list)
     """Execution decision failures."""
 
-    input: str = None
+    input: t.Union[str, None] = None
     """Execution input."""
 
     cancel_requested: bool = False
     """Execution cancellation has been requested."""
 
-    result: str = None
+    result: t.Union[str, None] = None
     """Execution result."""
 
-    failure_reason: str = None
+    failure_reason: t.Union[str, None] = None
     """Execution failure reason."""
 
-    stop_details: str = None
+    stop_details: t.Union[str, None] = None
     """Execution ended details."""
 
-    continuing_execution_run_id: str = None
+    continuing_execution_run_id: t.Union[str, None] = None
     """ID of execution continuing this execution."""
 
 

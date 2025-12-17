@@ -125,7 +125,7 @@ class WorkerTask(_common.Deserialisable):
     task_started_execution_history_event_id: int
     """History event ID for task start."""
 
-    input: str = None
+    input: t.Union[str, None] = None
     """Task input."""
 
     @classmethod
@@ -146,7 +146,7 @@ class WorkerTask(_common.Deserialisable):
 def get_number_of_pending_tasks(
     task_list: str,
     domain: str,
-    client: "botocore.client.BaseClient" = None,
+    client: t.Union["botocore.client.BaseClient", None] = None,
 ) -> int:
     """Get the number of pending activity tasks.
 
@@ -173,9 +173,9 @@ def get_number_of_pending_tasks(
 def request_task(
     task_list: str,
     domain: str,
-    worker_identity: str = None,
-    no_tasks_callback: t.Callable[[], None] = None,
-    client: "botocore.client.BaseClient" = None,
+    worker_identity: t.Union[str, None] = None,
+    no_tasks_callback: t.Union[t.Callable[[], None], None] = None,
+    client: t.Union["botocore.client.BaseClient", None] = None,
 ) -> WorkerTask:
     """Request (poll for) an activity task; blocks until task is received.
 
@@ -208,8 +208,8 @@ def request_task(
 
 def send_heartbeat(
     token: str,
-    details: str = None,
-    client: "botocore.client.BaseClient" = None,
+    details: t.Union[str, None] = None,
+    client: t.Union["botocore.client.BaseClient", None] = None,
 ) -> None:
     """Send a heartbeat to SWF for the current activity task.
 
@@ -233,8 +233,8 @@ def send_heartbeat(
 
 def cancel_task(
     token: str,
-    details: str = None,
-    client: "botocore.client.BaseClient" = None,
+    details: t.Union[str, None] = None,
+    client: t.Union["botocore.client.BaseClient", None] = None,
 ) -> None:
     """Cancel the current activity task.
 
@@ -255,8 +255,8 @@ def cancel_task(
 
 def complete_task(
     token: str,
-    result: str = None,
-    client: "botocore.client.BaseClient" = None,
+    result: t.Union[str, None] = None,
+    client: t.Union["botocore.client.BaseClient", None] = None,
 ) -> None:
     """Complete the current activity task.
 
@@ -277,9 +277,9 @@ def complete_task(
 
 def fail_task(
     token: str,
-    reason: str = None,
-    details: str = None,
-    client: "botocore.client.BaseClient" = None,
+    reason: t.Union[str, None] = None,
+    details: t.Union[str, None] = None,
+    client: t.Union["botocore.client.BaseClient", None] = None,
 ) -> None:
     """Fail the current activity task.
 

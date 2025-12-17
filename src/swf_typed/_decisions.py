@@ -52,7 +52,7 @@ class CancelWorkflowExecutionDecision(Decision):
 
     type: t.ClassVar[str] = "CancelWorkflowExecution"
 
-    details: str = None
+    details: t.Union[str, None] = None
     """Execution cancellation details, usually for explanation."""
 
     def to_api(self):
@@ -70,7 +70,7 @@ class CompleteWorkflowExecutionDecision(Decision):
 
     type: t.ClassVar[str] = "CompleteWorkflowExecution"
 
-    execution_result: str = None
+    execution_result: t.Union[str, None] = None
     """Execution result."""
 
     def to_api(self):
@@ -88,16 +88,19 @@ class ContinueAsNewWorkflowExecutionDecision(Decision):
 
     type: t.ClassVar[str] = "ContinueAsNewWorkflowExecution"
 
-    execution_input: str = None
+    execution_input: t.Union[str, None] = None
     """Continuing execution input."""
 
-    workflow_version: str = None
+    workflow_version: t.Union[str, None] = None
     """Continuing execution workflow version."""
 
-    execution_configuration: "_executions.PartialExecutionConfiguration" = None
+    execution_configuration: t.Union[
+        "_executions.PartialExecutionConfiguration",
+        None,
+    ] = None
     """Continuing execution configuration overrides."""
 
-    tags: t.List[str] = None
+    tags: t.Union[t.List[str], None] = None
     """Continuing execution tags."""
 
     def to_api(self):
@@ -126,10 +129,10 @@ class FailWorkflowExecutionDecision(Decision):
 
     type: t.ClassVar[str] = "FailWorkflowExecution"
 
-    reason: str = None
+    reason: t.Union[str, None] = None
     """Execution failure reason, usually for classification."""
 
-    details: str = None
+    details: t.Union[str, None] = None
     """Execution failure details, usually for explanation."""
 
     def to_api(self):
@@ -154,7 +157,7 @@ class RecordMarkerDecision(Decision):
     marker_name: str
     """Marker name."""
 
-    details: str = None
+    details: t.Union[str, None] = None
     """Attached marker data."""
 
     def to_api(self):
@@ -191,7 +194,7 @@ class RequestCancelExternalWorkflowExecutionDecision(Decision):
     execution: t.Union["_executions.ExecutionId", "_executions.CurrentExecutionId"]
     """ID of execution to cancel."""
 
-    control: str = None
+    control: t.Union[str, None] = None
     """Message for future deciders."""
 
     def to_api(self):
@@ -215,13 +218,13 @@ class ScheduleActivityTaskDecision(Decision):
     task_id: str
     """Task ID."""
 
-    task_input: str = None
+    task_input: t.Union[str, None] = None
     """Task input."""
 
-    task_configuration: "_tasks.PartialTaskConfiguration" = None
+    task_configuration: t.Union["_tasks.PartialTaskConfiguration", None] = None
     """Task configuration overrides."""
 
-    control: str = None
+    control: t.Union[str, None] = None
     """Message for future deciders."""
 
     def to_api(self):
@@ -256,13 +259,13 @@ class ScheduleLambdaFunctionDecision(Decision):
     task_id: str
     """Task ID."""
 
-    task_input: str = None
+    task_input: t.Union[str, None] = None
     """Lambda function input."""
 
     task_timeout: datetime.timedelta = _common.unset
     """Lambda function invocation timeout."""
 
-    control: str = None
+    control: t.Union[str, None] = None
     """Message for future deciders."""
 
     def to_api(self):
@@ -298,10 +301,10 @@ class SignalExternalWorkflowExecutionDecision(Decision):
     signal: str
     """Signal name."""
 
-    signal_input: str = None
+    signal_input: t.Union[str, None] = None
     """Signal input."""
 
-    control: str = None
+    control: t.Union[str, None] = None
     """Message for future deciders."""
 
     def to_api(self):
@@ -328,16 +331,19 @@ class StartChildWorkflowExecutionDecision(Decision):
     execution: "_executions.CurrentExecutionId"
     """Child execution workflow-ID."""
 
-    execution_input: str = None
+    execution_input: t.Union[str, None] = None
     """Child execution input."""
 
-    execution_configuration: "_executions.PartialExecutionConfiguration" = None
+    execution_configuration: t.Union[
+        "_executions.PartialExecutionConfiguration",
+        None,
+    ] = None
     """Child execution configuration overrides."""
 
-    tags: t.List[str] = None
+    tags: t.Union[t.List[str], None] = None
     """Child execution tags"""
 
-    control: str = None
+    control: t.Union[str, None] = None
     """Message for future deciders."""
 
     def to_api(self):
@@ -374,7 +380,7 @@ class StartTimerDecision(Decision):
     timer_duration: datetime.timedelta
     """Timer duration."""
 
-    control: str = None
+    control: t.Union[str, None] = None
     """Message for future deciders."""
 
     def to_api(self):
@@ -406,7 +412,7 @@ class DecisionTask(_common.Deserialisable):
     decision_task_started_execution_history_event_id: int
     """History event ID for decision-task start."""
 
-    previous_decision_task_started_execution_history_event_id: int = None
+    previous_decision_task_started_execution_history_event_id: t.Union[int, None] = None
     """History event ID for previous decision-task start."""
 
     _execution_history_list: t.List["_history.Event"] = dataclasses.field(init=False)
@@ -416,7 +422,9 @@ class DecisionTask(_common.Deserialisable):
 
     @classmethod
     def from_api(
-        cls, data, execution_history_iter: t.Iterable["_history.Event"] = None
+        cls,
+        data,
+        execution_history_iter: t.Union[t.Iterable["_history.Event"], None] = None,
     ) -> "DecisionTask":
         """Deserialise decision task from SWF API response data.
 
@@ -464,7 +472,7 @@ class DecisionTask(_common.Deserialisable):
 def get_number_of_pending_decision_tasks(
     task_list: str,
     domain: str,
-    client: "botocore.client.BaseClient" = None,
+    client: t.Union["botocore.client.BaseClient", None] = None,
 ) -> int:
     """Get the number of pending decision tasks.
 
@@ -491,9 +499,9 @@ def get_number_of_pending_decision_tasks(
 def request_decision_task(
     task_list: str,
     domain: str,
-    decider_identity: str = None,
-    no_tasks_callback: t.Callable[[], None] = None,
-    client: "botocore.client.BaseClient" = None,
+    decider_identity: t.Union[str, None] = None,
+    no_tasks_callback: t.Union[t.Callable[[], None], None] = None,
+    client: t.Union["botocore.client.BaseClient", None] = None,
 ) -> DecisionTask:
     """Request (poll for) a decision task; blocks until task is received.
 
@@ -543,8 +551,8 @@ def request_decision_task(
 def send_decisions(
     token: str,
     decisions: t.List[Decision],
-    context: str = None,
-    client: "botocore.client.BaseClient" = None,
+    context: t.Union[str, None] = None,
+    client: t.Union["botocore.client.BaseClient", None] = None,
 ) -> None:
     """Make decisions for a workflow execution, completing decision task.
 

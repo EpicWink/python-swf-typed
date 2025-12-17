@@ -43,10 +43,10 @@ class ActivityInfo(_common.Deserialisable):
     created: datetime.datetime
     """Creation date."""
 
-    description: str = None
+    description: t.Union[str, None] = None
     """Activity description."""
 
-    deprecated: datetime.datetime = None
+    deprecated: t.Union[datetime.datetime, None] = None
     """Deprecation date."""
 
     @classmethod
@@ -105,7 +105,7 @@ class ActivityIdFilter(_common.SerialisableToArguments):
 def delete_activity(
     activity: ActivityId,
     domain: str,
-    client: "botocore.client.BaseClient" = None,
+    client: t.Union["botocore.client.BaseClient", None] = None,
 ) -> None:
     """Delete a (deprecated/inactive) activity type.
 
@@ -122,7 +122,7 @@ def delete_activity(
 def deprecate_activity(
     activity: ActivityId,
     domain: str,
-    client: "botocore.client.BaseClient" = None,
+    client: t.Union["botocore.client.BaseClient", None] = None,
 ) -> None:
     """Deprecate (deactivate) an activity type.
 
@@ -139,7 +139,7 @@ def deprecate_activity(
 def describe_activity(
     activity: ActivityId,
     domain: str,
-    client: "botocore.client.BaseClient" = None,
+    client: t.Union["botocore.client.BaseClient", None] = None,
 ) -> ActivityDetails:
     """Describe an activity type.
 
@@ -162,9 +162,9 @@ def describe_activity(
 def list_activities(
     domain: str,
     deprecated: bool = False,
-    activity_filter: ActivityIdFilter = None,
+    activity_filter: t.Union[ActivityIdFilter, None] = None,
     reverse: bool = False,
-    client: "botocore.client.BaseClient" = None,
+    client: t.Union["botocore.client.BaseClient", None] = None,
 ) -> t.Generator[ActivityInfo, None, None]:
     """List activity types; retrieved semi-lazily.
 
@@ -197,9 +197,9 @@ def list_activities(
 def register_activity(
     activity: ActivityId,
     domain: str,
-    description: str = None,
-    default_task_configuration: DefaultTaskConfiguration = None,
-    client: "botocore.client.BaseClient" = None,
+    description: t.Union[str, None] = None,
+    default_task_configuration: t.Union[DefaultTaskConfiguration, None] = None,
+    client: t.Union["botocore.client.BaseClient", None] = None,
 ) -> None:
     """Register a new activity type.
 
@@ -230,7 +230,7 @@ def register_activity(
 def undeprecate_activity(
     activity: ActivityId,
     domain: str,
-    client: "botocore.client.BaseClient" = None,
+    client: t.Union["botocore.client.BaseClient", None] = None,
 ) -> None:
     """Undeprecate (reactivate) an activity type.
 
