@@ -63,17 +63,15 @@ class SerialisableToArguments(metaclass=abc.ABCMeta):
 
 def ensure_client(
     client: "botocore.client.BaseClient" = None,
-) -> "botocore.client.BaseClient":
+) -> "_exceptions.ExceptionRedirectClientWrapper":
     """Return or create SWF client."""
     if client:
-        _exceptions.redirect_exceptions_in_swf_client(client)
-        return client
+        return _exceptions.redirect_exceptions_in_swf_client(client)
 
     import boto3
 
     client = boto3.client("swf")
-    _exceptions.redirect_exceptions_in_swf_client(client)
-    return client
+    return _exceptions.redirect_exceptions_in_swf_client(client)
 
 
 def parse_timeout(timeout_data: str) -> t.Union[datetime.timedelta, None]:
