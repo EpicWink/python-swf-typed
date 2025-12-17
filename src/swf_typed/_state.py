@@ -167,7 +167,7 @@ class ChildExecutionState:
     execution: "_executions.ExecutionId"
     """Child execution ID."""
 
-    workflow: "_workflows.WorkflowId"
+    workflow_type: "_workflows.WorkflowTypeReference"
     """Child execution workflow."""
 
     status: "_executions.ExecutionStatus"
@@ -525,7 +525,7 @@ class _StateBuilder:
 
             execution = ChildExecutionState(
                 execution=event.execution,
-                workflow=initiation_event.workflow,
+                workflow_type=initiation_event.workflow_type,
                 status=_executions.ExecutionStatus.started,
                 configuration=initiation_event.execution_configuration,
                 started=event.occured,

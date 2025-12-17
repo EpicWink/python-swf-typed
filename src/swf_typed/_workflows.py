@@ -13,7 +13,7 @@ if t.TYPE_CHECKING:
 
 
 @dataclasses.dataclass
-class WorkflowId(_common.Deserialisable, _common.Serialisable):
+class WorkflowTypeReference(_common.Deserialisable, _common.Serialisable):
     """Workflow type identifier."""
 
     name: str
@@ -23,7 +23,7 @@ class WorkflowId(_common.Deserialisable, _common.Serialisable):
     """Workflow version."""
 
     @classmethod
-    def from_api(cls, data) -> "WorkflowId":
+    def from_api(cls, data) -> "WorkflowTypeReference":
         return cls(data["name"], data["version"])
 
     def to_api(self):
@@ -31,10 +31,10 @@ class WorkflowId(_common.Deserialisable, _common.Serialisable):
 
 
 @dataclasses.dataclass
-class WorkflowInfo(_common.Deserialisable):
+class WorkflowTypeInfo(_common.Deserialisable):
     """Workflow type details."""
 
-    workflow: WorkflowId
+    workflow_type: WorkflowTypeReference
     """Workflow ID."""
 
     is_deprecated: bool
@@ -50,9 +50,9 @@ class WorkflowInfo(_common.Deserialisable):
     """Deprecation date."""
 
     @classmethod
-    def from_api(cls, data) -> "WorkflowInfo":
+    def from_api(cls, data) -> "WorkflowTypeInfo":
         return cls(
-            workflow=WorkflowId.from_api(data["workflowType"]),
+            workflow_type=WorkflowTypeReference.from_api(data["workflowType"]),
             is_deprecated=_common.is_deprecated_by_registration_status[data["status"]],
             created=data["creationDate"],
             description=data.get("description"),
@@ -74,26 +74,26 @@ class DefaultExecutionConfiguration(_executions.PartialExecutionConfiguration):
 
 
 @dataclasses.dataclass
-class WorkflowDetails(_common.Deserialisable):
+class WorkflowTypeDetails(_common.Deserialisable):
     """Workflow type details and default workflow execution configuration."""
 
-    info: WorkflowInfo
+    info: WorkflowTypeInfo
     """Workflow details."""
 
     default_execution_configuration: DefaultExecutionConfiguration
     """Default execution configuration, can be overriden when starting."""
 
     @classmethod
-    def from_api(cls, data) -> "WorkflowDetails":
+    def from_api(cls, data) -> "WorkflowTypeDetails":
         configuration = DefaultExecutionConfiguration.from_api(data)
         return cls(
-            info=WorkflowInfo.from_api(data["typeInfo"]),
+            info=WorkflowTypeInfo.from_api(data["typeInfo"]),
             default_execution_configuration=configuration,
         )
 
 
 @dataclasses.dataclass
-class WorkflowIdFilter(_common.Serialisable, _common.SerialisableToArguments):
+class WorkflowTypeFilter(_common.Serialisable, _common.SerialisableToArguments):
     """Workflow type filter on workflow name."""
 
     name: str
@@ -106,49 +106,49 @@ class WorkflowIdFilter(_common.Serialisable, _common.SerialisableToArguments):
         return {"name": self.name}
 
 
-def delete_workflow(
-    workflow: WorkflowId,
+def delete_workflow_type(
+    workflow_type: WorkflowTypeReference,
     domain: str,
     client: "botocore.client.BaseClient" = None,
 ) -> None:
     """Delete a (deprecated/inactive) workflow type.
 
     Args:
-        workflow: workflow type to delete
+        workflow_type: workflow type to delete
         domain: domain of workflow type
         client: SWF client
     """
 
     client = _common.ensure_client(client)
-    client.delete_workflow_type(domain=domain, workflowType=workflow.to_api())
+    client.delete_workflow_type(domain=domain, workflowType=workflow_type.to_api())
 
 
-def deprecate_workflow(
-    workflow: WorkflowId,
+def deprecate_workflow_type(
+    workflow_type: WorkflowTypeReference,
     domain: str,
     client: "botocore.client.BaseClient" = None,
 ) -> None:
     """Deprecate (deactivate) a workflow type.
 
     Args:
-        workflow: workflow type to deprecate
+        workflow_type: workflow type to deprecate
         domain: domain of workflow type
         client: SWF client
     """
 
     client = _common.ensure_client(client)
-    client.deprecate_workflow_type(domain=domain, workflowType=workflow.to_api())
+    client.deprecate_workflow_type(domain=domain, workflowType=workflow_type.to_api())
 
 
-def describe_workflow(
-    workflow: WorkflowId,
+def describe_workflow_type(
+    workflow_type: WorkflowTypeReference,
     domain: str,
     client: "botocore.client.BaseClient" = None,
-) -> WorkflowDetails:
+) -> WorkflowTypeDetails:
     """Describe a workflow type.
 
     Args:
-        workflow: workflow type to describe
+        workflow_type: workflow type to describe
         domain: domain of workflow type
         client: SWF client
 
@@ -158,25 +158,25 @@ def describe_workflow(
 
     client = _common.ensure_client(client)
     response = client.describe_workflow_type(
-        domain=domain, workflowType=workflow.to_api()
+        domain=domain, workflowType=workflow_type.to_api()
     )
-    return WorkflowDetails.from_api(response)
+    return WorkflowTypeDetails.from_api(response)
 
 
-def list_workflows(
+def list_workflow_types(
     domain: str,
     deprecated: bool = False,
-    workflow_filter: WorkflowIdFilter = None,
+    workflow_type_filter: WorkflowTypeFilter = None,
     reverse: bool = False,
     client: "botocore.client.BaseClient" = None,
-) -> t.Generator[WorkflowInfo, None, None]:
+) -> t.Generator[WorkflowTypeInfo, None, None]:
     """List workflow types; retrieved semi-lazily.
 
     Args:
         domain: domain of workflow types
         deprecated: list deprecated workflow types instead of
             non-deprecated
-        workflow_filter: filter returned workflow types by name
+        workflow_type_filter: filter returned workflow types by name
         reverse: return results in reverse alphabetical order
         client: SWF client
 
@@ -186,8 +186,8 @@ def list_workflows(
 
     client = _common.ensure_client(client)
     kw = {}
-    if workflow_filter:
-        kw.update(workflow_filter.get_api_args())
+    if workflow_type_filter:
+        kw.update(workflow_type_filter.get_api_args())
     call = functools.partial(
         client.list_workflow_types,
         domain=domain,
@@ -195,11 +195,11 @@ def list_workflows(
         reverseOrder=reverse,
         **kw,
     )
-    return _common.iter_paged(call, WorkflowInfo.from_api, "typeInfos")
+    return _common.iter_paged(call, WorkflowTypeInfo.from_api, "typeInfos")
 
 
-def register_workflow(
-    workflow: WorkflowId,
+def register_workflow_type(
+    workflow_type: WorkflowTypeReference,
     domain: str,
     description: str = None,
     default_execution_configuration: DefaultExecutionConfiguration = None,
@@ -208,7 +208,7 @@ def register_workflow(
     """Register a new workflow type.
 
     Args:
-        workflow: workflow type name and version
+        workflow_type: workflow type name and version
         domain: domain to register in
         description: workflow type description
         default_execution_configuration: default configuration for workflow
@@ -225,24 +225,24 @@ def register_workflow(
         kw["description"] = description
     client.register_workflow_type(
         domain=domain,
-        name=workflow.name,
-        version=workflow.version,
+        name=workflow_type.name,
+        version=workflow_type.version,
         **kw,
     )
 
 
-def undeprecate_workflow(
-    workflow: WorkflowId,
+def undeprecate_workflow_type(
+    workflow_type: WorkflowTypeReference,
     domain: str,
     client: "botocore.client.BaseClient" = None,
 ) -> None:
     """Undeprecate (reactivate) a workflow type.
 
     Args:
-        workflow: workflow type to undeprecate
+        workflow_type: workflow type to undeprecate
         domain: domain of workflow type
         client: SWF client
     """
 
     client = _common.ensure_client(client)
-    client.undeprecate_workflow_type(domain=domain, workflowType=workflow.to_api())
+    client.undeprecate_workflow_type(domain=domain, workflowType=workflow_type.to_api())

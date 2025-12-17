@@ -84,7 +84,7 @@ class ExecutionInfo(_common.Deserialisable):
     execution: ExecutionId
     """Execution ID."""
 
-    workflow: "_workflows.WorkflowId"
+    workflow_type: "_workflows.WorkflowTypeReference"
     """Execution workflow."""
 
     started: datetime.datetime
@@ -114,7 +114,9 @@ class ExecutionInfo(_common.Deserialisable):
             status_data = data["closeStatus"]
         return cls(
             execution=ExecutionId.from_api(data["execution"]),
-            workflow=_workflows.WorkflowId.from_api(data["workflowType"]),
+            workflow_type=_workflows.WorkflowTypeReference.from_api(
+                data["workflowType"],
+            ),
             started=data["startTimestamp"],
             status=ExecutionStatus(status_data),
             cancel_requested=data["cancelRequested"],
@@ -360,11 +362,14 @@ class IdExecutionFilter(ExecutionFilter):
 class WorkflowTypeExecutionFilter(ExecutionFilter):
     """Workflow execution filter on execution workflow-type."""
 
-    workflow: t.Union["_workflows.WorkflowId", "_workflows.WorkflowIdFilter"]
+    workflow_type: t.Union[
+        "_workflows.WorkflowTypeReference",
+        "_workflows.WorkflowTypeFilter",
+    ]
     """Execution workflow."""
 
     def get_api_args(self):
-        return {"typeFilter": self.workflow.to_api()}
+        return {"typeFilter": self.workflow_type.to_api()}
 
 
 @dataclasses.dataclass
@@ -646,7 +651,7 @@ def signal_execution(
 
 
 def start_execution(
-    workflow: "_workflows.WorkflowId",
+    workflow_type: "_workflows.WorkflowTypeReference",
     execution: CurrentExecutionId,
     domain: str,
     input: str = None,
@@ -657,7 +662,7 @@ def start_execution(
     """Start a workflow execution.
 
     Args:
-        workflow: workflow type for execution
+        workflow_type: workflow type for execution
         execution: execution workflow-ID
         domain: domain for execution
         input: execution input
@@ -680,7 +685,7 @@ def start_execution(
     response = client.start_workflow_execution(
         domain=domain,
         workflowId=execution.id,
-        workflowType=workflow.to_api(),
+        workflowType=workflow_type.to_api(),
         **kw,
     )
     return ExecutionId(id=execution.id, run_id=response["runId"])
