@@ -24,7 +24,7 @@ class DomainInfo(_common.Deserialisable):
     arn: str
     """Domain ARN."""
 
-    description: str = None
+    description: t.Union[str, None] = None
     """Domain description."""
 
     @classmethod
@@ -72,7 +72,7 @@ class DomainDetails(_common.Deserialisable):
 
 def deprecate_domain(
     domain: str,
-    client: "botocore.client.BaseClient" = None,
+    client: t.Union["botocore.client.BaseClient", None] = None,
 ) -> None:
     """Deprecate (deactivate) a domain.
 
@@ -87,7 +87,7 @@ def deprecate_domain(
 
 def describe_domain(
     domain: str,
-    client: "botocore.client.BaseClient" = None,
+    client: t.Union["botocore.client.BaseClient", None] = None,
 ) -> DomainDetails:
     """Describe a domain.
 
@@ -107,7 +107,7 @@ def describe_domain(
 def list_domains(
     deprecated: bool = False,
     reverse: bool = False,
-    client: "botocore.client.BaseClient" = None,
+    client: t.Union["botocore.client.BaseClient", None] = None,
 ) -> t.Generator[DomainInfo, None, None]:
     """List domains; retrieved semi-lazily.
 
@@ -131,7 +131,7 @@ def list_domains(
 
 def get_domain_tags(
     domain_arn: str,
-    client: "botocore.client.BaseClient" = None,
+    client: t.Union["botocore.client.BaseClient", None] = None,
 ) -> t.Dict[str, str]:
     """Get a domain's tags.
 
@@ -151,9 +151,9 @@ def get_domain_tags(
 def register_domain(
     domain: str,
     configuration: DomainConfiguration,
-    description: str = None,
-    tags: t.Dict[str, str] = None,
-    client: "botocore.client.BaseClient" = None,
+    description: t.Union[str, None] = None,
+    tags: t.Union[t.Dict[str, str], None] = None,
+    client: t.Union["botocore.client.BaseClient", None] = None,
 ) -> None:
     """Register a new domain.
 
@@ -182,7 +182,7 @@ def register_domain(
 def tag_domain(
     domain_arn: str,
     tags: t.Dict[str, str],
-    client: "botocore.client.BaseClient" = None,
+    client: t.Union["botocore.client.BaseClient", None] = None,
 ) -> None:
     """Add tags to domain.
 
@@ -199,7 +199,7 @@ def tag_domain(
 
 def undeprecate_domain(
     domain: str,
-    client: "botocore.client.BaseClient" = None,
+    client: t.Union["botocore.client.BaseClient", None] = None,
 ) -> None:
     """Undeprecate (reactivate) a domain.
 
@@ -215,7 +215,7 @@ def undeprecate_domain(
 def untag_domain(
     domain_arn: str,
     tags: t.List[str],
-    client: "botocore.client.BaseClient" = None,
+    client: t.Union["botocore.client.BaseClient", None] = None,
 ) -> None:
     """Remove tags from a domain.
 

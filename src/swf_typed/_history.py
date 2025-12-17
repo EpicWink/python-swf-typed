@@ -203,10 +203,10 @@ class ActivityTaskCancelledEvent(Event):
     task_started_event_id: int
     """Task start event ID."""
 
-    task_cancel_requested_event_id: int = None
+    task_cancel_requested_event_id: t.Union[int, None] = None
     """Task cancellation request event ID."""
 
-    details: str = None
+    details: t.Union[str, None] = None
     """Cancellation details, usually for explanation."""
 
     @classmethod
@@ -234,7 +234,7 @@ class ActivityTaskCompletedEvent(Event):
     task_started_event_id: int
     """Task start event ID."""
 
-    task_result: str = None
+    task_result: t.Union[str, None] = None
     """Task result."""
 
     @classmethod
@@ -261,10 +261,10 @@ class ActivityTaskFailedEvent(Event):
     task_started_event_id: int
     """Task start event ID."""
 
-    reason: str = None
+    reason: t.Union[str, None] = None
     """Failure reason, usually for classification."""
 
-    details: str = None
+    details: t.Union[str, None] = None
     """Failure details, usually for explanation."""
 
     @classmethod
@@ -298,10 +298,10 @@ class ActivityTaskScheduledEvent(Event):
     decision_event_id: int
     """Task schedule decision event ID."""
 
-    task_input: str = None
+    task_input: t.Union[str, None] = None
     """Task input."""
 
-    control: str = None
+    control: t.Union[str, None] = None
     """Message from task scheduling decider."""
 
     @classmethod
@@ -331,7 +331,7 @@ class ActivityTaskStartedEvent(Event):
     task_scheduled_event_id: int
     """Task schedule event ID."""
 
-    worker_identity: str = None
+    worker_identity: t.Union[str, None] = None
     """Identity of worker which acquired task."""
 
     @classmethod
@@ -360,7 +360,7 @@ class ActivityTaskTimedOutEvent(Event):
     task_started_event_id: int
     """Task start event ID."""
 
-    details: str = None
+    details: t.Union[str, None] = None
     """Most recent progress message from worker (see ``send_heartbeat``)."""
 
     @classmethod
@@ -446,7 +446,7 @@ class ChildWorkflowExecutionCancelledEvent(Event):
     execution_started_event_id: int
     """Child execution start event ID."""
 
-    details: str = None
+    details: t.Union[str, None] = None
     """Cancellation details, usually for explanation."""
 
     @classmethod
@@ -484,7 +484,7 @@ class ChildWorkflowExecutionCompletedEvent(Event):
     execution_started_event_id: int
     """Child execution start event ID."""
 
-    execution_result: str = None
+    execution_result: t.Union[str, None] = None
     """Child execution result."""
 
     @classmethod
@@ -522,10 +522,10 @@ class ChildWorkflowExecutionFailedEvent(Event):
     execution_started_event_id: int
     """Child execution start event ID."""
 
-    reason: str = None
+    reason: t.Union[str, None] = None
     """Failure reason, usually for classification."""
 
-    details: str = None
+    details: t.Union[str, None] = None
     """Failure details, usually for explanation."""
 
     @classmethod
@@ -710,7 +710,7 @@ class DecisionTaskCompletedEvent(Event):
     decision_task_started_event_id: int
     """Decision task start event ID."""
 
-    decision_context: str = None
+    decision_context: t.Union[str, None] = None
     """Context provided by decider, accessible when describing execution."""
 
     @classmethod
@@ -737,7 +737,7 @@ class DecisionTaskScheduledEvent(Event):
     decision_task_timeout: t.Union[datetime.timedelta, None] = _common.unset
     """Decision runtime timeout."""
 
-    decision_task_priority: int = None
+    decision_task_priority: t.Union[int, None] = None
     """Decision task priority."""
 
     @classmethod
@@ -764,7 +764,7 @@ class DecisionTaskStartedEvent(Event):
     decision_task_scheduled_event_id: int
     """Decision task schedule event ID."""
 
-    decider_identity: str = None
+    decider_identity: t.Union[str, None] = None
     """Identity of decider which acquired task."""
 
     @classmethod
@@ -894,7 +894,7 @@ class MarkerRecordedEvent(Event):
     decision_event_id: int
     """Marker record decision event ID."""
 
-    details: str = None
+    details: t.Union[str, None] = None
     """Attached marker data."""
 
     @classmethod
@@ -924,13 +924,13 @@ class LambdaFunctionScheduledEvent(Event):
     decision_event_id: int
     """Task schedule event ID."""
 
-    task_input: str = None
+    task_input: t.Union[str, None] = None
     """Lambda function input."""
 
     task_timeout: datetime.timedelta = _common.unset
     """Lambda function invocation timeout."""
 
-    control: str = None
+    control: t.Union[str, None] = None
     """Message from task scheduling decider."""
 
     @classmethod
@@ -981,7 +981,7 @@ class LambdaFunctionCompletedEvent(Event):
     task_started_event_id: int
     """Task start event ID."""
 
-    task_result: str = None
+    task_result: t.Union[str, None] = None
     """Lambda function invocation result."""
 
     @classmethod
@@ -1008,10 +1008,10 @@ class LambdaFunctionFailedEvent(Event):
     task_started_event_id: int
     """Task start event ID."""
 
-    reason: str = None
+    reason: t.Union[str, None] = None
     """Failure reason, usually for classification."""
 
-    details: str = None
+    details: t.Union[str, None] = None
     """Failure details, usually for explanation."""
 
     @classmethod
@@ -1134,7 +1134,7 @@ class RequestCancelExternalWorkflowExecutionFailedEvent(Event):
     decision_event_id: int
     """Cancellation request decision event ID."""
 
-    control: str = None
+    control: t.Union[str, None] = None
     """Message from cancellation requesting decider."""
 
     @classmethod
@@ -1165,7 +1165,7 @@ class RequestCancelExternalWorkflowExecutionInitiatedEvent(Event):
     decision_event_id: int
     """Cancellation request decision event ID."""
 
-    control: str = None
+    control: t.Union[str, None] = None
     """Message from cancellation requesting decider."""
 
     @classmethod
@@ -1264,7 +1264,7 @@ class SignalExternalWorkflowExecutionFailedEvent(Event):
     decision_event_id: int
     """External workflow signal decision event ID."""
 
-    control: str = None
+    control: t.Union[str, None] = None
     """Message from signalling decider."""
 
     @classmethod
@@ -1298,10 +1298,10 @@ class SignalExternalWorkflowExecutionInitiatedEvent(Event):
     decision_event_id: int
     """External workflow signal decision event ID."""
 
-    signal_input: str = None
+    signal_input: t.Union[str, None] = None
     """Attached signal data."""
 
-    control: str = None
+    control: t.Union[str, None] = None
     """Message from signalling decider."""
 
     @classmethod
@@ -1324,13 +1324,13 @@ class StartActivityTaskFailedEvent(Event):
 
     type: t.ClassVar[str] = "StartActivityTaskFailed"
 
-    task_id: str = None
+    task_id: t.Union[str, None] = None
     """ID of task to be started."""
 
-    cause: str = None
+    cause: t.Union[str, None] = None
     """Failure cause."""
 
-    task_scheduled_event_id: int = None
+    task_scheduled_event_id: t.Union[int, None] = None
     """Task schedule decision event ID."""
 
     @classmethod
@@ -1352,13 +1352,13 @@ class StartLambdaFunctionFailedEvent(Event):
 
     type: t.ClassVar[str] = "StartLambdaFunctionFailed"
 
-    cause: StartLambdaFailureCause = None
+    cause: t.Union[StartLambdaFailureCause, None] = None
     """Failure cause."""
 
-    message: str = None
+    message: t.Union[str, None] = None
     """Failure explanation."""
 
-    task_scheduled_event_id: int = None
+    task_scheduled_event_id: t.Union[int, None] = None
     """Task schedule decision event ID."""
 
     @classmethod
@@ -1396,7 +1396,7 @@ class StartChildWorkflowExecutionFailedEvent(Event):
     decision_event_id: int
     """Child workflow start decision event ID."""
 
-    control: str = None
+    control: t.Union[str, None] = None
     """Message from child execution starting decider."""
 
     @classmethod
@@ -1439,13 +1439,13 @@ class StartChildWorkflowExecutionInitiatedEvent(Event):
     decision_event_id: int
     """Child execution start decision event ID."""
 
-    execution_input: str = None
+    execution_input: t.Union[str, None] = None
     """Child execution input."""
 
-    execution_tags: t.List[str] = None
+    execution_tags: t.Union[t.List[str], None] = None
     """Child execution tags."""
 
-    control: str = None
+    control: t.Union[str, None] = None
     """Message from child execution starting decider."""
 
     @classmethod
@@ -1560,7 +1560,7 @@ class TimerStartedEvent(Event):
     decision_event_id: int
     """Timer start decision event ID."""
 
-    control: str = None
+    control: t.Union[str, None] = None
     """Message from timer starting decider."""
 
     @classmethod
@@ -1584,13 +1584,13 @@ class WorkflowExecutionCancelRequestedEvent(Event):
 
     type: t.ClassVar[str] = "WorkflowExecutionCancelRequested"
 
-    cause: ExecutionTerminationCause = None
+    cause: t.Union[ExecutionTerminationCause, None] = None
     """Cancellation request cause."""
 
-    cancelling_execution: "_executions.ExecutionId" = None
+    cancelling_execution: t.Union["_executions.ExecutionId", None] = None
     """Execution which requested the cancellation."""
 
-    cancel_decision_event_id: int = None
+    cancel_decision_event_id: t.Union[int, None] = None
     """Cancellation request decision event ID in execution which requested the
     cancellation.
     """
@@ -1622,7 +1622,7 @@ class WorkflowExecutionCancelledEvent(Event):
     decision_event_id: int
     """Execution cancel decision event ID."""
 
-    details: str = None
+    details: t.Union[str, None] = None
     """Execution cancellation details, usually for explanation."""
 
     @classmethod
@@ -1645,7 +1645,7 @@ class WorkflowExecutionCompletedEvent(Event):
     decision_event_id: int
     """Execution complete decision event ID."""
 
-    execution_result: str = None
+    execution_result: t.Union[str, None] = None
     """Execution result."""
 
     @classmethod
@@ -1679,10 +1679,10 @@ class WorkflowExecutionContinuedAsNewEvent(Event):
     decision_event_id: int
     """Continue as new execution decision event ID."""
 
-    execution_input: str = None
+    execution_input: t.Union[str, None] = None
     """New execution input."""
 
-    execution_tags: t.List[str] = None
+    execution_tags: t.Union[t.List[str], None] = None
     """New execution tags."""
 
     @classmethod
@@ -1713,10 +1713,10 @@ class WorkflowExecutionFailedEvent(Event):
     decision_event_id: int
     """Execution fail decision event ID."""
 
-    reason: str = None
+    reason: t.Union[str, None] = None
     """Failure reason, usually for classification."""
 
-    details: str = None
+    details: t.Union[str, None] = None
     """Failure details, usually for explanation."""
 
     @classmethod
@@ -1740,13 +1740,13 @@ class WorkflowExecutionSignaledEvent(Event):
     signal_name: str
     """Signal name."""
 
-    signal_input: str = None
+    signal_input: t.Union[str, None] = None
     """Attached signal data."""
 
-    signalling_execution: "_executions.ExecutionId" = None
+    signalling_execution: t.Union["_executions.ExecutionId", None] = None
     """Execution which sent the signal."""
 
-    signal_decision_event_id: int = None
+    signal_decision_event_id: t.Union[int, None] = None
     """Signal decision event ID in execution which sent the signal."""
 
     @classmethod
@@ -1779,19 +1779,19 @@ class WorkflowExecutionStartedEvent(Event):
     guaranteed).
     """
 
-    execution_input: str = None
+    execution_input: t.Union[str, None] = None
     """Execution input."""
 
-    execution_tags: t.List[str] = None
+    execution_tags: t.Union[t.List[str], None] = None
     """Execution tags."""
 
-    continued_execution_run_id: str = None
+    continued_execution_run_id: t.Union[str, None] = None
     """Run ID of execution which this execution continues from."""
 
-    parent_execution: "_executions.ExecutionId" = None
+    parent_execution: t.Union["_executions.ExecutionId", None] = None
     """Parent execution (which started this execution)."""
 
-    parent_initiated_event_id: int = None
+    parent_initiated_event_id: t.Union[int, None] = None
     """ID of event in parent execution which begins the starting of this
     execution."""
 
@@ -1827,13 +1827,13 @@ class WorkflowExecutionTerminatedEvent(Event):
     child_execution_policy: "_executions.ChildExecutionTerminationPolicy"
     """Child execution policy (how open child executions were handled)."""
 
-    cause: ExecutionTerminationCause = None
+    cause: t.Union[ExecutionTerminationCause, None] = None
     """Failure cause."""
 
-    reason: str = None
+    reason: t.Union[str, None] = None
     """Termination reason, usually for classification."""
 
-    details: str = None
+    details: t.Union[str, None] = None
     """Termination details, usually for explanation."""
 
     @classmethod
@@ -1898,7 +1898,7 @@ def get_execution_history(
     execution: "_executions.ExecutionId",
     domain: str,
     reverse: bool = False,
-    client: "botocore.client.BaseClient" = None,
+    client: t.Union["botocore.client.BaseClient", None] = None,
 ) -> t.Generator[Event, None, None]:
     """Get workflow execution history; retrieved semi-lazily.
 
@@ -1925,7 +1925,7 @@ def get_execution_history(
 def get_last_execution_history_event(
     execution: "_executions.ExecutionId",
     domain: str,
-    client: "botocore.client.BaseClient" = None,
+    client: t.Union["botocore.client.BaseClient", None] = None,
 ) -> Event:
     """Get last workflow execution history event.
 
