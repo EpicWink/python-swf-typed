@@ -102,6 +102,23 @@ class ActivityIdFilter(_common.SerialisableToArguments):
         return {"name": self.name}
 
 
+def delete_activity(
+    activity: ActivityId,
+    domain: str,
+    client: "botocore.client.BaseClient" = None,
+) -> None:
+    """Delete a (deprecated/inactive) activity type.
+
+    Args:
+        activity: activity type to delete
+        domain: domain of activity type
+        client: SWF client
+    """
+
+    client = _common.ensure_client(client)
+    client.delete_activity_type(domain=domain, activityType=activity.to_api())
+
+
 def deprecate_activity(
     activity: ActivityId,
     domain: str,

@@ -106,6 +106,23 @@ class WorkflowIdFilter(_common.Serialisable, _common.SerialisableToArguments):
         return {"name": self.name}
 
 
+def delete_workflow(
+    workflow: WorkflowId,
+    domain: str,
+    client: "botocore.client.BaseClient" = None,
+) -> None:
+    """Delete a (deprecated/inactive) workflow type.
+
+    Args:
+        workflow: workflow type to delete
+        domain: domain of workflow type
+        client: SWF client
+    """
+
+    client = _common.ensure_client(client)
+    client.delete_workflow_type(domain=domain, workflowType=workflow.to_api())
+
+
 def deprecate_workflow(
     workflow: WorkflowId,
     domain: str,

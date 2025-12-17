@@ -19,6 +19,7 @@ from ._workflows import WorkflowInfo
 from ._workflows import DefaultExecutionConfiguration
 from ._workflows import WorkflowDetails
 
+from ._workflows import delete_workflow
 from ._workflows import deprecate_workflow
 from ._workflows import describe_workflow
 from ._workflows import list_workflows
@@ -31,6 +32,7 @@ from ._activities import ActivityInfo
 from ._activities import DefaultTaskConfiguration
 from ._activities import ActivityDetails
 
+from ._activities import delete_activity
 from ._activities import deprecate_activity
 from ._activities import describe_activity
 from ._activities import list_activities
