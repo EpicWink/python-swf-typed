@@ -246,16 +246,16 @@ class PartialExecutionConfiguration(
 class ExecutionOpenCounts:
     """Counts of workflow executions' open tasks/timers/children."""
 
-    activity_tasks: int = None
+    activity_tasks: int
     """Number of scheduled/started activity tasks."""
 
-    decision_tasks: int = None
+    decision_tasks: int
     """Number of scheduled/started decision tasks."""
 
-    timers: int = None
+    timers: int
     """Number of started timers."""
 
-    child_executions: int = None
+    child_executions: int
     """Number of started child executions."""
 
     lambda_tasks: int = None
@@ -268,7 +268,7 @@ class ExecutionOpenCounts:
             data["openDecisionTasks"],
             data["openTimers"],
             data["openChildWorkflowExecutions"],
-            data["openLambdaFunctions"],
+            lambda_tasks=data.get("openLambdaFunctions"),
         )
 
 
