@@ -129,7 +129,7 @@ def iter_paged(
 @contextlib.contextmanager
 def polling_socket_timeout(
     timeout: datetime.timedelta = datetime.timedelta(seconds=70),
-) -> None:
+) -> t.Generator[None, None, None]:
     """Set socket timeout for polling in a context."""
     original_timeout_seconds = socket.getdefaulttimeout()
     socket.setdefaulttimeout(timeout.total_seconds())
