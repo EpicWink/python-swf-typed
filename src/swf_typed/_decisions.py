@@ -6,6 +6,7 @@ import warnings
 import functools
 import dataclasses
 import typing as t
+import concurrent.futures
 
 from . import _common
 from . import _executions
@@ -514,12 +515,13 @@ def request_decision_task(
     def iter_history() -> t.Generator["_history.Event", None, None]:
         r = response
         while r.get("nextPageToken"):
-            future = _common.executor.submit(call, nextPageToken=r["nextPageToken"])
+            future = executor.submit(call, nextPageToken=r["nextPageToken"])
             yield from (_history.Event.from_api(d) for d in r.get("events") or [])
             r = future.result()
         yield from (_history.Event.from_api(d) for d in r.get("events") or [])
 
     client = _common.ensure_client(client)
+    executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
     kw = {}
     if decider_identity or decider_identity == "":
         kw["identity"] = decider_identity
