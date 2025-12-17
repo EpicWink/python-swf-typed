@@ -24,6 +24,7 @@
 * Move Python project metadata and configuration to [pyproject.toml](./pyproject.toml)
 * Add Trove classifiers to Python project
 * Require `setuptools` <81, to ensure legacy `license` metadata support
+* Unit-test common utilities
 
 ## 1.1.2 - 2024-06-11
 
