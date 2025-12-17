@@ -5,8 +5,10 @@ Please follow the [code of conduct](./CODE_OF_CONDUCT.md).
 
 ## Development environment set-up
 ```shell
-pip install -e . -r tests/requirements.txt 'darker[isort,black]'
+pip install -r dev.requirements.txt
 ```
+
+This installs the package as editable
 
 ## Testing
 Run the example from the README and make sure the output looks correct.
