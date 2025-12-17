@@ -42,4 +42,4 @@ jobs:
     - name: Test package
       run: pytest -vvra
     - name: Lint package
-      run: darker --verbose --check --diff --isort ./docs/src ./src ./tests
+      run: darker --verbose --check --diff --isort ./docs/src ./scripts ./src ./tests
