@@ -228,4 +228,4 @@ def undeprecate_workflow(
     """
 
     client = _common.ensure_client(client)
-    client.undeprecate_workflow(domain=domain, workflowType=workflow.to_api())
+    client.undeprecate_workflow_type(domain=domain, workflowType=workflow.to_api())
