@@ -346,7 +346,7 @@ class CloseTimeExecutionFilter(DateTimeFilter, ExecutionFilter):
 
 
 @dataclasses.dataclass
-class IdExecutionFilter(ExecutionFilter, metaclass=abc.ABCMeta):
+class IdExecutionFilter(ExecutionFilter):
     """Workflow execution filter on execution workflow-ID."""
 
     execution: CurrentExecutionId
@@ -357,7 +357,7 @@ class IdExecutionFilter(ExecutionFilter, metaclass=abc.ABCMeta):
 
 
 @dataclasses.dataclass
-class WorkflowTypeExecutionFilter(ExecutionFilter, metaclass=abc.ABCMeta):
+class WorkflowTypeExecutionFilter(ExecutionFilter):
     """Workflow execution filter on execution workflow-type."""
 
     workflow: t.Union["_workflows.WorkflowId", "_workflows.WorkflowIdFilter"]
