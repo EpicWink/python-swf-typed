@@ -169,7 +169,7 @@ def list_workflows(
     workflow_filter: WorkflowIdFilter = None,
     reverse: bool = False,
     client: "botocore.client.BaseClient" = None,
-) -> t.Generator[WorkflowInfo, None, None]:
+) -> _common.PageConsumer[WorkflowInfo]:
     """List workflow types; retrieved semi-lazily.
 
     Args:

@@ -108,7 +108,7 @@ def list_domains(
     deprecated: bool = False,
     reverse: bool = False,
     client: "botocore.client.BaseClient" = None,
-) -> t.Generator[DomainInfo, None, None]:
+) -> _common.PageConsumer[DomainInfo]:
     """List domains; retrieved semi-lazily.
 
     Args:
