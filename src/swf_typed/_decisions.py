@@ -540,10 +540,25 @@ def request_decision_task(
     return DecisionTask.from_api(response, iter_history())
 
 
+class TaskListOverride:
+    """Decision task list override."""
+
+    name: str
+    """Decision task list name."""
+
+    timeout: t.Union[datetime.timedelta, None] = None
+    """Decision task start timeout.
+
+    Decision task will be re-scheduled on the original task list after
+    timeout.
+    """
+
+
 def send_decisions(
     token: str,
     decisions: t.List[Decision],
     context: str = None,
+    task_list_override: t.Union[TaskListOverride, None],
     client: "botocore.client.BaseClient" = None,
 ) -> None:
     """Make decisions for a workflow execution, completing decision task.
@@ -559,6 +574,11 @@ def send_decisions(
     kw = {}
     if context or context == "":
         kw["executonContext"] = context
+    if task_list_override:
+        kw["taskList"] = {"name": task_list_override.name}
+        timeout = task_list_override.timeout
+        if timeout or timeout == datetime.timedelta(0):
+            kw["taskListScheduleToStartTimeout"] = str(int(timeout.total_seconds()))
     decisions_data = [d.to_api() for d in decisions]
     client.respond_decision_task_completed(
         taskToken=token, decisions=decisions_data, **kw
