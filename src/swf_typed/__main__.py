@@ -74,7 +74,11 @@ def _raw_as_sdk(x: "t.Any") -> "t.Any":
         value = getattr(x, field.name)
         if field.type in (datetime.datetime, "datetime.datetime"):
             if isinstance(value, str):
-                setattr(x, field.name, datetime.datetime.fromisoformat(value))
+                setattr(
+                    x,
+                    field.name,
+                    datetime.datetime.fromisoformat(value.replace("Z", "+00:00")),
+                )
             elif isinstance(value, (int, float)):
                 setattr(
                     x,
@@ -129,8 +133,8 @@ def _format_state(
 
     def get_duration(start: str, end: str) -> str:
         return _common.serialise_timedelta(
-            datetime.datetime.fromisoformat(end)
-            - datetime.datetime.fromisoformat(start)
+            datetime.datetime.fromisoformat(end.replace("Z", "+00:00"))
+            - datetime.datetime.fromisoformat(start.replace("Z", "+00:00"))
         )
 
     yield f"status: {state['status']}"
