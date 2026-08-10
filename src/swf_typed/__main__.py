@@ -143,7 +143,7 @@ def _format_state(
 
         if task.get("ended"):
             yield f"    ended: {task['ended']}"
-            yield f"    enqueued: {get_duration(task['started'], task['ended'])}"
+            yield f"    duration: {get_duration(task['started'], task['ended'])}"
 
         if output_results and task["status"] == _state.TaskStatus.completed.value:
             yield f"    result: {json.dumps(task.get('result'))}"
