@@ -364,7 +364,10 @@ class ChildExecutionState:
             cd["lambdaIamRoleArn"] = self.configuration.lambda_iam_role_arn
 
         state_dict = {
-            "execution": {"id": self.execution.id, "runId": self.execution.run_id},
+            "execution": {
+                "id": self.execution.workflow_id,
+                "runId": self.execution.run_id,
+            },
             "workflow": {
                 "name": self.workflow_type.name,
                 "version": self.workflow_type.version,

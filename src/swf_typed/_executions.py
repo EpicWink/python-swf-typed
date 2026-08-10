@@ -22,15 +22,15 @@ default_executions_list_time_range = datetime.timedelta(days=90)
 class CurrentWorkflowExecutionReference(_common.Deserialisable, _common.Serialisable):
     """Current open workflow execution specifier."""
 
-    id: str
+    workflow_id: str
     """Execution workflow-ID."""
 
     @classmethod
     def from_api(cls, data) -> "CurrentWorkflowExecutionReference":
-        return cls(id=data["workflowId"])
+        return cls(workflow_id=data["workflowId"])
 
     def to_api(self):
-        return {"workflowId": self.id}
+        return {"workflowId": self.workflow_id}
 
 
 @dataclasses.dataclass
@@ -42,7 +42,7 @@ class WorkflowExecutionReference(CurrentWorkflowExecutionReference):
 
     @classmethod
     def from_api(cls, data) -> "WorkflowExecutionReference":
-        return cls(id=data["workflowId"], run_id=data["runId"])
+        return cls(workflow_id=data["workflowId"], run_id=data["runId"])
 
     def to_api(self):
         data = super().to_api()
@@ -643,7 +643,7 @@ def request_cancel_workflow_execution(
     if isinstance(execution, WorkflowExecutionReference):
         kw["runId"] = execution.run_id
     client.request_cancel_workflow_execution(
-        domain=domain, workflowId=execution.id, **kw
+        domain=domain, workflowId=execution.workflow_id, **kw
     )
 
 
@@ -672,7 +672,7 @@ def signal_workflow_execution(
         kw["input"] = input_
     client.request_cancel_workflow_execution(
         domain=domain,
-        workflowId=execution.id,
+        workflowId=execution.workflow_id,
         signalName=signal,
         **kw,
     )
@@ -712,11 +712,13 @@ def start_workflow_execution(
         kw["tagList"] = tags
     response = client.start_workflow_execution(
         domain=domain,
-        workflowId=execution.id,
+        workflowId=execution.workflow_id,
         workflowType=workflow_type.to_api(),
         **kw,
     )
-    return WorkflowExecutionReference(id=execution.id, run_id=response["runId"])
+    return WorkflowExecutionReference(
+        workflow_id=execution.workflow_id, run_id=response["runId"]
+    )
 
 
 def terminate_workflow_execution(
@@ -754,6 +756,6 @@ def terminate_workflow_execution(
         kw["childPolicy"] = child_execution_policy.value
     client.terminate_workflow_execution(
         domain=domain,
-        workflowId=execution.id,
+        workflowId=execution.workflow_id,
         **kw,
     )

@@ -42,7 +42,7 @@ def list_executions(
 
     for execution in executions:
         yield (
-            execution.execution.id,
+            execution.execution.workflow_id,
             execution.execution.run_id,
             execution.status.value,
             execution.workflow.name,

@@ -68,7 +68,6 @@ This library has a slight change in terminology from AWS `SDKs
 <https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/swf.html>`_/`APIs
 <https://docs.aws.amazon.com/amazonswf/latest/apireference/Welcome.html>`_/`docs <https://docs.aws.amazon.com/amazonswf/latest/developerguide/swf-welcome.html>`_:
 
-* Workflow execution ``workflowId`` -> execution ID
 * Activity type -> activity
 * Activity task -> task
 * Activity worker -> worker

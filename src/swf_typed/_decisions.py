@@ -353,7 +353,7 @@ class StartChildWorkflowExecutionDecision(Decision):
         data = super().to_api()
         data["startChildWorkflowExecutionDecisionAttributes"] = decision_attributes = {
             "workflowType": self.workflow_type.to_api(),
-            "workflowId": self.execution.id,
+            "workflowId": self.execution.workflow_id,
         }
 
         if self.execution_input or self.execution_input == "":

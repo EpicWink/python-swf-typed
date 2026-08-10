@@ -35,7 +35,7 @@ See [the full documentation](https://python-swf-typed.readthedocs.io/).
 ```python
 import swf_typed
 
-execution = swf_typed.WorkflowExecutionReference(id="spam", run_id="abcd1234")
+execution = swf_typed.WorkflowExecutionReference(workflow_id="spam", run_id="abcd1234")
 execution_details = swf_typed.describe_workflow_execution(execution, domain="eggs")
 print(execution_details.configuration)
 
@@ -49,7 +49,6 @@ for task in state.tasks:
 
 This library has a slight change in terminology from AWS [SDKs](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/swf.html)/[APIs](https://docs.aws.amazon.com/amazonswf/latest/apireference/Welcome.html)/[docs](https://docs.aws.amazon.com/amazonswf/latest/developerguide/swf-welcome.html):
 
-* Workflow execution `workflowId` -> execution ID
 * Activity type -> activity
 * Activity task -> task
 * Activity worker -> worker
