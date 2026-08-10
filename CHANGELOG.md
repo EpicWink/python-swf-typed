@@ -37,6 +37,8 @@
 * Handle unknown AWS SDK client methods and exceptions
 * Made decision failure state `event` attribute type more specific
 * Sort imports
+* Document default values' types in type annotations (eg `x: str = None` -> `x: str |
+  None = None`)
 
 ### Miscellaneous
 

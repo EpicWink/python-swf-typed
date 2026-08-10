@@ -42,10 +42,10 @@ class WorkflowInfo(_common.Deserialisable):
     created: datetime.datetime
     """Creation date."""
 
-    description: str = None
+    description: t.Union[str, None] = None
     """Workflow description."""
 
-    deprecated: datetime.datetime = None
+    deprecated: t.Union[datetime.datetime, None] = None
     """Deprecation date."""
 
     @classmethod
@@ -108,7 +108,7 @@ class WorkflowIdFilter(_common.Serialisable, _common.SerialisableToArguments):
 def delete_workflow(
     workflow: WorkflowId,
     domain: str,
-    client: "botocore.client.BaseClient" = None,
+    client: t.Union["botocore.client.BaseClient", None] = None,
 ) -> None:
     """Delete a (deprecated/inactive) workflow type.
 
@@ -125,7 +125,7 @@ def delete_workflow(
 def deprecate_workflow(
     workflow: WorkflowId,
     domain: str,
-    client: "botocore.client.BaseClient" = None,
+    client: t.Union["botocore.client.BaseClient", None] = None,
 ) -> None:
     """Deprecate (deactivate) a workflow type.
 
@@ -142,7 +142,7 @@ def deprecate_workflow(
 def describe_workflow(
     workflow: WorkflowId,
     domain: str,
-    client: "botocore.client.BaseClient" = None,
+    client: t.Union["botocore.client.BaseClient", None] = None,
 ) -> WorkflowDetails:
     """Describe a workflow type.
 
@@ -165,9 +165,9 @@ def describe_workflow(
 def list_workflows(
     domain: str,
     deprecated: bool = False,
-    workflow_filter: WorkflowIdFilter = None,
+    workflow_filter: t.Union[WorkflowIdFilter, None] = None,
     reverse: bool = False,
-    client: "botocore.client.BaseClient" = None,
+    client: t.Union["botocore.client.BaseClient", None] = None,
 ) -> t.Generator[WorkflowInfo, None, None]:
     """List workflow types; retrieved semi-lazily.
 
@@ -200,9 +200,9 @@ def list_workflows(
 def register_workflow(
     workflow: WorkflowId,
     domain: str,
-    description: str = None,
-    default_execution_configuration: DefaultExecutionConfiguration = None,
-    client: "botocore.client.BaseClient" = None,
+    description: t.Union[str, None] = None,
+    default_execution_configuration: t.Union[DefaultExecutionConfiguration, None] = None,
+    client: t.Union["botocore.client.BaseClient", None] = None,
 ) -> None:
     """Register a new workflow type.
 
@@ -233,7 +233,7 @@ def register_workflow(
 def undeprecate_workflow(
     workflow: WorkflowId,
     domain: str,
-    client: "botocore.client.BaseClient" = None,
+    client: t.Union["botocore.client.BaseClient", None] = None,
 ) -> None:
     """Undeprecate (reactivate) a workflow type.
 
