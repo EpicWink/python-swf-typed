@@ -14,6 +14,9 @@
 * Workflow and activity type deletion (type must be deprecated)
 * Execution state workflow type reference
 * Timer state `duration` attribute (replacing `duraction`)
+* State `to_dict`, converting to basic built-in types (eg for JSON serialisation).
+  Date-times and time-deltas are formatted as ISO 8601 (for dates: RFC 3339, with T
+  separator)
 
 ### Fixes
 
@@ -29,6 +32,7 @@
 * Don't modify provided SWF client
 * Handle unknown AWS SDK client methods and exceptions
 * Made decision failure state `event` attribute type more specific
+* Sort imports
 * Document default values' types in type annotations (eg `x: str = None` -> `x: str |
   None = None`)
 

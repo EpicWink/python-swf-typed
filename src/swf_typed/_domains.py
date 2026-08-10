@@ -1,9 +1,9 @@
 """SWF domain management."""
 
+import typing as t
 import datetime
 import functools
 import dataclasses
-import typing as t
 
 from . import _common
 

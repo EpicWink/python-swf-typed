@@ -2,9 +2,9 @@
 
 import abc
 import socket
+import typing as t
 import datetime
 import contextlib
-import typing as t
 import concurrent.futures
 
 from . import _exceptions
@@ -87,6 +87,54 @@ def parse_timeout(timeout_data: str) -> t.Union[datetime.timedelta, None]:
     if timeout_data == "NONE":
         return None
     return datetime.timedelta(seconds=int(timeout_data))
+
+
+def serialise_datetime(dt: datetime.datetime) -> str:
+    """Format date-time for serialisation (eg as JSON).
+
+    Args:
+        dt: date-time to format
+
+    Returns:
+        date-time string in ISO 8601-format (RFC 3339, with T-separator),
+            for example: ``2020-01-23T01:23:45.678Z``
+    """
+
+    return dt.isoformat(
+        sep="T",
+        timespec=(
+            "milliseconds"
+            if dt.microsecond and (dt.microsecond % 1000 == 0)
+            else "auto"
+        ),
+    ).replace("+00:00", "Z")
+
+
+def serialise_timedelta(td: datetime.timedelta) -> str:
+    """Format time-delta for serialisation (eg as JSON).
+
+    Args:
+        td: time-delta to format
+
+    Returns:
+        duration string in ISO 8601-format, for example: ``P1DT12H``
+    """
+
+    def iter_parts():
+        yield "P"
+        if td.days:
+            yield str(td.days)
+            yield "D"
+        if td.seconds or td.microseconds:
+            yield "T"
+            yield str(td.seconds)
+            if td.microseconds:
+                yield f".{td.microseconds:06d}".rstrip("0")
+            yield "S"
+        elif not td.days:
+            yield "0D"
+
+    return "".join(iter_parts())
 
 
 def iter_paged(

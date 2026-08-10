@@ -1,16 +1,16 @@
 """SWF activity task management."""
 
+import typing as t
 import datetime
 import warnings
 import dataclasses
-import typing as t
 
 from . import _common
 
 if t.TYPE_CHECKING:
     import botocore.client
-    from . import _activities
-    from . import _executions
+
+    from . import _activities, _executions
 
 
 class Cancelled(Exception):
@@ -130,8 +130,7 @@ class WorkerTask(_common.Deserialisable):
 
     @classmethod
     def from_api(cls, data) -> "WorkerTask":
-        from . import _activities
-        from . import _executions
+        from . import _activities, _executions
 
         return cls(
             token=data["taskToken"],

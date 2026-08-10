@@ -1,22 +1,19 @@
 """SWF decision task management."""
 
 import abc
+import typing as t
 import datetime
 import warnings
 import functools
 import dataclasses
-import typing as t
 import concurrent.futures
 
-from . import _common
-from . import _executions
+from . import _common, _executions
 
 if t.TYPE_CHECKING:
     import botocore.client
-    from . import _tasks
-    from . import _history
-    from . import _workflows
-    from . import _activities
+
+    from . import _activities, _history, _tasks, _workflows
 
 
 @dataclasses.dataclass
@@ -434,8 +431,7 @@ class DecisionTask(_common.Deserialisable):
                 of paginated history. Default: get from response data
         """
 
-        from . import _workflows
-        from . import _executions
+        from . import _executions, _workflows
 
         if not execution_history_iter:
             from . import _history

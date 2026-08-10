@@ -2,19 +2,17 @@
 
 import abc
 import enum
+import typing as t
 import datetime
 import functools
 import dataclasses
-import typing as t
 
 from . import _common
 
 if t.TYPE_CHECKING:
     import botocore.client
-    from . import _tasks
-    from . import _workflows
-    from . import _activities
-    from . import _executions
+
+    from . import _activities, _executions, _tasks, _workflows
 
 
 class TimeoutType(str, enum.Enum):
@@ -306,8 +304,7 @@ class ActivityTaskScheduledEvent(Event):
 
     @classmethod
     def from_api(cls, data):
-        from . import _tasks
-        from . import _activities
+        from . import _activities, _tasks
 
         attrs = data["activityTaskScheduledEventAttributes"]
         return cls(
@@ -451,8 +448,7 @@ class ChildWorkflowExecutionCancelledEvent(Event):
 
     @classmethod
     def from_api(cls, data):
-        from . import _workflows
-        from . import _executions
+        from . import _executions, _workflows
 
         attrs = data["childWorkflowExecutionCanceledEventAttributes"]
         return cls(
@@ -489,8 +485,7 @@ class ChildWorkflowExecutionCompletedEvent(Event):
 
     @classmethod
     def from_api(cls, data):
-        from . import _workflows
-        from . import _executions
+        from . import _executions, _workflows
 
         attrs = data["childWorkflowExecutionCompletedEventAttributes"]
         return cls(
@@ -530,8 +525,7 @@ class ChildWorkflowExecutionFailedEvent(Event):
 
     @classmethod
     def from_api(cls, data):
-        from . import _workflows
-        from . import _executions
+        from . import _executions, _workflows
 
         attrs = data["childWorkflowExecutionFailedEventAttributes"]
         return cls(
@@ -563,8 +557,7 @@ class ChildWorkflowExecutionStartedEvent(Event):
 
     @classmethod
     def from_api(cls, data):
-        from . import _workflows
-        from . import _executions
+        from . import _executions, _workflows
 
         attrs = data["childWorkflowExecutionStartedEventAttributes"]
         return cls(
@@ -596,8 +589,7 @@ class ChildWorkflowExecutionTerminatedEvent(Event):
 
     @classmethod
     def from_api(cls, data):
-        from . import _workflows
-        from . import _executions
+        from . import _executions, _workflows
 
         attrs = data["childWorkflowExecutionTerminatedEventAttributes"]
         return cls(
@@ -630,8 +622,7 @@ class ChildWorkflowExecutionTimedOutEvent(Event):
 
     @classmethod
     def from_api(cls, data):
-        from . import _workflows
-        from . import _executions
+        from . import _executions, _workflows
 
         attrs = data["childWorkflowExecutionTimedOutEventAttributes"]
         assert attrs["timeoutType"] == "START_TO_CLOSE"
@@ -1401,8 +1392,7 @@ class StartChildWorkflowExecutionFailedEvent(Event):
 
     @classmethod
     def from_api(cls, data):
-        from . import _workflows
-        from . import _executions
+        from . import _executions, _workflows
 
         attrs = data["startChildWorkflowExecutionFailedEventAttributes"]
         return cls(
@@ -1450,8 +1440,7 @@ class StartChildWorkflowExecutionInitiatedEvent(Event):
 
     @classmethod
     def from_api(cls, data):
-        from . import _workflows
-        from . import _executions
+        from . import _executions, _workflows
 
         attrs = data["startChildWorkflowExecutionInitiatedEventAttributes"]
         config = _executions.PartialExecutionConfiguration.from_api(attrs)
@@ -1687,8 +1676,7 @@ class WorkflowExecutionContinuedAsNewEvent(Event):
 
     @classmethod
     def from_api(cls, data):
-        from . import _workflows
-        from . import _executions
+        from . import _executions, _workflows
 
         attrs = data["workflowExecutionContinuedAsNewEventAttributes"]
         config = _executions.PartialExecutionConfiguration.from_api(attrs)
@@ -1797,8 +1785,7 @@ class WorkflowExecutionStartedEvent(Event):
 
     @classmethod
     def from_api(cls, data):
-        from . import _workflows
-        from . import _executions
+        from . import _executions, _workflows
 
         attrs = data["workflowExecutionStartedEventAttributes"]
         config = _executions.PartialExecutionConfiguration.from_api(attrs)
