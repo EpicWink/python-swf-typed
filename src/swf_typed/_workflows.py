@@ -168,7 +168,7 @@ def list_workflows(
     workflow_filter: t.Union[WorkflowIdFilter, None] = None,
     reverse: bool = False,
     client: t.Union["botocore.client.BaseClient", None] = None,
-) -> t.Generator[WorkflowInfo, None, None]:
+) -> _common.PageConsumer[WorkflowInfo]:
     """List workflow types; retrieved semi-lazily.
 
     Args:

@@ -5,6 +5,8 @@ import socket
 import typing as t
 import datetime
 import contextlib
+import dataclasses
+import collections.abc
 import concurrent.futures
 
 from . import _exceptions
@@ -59,6 +61,125 @@ class SerialisableToArguments(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def get_api_args(self) -> t.Dict[str, t.Any]:
         """Serialise to SWF API request arguments."""
+
+
+@dataclasses.dataclass
+class PageConsumer(collections.abc.Generator, t.Generic[T]):
+    """Paged SWF API response iterator."""
+
+    _next_page_token_key: t.ClassVar[str] = "nextPageToken"
+
+    api_call: t.Callable[..., t.Dict[str, t.Any]]
+    """List AWS SWF API SDK function."""
+
+    model: t.Callable[[t.Dict[str, t.Any]], T]
+    """``swf_typed`` model (constructor) for list result items."""
+
+    data_key: str
+    """List results key."""
+
+    response: t.Dict[str, t.Any]
+    """Current list API response."""
+
+    executor: concurrent.futures.Executor
+    """Concurrency executor."""
+
+    def __post_init__(self) -> None:
+        self._i = 0
+        self._future: t.Union[concurrent.futures.Future, None] = None
+
+    @property
+    def _items(self) -> t.List[t.Dict[str, t.Any]]:
+        return self.response.get(self.data_key) or []
+
+    def send(self, value: None) -> T:
+        if (
+            self._i == 0
+            and not self._future
+            and self.response.get(self._next_page_token_key)
+        ):
+            # Start getting next page (first iteration)
+            self._future = self.executor.submit(
+                self.api_call, nextPageToken=self.response[self._next_page_token_key]
+            )
+
+        if self._i >= len(self._items):
+            if not self._future:
+                raise StopIteration
+            # Receive next page
+            self.response = self._future.result()
+            self._i = 0
+            if self.response.get(self._next_page_token_key):
+                # Start getting next page
+                self._future = self.executor.submit(
+                    self.api_call,
+                    nextPageToken=self.response[self._next_page_token_key],
+                )
+            else:
+                self._future = None
+
+        item = self._items[self._i]
+        self._i += 1
+        return self.model(item)
+
+    def throw(self, typ, val=None, tb=None) -> T:
+        r = self.send(None)
+        self._future = None
+        self.response.pop(self._next_page_token_key, None)
+        self._i = len(self._items)
+        return r
+
+    def get_page(
+        self,
+        page_token: t.Union[str, None] = None,
+        start_getting_next_page: bool = True,
+    ) -> t.Tuple[t.List[T], t.Union[str, None]]:
+        """Get a full page of results from SWF.
+
+        Uses pre-fetched results if available.
+
+        Args:
+            page_token: page token
+            start_getting_next_page: start fetching the next page in another
+                thread
+
+        Returns:
+            page of results (structured), and next page's token
+        """
+
+        if not page_token and not self._future:
+            # Use pre-fetched first response
+            response = self.response
+
+            if start_getting_next_page and self.response.get(self._next_page_token_key):
+                self._future = self.executor.submit(
+                    self.api_call,
+                    nextPageToken=self.response[self._next_page_token_key],
+                )
+        elif (
+            page_token
+            and self._future
+            and page_token == self.response.get(self._next_page_token_key)
+        ):
+            # Use in-flight response
+            response = self._future.result()
+
+            if start_getting_next_page:
+                self.response = response
+                self._i = 0
+                if self.response.get(self._next_page_token_key):
+                    self._future = self.executor.submit(
+                        self.api_call,
+                        nextPageToken=self.response[self._next_page_token_key],
+                    )
+        elif page_token:
+            response = self.api_call(nextPageToken=page_token)
+        else:
+            # First page, but we're not certain if `self.response` is the first still
+            response = self.api_call()
+
+        models = [self.model(item) for item in response.get(self.data_key) or []]
+        return models, response.get(self._next_page_token_key)
 
 
 def ensure_client(
@@ -141,7 +262,7 @@ def iter_paged(
     call: t.Callable[..., t.Dict[str, t.Any]],
     model: t.Callable[[t.Dict[str, t.Any]], T],
     data_key: str,
-) -> t.Generator[T, None, None]:
+) -> PageConsumer[T]:
     """Yield results from paginated method.
 
     Method is called immediately, then a generator is returned which yields
@@ -158,18 +279,9 @@ def iter_paged(
         method results, transformed
     """
 
-    def iter_() -> t.Generator[T, None, None]:
-        nonlocal response
-
-        while response.get("nextPageToken"):
-            future = executor.submit(call, nextPageToken=response["nextPageToken"])
-            yield from (model(d) for d in response.get(data_key) or [])
-            response = future.result()
-        yield from (model(d) for d in response.get(data_key) or [])
-
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
     response = call()
-    return iter_()
+    return PageConsumer(call, model, data_key, response, executor)
 
 
 @contextlib.contextmanager
