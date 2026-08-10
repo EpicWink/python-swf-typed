@@ -571,6 +571,7 @@ def send_decisions(
         token: decision task identifying token
         decisions: decisions to make
         context: workflow execution context to set
+        task_list_override: decision task list override configuration
         client: SWF client
     """
 
