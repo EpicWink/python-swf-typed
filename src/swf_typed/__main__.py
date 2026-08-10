@@ -59,95 +59,102 @@ def _raw_as_sdk(x: "t.Any") -> "t.Any":
     return x
 
 
-def _isoformat_duration(td: "datetime.timedelta") -> str:
-    """Format time-delta as ISO 8601 duration string.
-
-    Args:
-        td: time-delta to format
-
-    Returns:
-        ISO 8601 duration
-    """
-
-    if td.microseconds:
-        return f"P{td.days}DT{td.seconds}.{td.microseconds:0>6d}S"
-    elif td.seconds:
-        return f"P{td.days}DT{td.seconds}S"
-    else:
-        return f"P{td.days}D"
-
-
 def _build_state(
     history: "t.Union[t.List[t.Dict[str, t.Any]], t.Dict[str, t.Any]]",
-    output_results: bool = False,
-) -> "t.Generator[str, None, None]":
+) -> t.Dict[str, t.Any]:
     """Build execution state from its history.
 
     Args:
         history: execution history (API response or its events)
-        output_results: include execution and task results and stop details
-            in output
+
+    Returns:
+        execution state, as built-in (JSON-serialisable) types
+    """
+
+    from . import _history, _state
+
+    events = history if isinstance(history, list) else history["events"]
+    state = _state.build_state(_raw_as_sdk(_history.Event.from_api(x)) for x in events)
+    del events, history
+    return state.to_dict()
+
+
+def _format_state(
+    state: t.Dict[str, t.Any],
+    output_results: bool = False,
+) -> "t.Generator[str, None, None]":
+    """Format execution state.
+
+    Args:
+        state: execution state, as built-in (JSON-deserialised) types
 
     Returns:
         a generator yielding output lines of state serialise as YAML
     """
 
     import json
+    import datetime
 
-    from . import _executions, _history, _state
+    from . import _common, _executions, _state
 
-    events = history if isinstance(history, list) else history["events"]
-    state = _state.build_state(_raw_as_sdk(_history.Event.from_api(x)) for x in events)
-    del events, history
+    def get_duration(start: str, end: str) -> str:
+        return _common.serialise_timedelta(
+            datetime.datetime.fromisoformat(end)
+            - datetime.datetime.fromisoformat(start)
+        )
 
-    yield f"status: {state.status.value}"
-    yield f"workflow: {state.workflow.name} @ {state.workflow.version}"
-    yield f"started: {state.started.isoformat(sep='T')}"
+    yield f"status: {state['status']}"
+    yield f"workflow: {state['workflow']['name']} @ {state['workflow']['version']}"
+    yield f"started: {state['started']}"
 
-    if state.ended:
-        yield f"ended: {state.ended.isoformat(sep='T')}"
-        yield f"duration: {_isoformat_duration(state.ended - state.started)}"
+    if state.get("ended"):
+        yield f"ended: {state['ended']}"
+        yield f"duration: {get_duration(state['started'], state['ended'])}"
 
-    if output_results and state.status == _executions.ExecutionStatus.completed:
-        yield f"result: {json.dumps(state.result)}"
-    elif state.failure_reason or (output_results and state.stop_details):
-        value = f"{state.failure_reason}" + (
-            f" - {state.stop_details}" if output_results else ""
+    if (
+        output_results
+        and state["status"] == _executions.ExecutionStatus.completed.value
+    ):
+        yield f"result: {json.dumps(state.get('result'))}"
+    elif state.get("failure_reason") or (output_results and state.get("stop_details")):
+        value = f"{state.get('failure_reason') or '<stopped>'}" + (
+            f" - {state['stop_details']}" if output_results else ""
         )
         if ": " in value or "\n" in value:
             value = "'" + value.replace("'", "''") + "'"
         yield f"error: {value}"
 
     yield "\ntasks:"
-    for task in state.tasks:
-        yield f"  - id: {task.id}"
-        yield f"    status: {task.status.name}"
-        yield f"    scheduled: {task.scheduled.isoformat(sep='T')}"
+    task: t.Dict[str, t.Any]
+    for task in state["tasks"]:
+        yield f"  - id: {task['id']}"
+        yield f"    status: {task['status']}"
+        yield f"    scheduled: {task['scheduled']}"
 
-        if task.started:
-            yield f"    started: {task.scheduled.isoformat(sep='T')}"
-            yield f"    enqueued: {_isoformat_duration(task.started - task.scheduled)}"
+        if task.get("started"):
+            yield f"    started: {task['started']}"
+            yield f"    enqueued: {get_duration(task['scheduled'], task['started'])}"
 
-        if task.ended:
-            yield f"    ended: {task.ended.isoformat(sep='T')}"
-            yield f"    duration: {_isoformat_duration(task.ended - task.started)}"
+        if task.get("ended"):
+            yield f"    ended: {task['ended']}"
+            yield f"    enqueued: {get_duration(task['started'], task['ended'])}"
 
-        if output_results and task.status == _state.TaskStatus.completed:
-            yield f"    result: {json.dumps(task.result)}"
+        if output_results and task["status"] == _state.TaskStatus.completed.value:
+            yield f"    result: {json.dumps(task.get('result'))}"
         elif (
-            task.failure_reason
-            or (isinstance(task, _state.TaskState) and task.timeout_type)
-            or (output_results and task.stop_details)
+            task.get("failure_reason")
+            or task.get("timeout_type")
+            or (output_results and task.get("stop_details"))
         ):
-            failure_reason = task.failure_reason
+            failure_reason = task.get("failure_reason")
             if failure_reason is None:
-                if isinstance(task, _state.TaskState) and task.timeout_type:
-                    failure_reason = task.timeout_type.value
+                if task.get("timeout_type"):
+                    failure_reason = task["timeout_type"]
                 else:
                     failure_reason = "null"
             yield (
                 f"    error: {failure_reason}"
-                + (f" - {task.stop_details}" if output_results else "")
+                + (f" - {task.get('stop_details')}" if output_results else "")
             )
 
 
@@ -159,10 +166,22 @@ def main(argv=None) -> None:
     def build_state() -> None:
         """Build execution state from its history."""
 
+        import sys
         import json
 
-        for line in _build_state(
-            history=json.loads(_read_text_from_file(args.file)),
+        json.dump(
+            _build_state(history=json.loads(_read_text_from_file(args.file))),
+            sys.stdout,
+            indent=2 if sys.stdout.isatty() else None,
+        )
+
+    def format_state() -> None:
+        """Format execution state."""
+
+        import json
+
+        for line in _format_state(
+            state=json.loads(_read_text_from_file(args.file)),
             output_results=args.output_results,
         ):
             print(line)
@@ -175,16 +194,28 @@ def main(argv=None) -> None:
         title="subcommands", required=True, metavar="COMMAND", help="command to run"
     )
 
-    state_parser = subparsers.add_parser(
+    build_state_parser = subparsers.add_parser(
         name="build-state",
         help="build execution state from its history",
-        description="Build execution state from its history",
+        description=build_state.__doc__,
     )
-    state_parser.add_argument("file", help="execution history file path; '-' for stdin")
-    state_parser.add_argument(
+    build_state_parser.add_argument(
+        "file", help="execution history file path; '-' for stdin"
+    )
+    build_state_parser.set_defaults(func=build_state)
+
+    format_state_parser = subparsers.add_parser(
+        name="format-state",
+        help="format execution state",
+        description=build_state.__doc__,
+    )
+    format_state_parser.add_argument(
+        "file", help="execution state file path; '-' for stdin"
+    )
+    format_state_parser.add_argument(
         "-R", "--output-results", action="store_true", help="include results in output"
     )
-    state_parser.set_defaults(func=build_state)
+    format_state_parser.set_defaults(func=format_state)
 
     args = parser.parse_args(argv)
     args.func()
