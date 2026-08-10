@@ -48,11 +48,17 @@ def _raw_as_sdk(x: "t.Any") -> "t.Any":
 
     for field in fields:
         value = getattr(x, field.name)
-        if (
-            field.type in (datetime.datetime, "datetime.datetime")
-            and isinstance(value, str)
-        ):
-            setattr(x, field.name, datetime.datetime.fromisoformat(value))
+        if field.type in (datetime.datetime, "datetime.datetime"):
+            if isinstance(value, str):
+                setattr(x, field.name, datetime.datetime.fromisoformat(value))
+            elif isinstance(value, (int, float)):
+                setattr(
+                    x,
+                    field.name,
+                    datetime.datetime.fromtimestamp(value, tz=datetime.timezone.utc),
+                )
+            elif not isinstance(value, datetime.datetime):
+                raise TypeError(f"Not a date-time ({field.name}): {value}")
         elif dataclasses.is_dataclass(value):
             setattr(x, field.name, _raw_as_sdk(value))  # recurse
 
