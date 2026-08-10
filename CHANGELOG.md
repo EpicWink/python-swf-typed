@@ -14,6 +14,10 @@
 * Workflow and activity type deletion (type must be deprecated)
 * Execution state workflow type reference
 * Timer state `duration` attribute (replacing `duraction`)
+* Add CLI by running the `swf_typed` module: `python -m swf_typed`. Includes two
+  subcommands:
+  * `build-state`: construct state from execution history JSON
+  * `format-state`: parse state JSON and extract pertinent details, outputting as YAML
 
 ### Fixes
 
