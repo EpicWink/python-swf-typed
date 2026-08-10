@@ -90,10 +90,10 @@ class DecisionFailure:
 
         if isinstance(self.event, _history.RecordMarkerFailedEvent):
             state_dict["event"]["cause"] = getattr(
-                self.event, "cause", "OPERATION_NOT_PERMITTED"
+                getattr(self.event, "cause", None), "name", "unauthorised"
             )
         else:
-            state_dict["event"]["cause"] = str(self.event.cause)
+            state_dict["event"]["cause"] = self.event.cause.name
 
         return state_dict
 
@@ -183,7 +183,7 @@ class TaskState:
 
         state_dict = {
             "id": self.id,
-            "status": self.status.value,
+            "status": self.status.name.replace("_", "-"),
             "activity": {"name": self.activity.name, "version": self.activity.version},
             "configuration": cd,
             "scheduled": _common.serialise_datetime(self.scheduled),
@@ -201,7 +201,7 @@ class TaskState:
         if self.result is not None:
             state_dict["result"] = self.result
         if self.timeout_type is not None:
-            state_dict["timeoutType"] = str(self.timeout_type)
+            state_dict["timeoutType"] = self.timeout_type.name
         if self.failure_reason is not None:
             state_dict["failureReason"] = self.failure_reason
         if self.stop_details is not None:
@@ -268,7 +268,7 @@ class LambdaTaskState:
 
         state_dict = {
             "id": self.id,
-            "status": self.status.value,
+            "status": self.status.name.replace("_", "-"),
             "lambdaFunction": self.lambda_function,
             "scheduled": _common.serialise_datetime(self.scheduled),
         }  # type: t.Dict[str, t.Any]
@@ -364,9 +364,9 @@ class ChildExecutionState:
             cd["lambdaIamRoleArn"] = self.configuration.lambda_iam_role_arn
 
         state_dict = {
-            "execution": {"id": self.execution.id, "run_id": self.execution.run_id},
+            "execution": {"id": self.execution.id, "runId": self.execution.run_id},
             "workflow": {"name": self.workflow.name, "version": self.workflow.version},
-            "status": self.status.value,
+            "status": self.status.name.replace("_", "-"),
             "configuration": cd,
             "started": _common.serialise_datetime(self.started),
         }  # type: t.Dict[str, t.Any]
@@ -378,7 +378,7 @@ class ChildExecutionState:
         if self.result is not None:
             state_dict["result"] = self.result
         if self.timeout_type is not None:
-            state_dict["timeoutType"] = str(self.timeout_type)
+            state_dict["timeoutType"] = self.timeout_type.name
         if self.failure_reason is not None:
             state_dict["failureReason"] = self.failure_reason
         if self.stop_details is not None:
@@ -435,7 +435,7 @@ class TimerState:
 
         state_dict = {
             "id": self.id,
-            "status": self.status.value,
+            "status": self.status.name.replace("_", "-"),
             "duration": _common.serialise_timedelta(self.duration),
             "started": _common.serialise_datetime(self.started),
         }  # type: t.Dict[str, t.Any]
@@ -609,17 +609,17 @@ class ExecutionState:
         if self.configuration.timeout is not None:
             cd["timeout"] = serialise_timedelta(self.configuration.timeout)
         if self.configuration.decision_task_timeout is not None:
-            cd["decision_task_timeout"] = serialise_timedelta(
+            cd["decisionTaskTimeout"] = serialise_timedelta(
                 self.configuration.decision_task_timeout,
             )
         if self.configuration.decision_task_priority is not None:
-            cd["decision_task_priority"] = self.configuration.decision_task_priority
+            cd["decisionTaskPriority"] = self.configuration.decision_task_priority
         if self.configuration.lambda_iam_role_arn is not None:
-            cd["lambda_iam_role_arn"] = self.configuration.lambda_iam_role_arn
+            cd["lambdaIamRoleArn"] = self.configuration.lambda_iam_role_arn
 
         state_dict = {
             "workflow": {"name": self.workflow.name, "version": self.workflow.version},
-            "status": self.status.value,
+            "status": self.status.name.replace("_", "-"),
             "configuration": cd,
             "started": _common.serialise_datetime(self.started),
             "tasks": [x.to_dict() for x in self.tasks],
@@ -627,8 +627,8 @@ class ExecutionState:
             "timers": [x.to_dict() for x in self.timers],
             "signals": [x.to_dict() for x in self.signals],
             "markers": [x.to_dict() for x in self.markers],
-            "decision_failures": [x.to_dict() for x in self.decision_failures],
-            "cancel_requested": self.cancel_requested,
+            "decisionFailures": [x.to_dict() for x in self.decision_failures],
+            "cancelRequested": self.cancel_requested,
         }  # type: t.Dict[str, t.Any]
 
         if self.ended is not None:
@@ -638,11 +638,11 @@ class ExecutionState:
         if self.result is not None:
             state_dict["result"] = self.result
         if self.failure_reason is not None:
-            state_dict["failure_reason"] = self.failure_reason
+            state_dict["failureReason"] = self.failure_reason
         if self.stop_details is not None:
-            state_dict["stop_details"] = self.stop_details
+            state_dict["stopDetails"] = self.stop_details
         if self.continuing_execution_run_id is not None:
-            state_dict["continuing_execution_run_id"] = self.continuing_execution_run_id
+            state_dict["continuingExecutionRunId"] = self.continuing_execution_run_id
 
         return state_dict
 
