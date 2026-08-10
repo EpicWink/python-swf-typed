@@ -21,6 +21,8 @@
   subcommands:
   * `build-state`: construct state from execution history JSON
   * `format-state`: parse state JSON and extract pertinent details, outputting as YAML
+* List functions (eg `list_domains`, `list_workflows`) now return an iterator with a
+  `get_page` method which gets a list results page
 
 ### Fixes
 
