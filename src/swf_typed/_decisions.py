@@ -562,7 +562,7 @@ def send_decisions(
     token: str,
     decisions: t.List[Decision],
     context: str = None,
-    task_list_override: t.Union[TaskListOverride, None],
+    task_list_override: t.Union[TaskListOverride, None] = None,
     client: t.Union["botocore.client.BaseClient", None] = None,
 ) -> None:
     """Make decisions for a workflow execution, completing decision task.
