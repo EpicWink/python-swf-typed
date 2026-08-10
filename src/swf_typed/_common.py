@@ -2,9 +2,9 @@
 
 import abc
 import socket
+import typing as t
 import datetime
 import contextlib
-import typing as t
 import concurrent.futures
 
 from . import _exceptions
@@ -100,7 +100,14 @@ def serialise_datetime(dt: datetime.datetime) -> str:
             for example: ``2020-01-23T01:23:45.678Z``
     """
 
-    return dt.isoformat(sep="T").replace("+00:00", "Z")
+    return dt.isoformat(
+        sep="T",
+        timespec=(
+            "milliseconds"
+            if dt.microsecond and (dt.microsecond % 1000 == 0)
+            else "auto"
+        ),
+    ).replace("+00:00", "Z")
 
 
 def serialise_timedelta(td: datetime.timedelta) -> str:
@@ -122,7 +129,7 @@ def serialise_timedelta(td: datetime.timedelta) -> str:
             yield "T"
             yield str(td.seconds)
             if td.microseconds:
-                yield str(td.microseconds / 1000000.0)
+                yield f".{td.microseconds:06d}".rstrip("0")
             yield "S"
         elif not td.days:
             yield "0D"

@@ -70,6 +70,12 @@ class DecisionFailure:
     """Most recent decision failed."""
 
     def to_dict(self) -> t.Dict[str, t.Any]:
+        """Convert state to built-in types, eg for JSON serialisation.
+
+        Returns:
+            state dictionary
+        """
+
         from . import _common, _history
 
         state_dict = {
@@ -147,6 +153,12 @@ class TaskState:
         return self.status not in (TaskStatus.scheduled, TaskStatus.started)
 
     def to_dict(self) -> t.Dict[str, t.Any]:
+        """Convert state to built-in types, eg for JSON serialisation.
+
+        Returns:
+            state dictionary
+        """
+
         from . import _common
 
         def serialise_timedelta(
@@ -246,6 +258,12 @@ class LambdaTaskState:
         return self.status not in (TaskStatus.scheduled, TaskStatus.started)
 
     def to_dict(self) -> t.Dict[str, t.Any]:
+        """Convert state to built-in types, eg for JSON serialisation.
+
+        Returns:
+            state dictionary
+        """
+
         from . import _common
 
         state_dict = {
@@ -316,6 +334,12 @@ class ChildExecutionState:
     """Message from decider attached to child execution."""
 
     def to_dict(self) -> t.Dict[str, t.Any]:
+        """Convert state to built-in types, eg for JSON serialisation.
+
+        Returns:
+            state dictionary
+        """
+
         from . import _common
 
         def serialise_timedelta(
@@ -401,6 +425,12 @@ class TimerState:
         self.duration = value
 
     def to_dict(self) -> t.Dict[str, t.Any]:
+        """Convert state to built-in types, eg for JSON serialisation.
+
+        Returns:
+            state dictionary
+        """
+
         from . import _common
 
         state_dict = {
@@ -437,6 +467,12 @@ class SignalState:
     """Execution was signalled after most recent decision."""
 
     def to_dict(self) -> t.Dict[str, t.Any]:
+        """Convert state to built-in types, eg for JSON serialisation.
+
+        Returns:
+            state dictionary
+        """
+
         from . import _common
 
         state_dict = {
@@ -468,6 +504,12 @@ class MarkerState:
     """Marker was recorded after most recent decision."""
 
     def to_dict(self) -> t.Dict[str, t.Any]:
+        """Convert state to built-in types, eg for JSON serialisation.
+
+        Returns:
+            state dictionary
+        """
+
         from . import _common
 
         state_dict = {
@@ -542,6 +584,12 @@ class ExecutionState:
     """ID of execution continuing this execution."""
 
     def to_dict(self) -> t.Dict[str, t.Any]:
+        """Convert state to built-in types, eg for JSON serialisation.
+
+        Returns:
+            state dictionary
+        """
+
         from . import _common
 
         def serialise_timedelta(
