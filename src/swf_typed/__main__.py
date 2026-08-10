@@ -91,7 +91,7 @@ def _raw_as_sdk(x: "t.Any") -> "t.Any":
 
 def _build_state(
     history: "t.Union[t.List[t.Dict[str, t.Any]], t.Dict[str, t.Any]]",
-) -> t.Dict[str, t.Any]:
+) -> "t.Dict[str, t.Any]":
     """Build execution state from its history.
 
     Args:
@@ -110,7 +110,7 @@ def _build_state(
 
 
 def _format_state(
-    state: t.Dict[str, t.Any],
+    state: "t.Dict[str, t.Any]",
     output_results: bool = False,
 ) -> "t.Generator[str, None, None]":
     """Format execution state.
