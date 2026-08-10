@@ -2,7 +2,7 @@
   "cancelRequested": false,
   "childExecutions": [],
   "configuration": {
-    "childExecutionPolicyOnTermination": "ChildWorkflowExecutionTerminationPolicy.terminate",
+    "childExecutionPolicyOnTermination": "terminate",
     "decisionTaskList": "dectl",
     "decisionTaskPriority": 0,
     "decisionTaskTimeout": "PT60S",

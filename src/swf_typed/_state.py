@@ -353,8 +353,10 @@ class ChildExecutionState:
                 self.configuration.decision_task_timeout,
             ),
             "decisionTaskList": self.configuration.decision_task_list,
-            "childExecutionPolicyOnTermination": str(
-                self.configuration.child_execution_policy_on_termination,
+            "childExecutionPolicyOnTermination": (
+                self.configuration.child_execution_policy_on_termination.name.replace(
+                    "_", "-"
+                )
             ),
         }  # type: t.Dict[str, t.Any]
 
@@ -607,8 +609,10 @@ class ExecutionState:
 
         cd = {
             "decisionTaskList": self.configuration.decision_task_list,
-            "childExecutionPolicyOnTermination": str(
-                self.configuration.child_execution_policy_on_termination,
+            "childExecutionPolicyOnTermination": (
+                self.configuration.child_execution_policy_on_termination.name.replace(
+                    "_", "-"
+                )
             ),
         }  # type: t.Dict[str, t.Any]
 
