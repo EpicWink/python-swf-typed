@@ -25,6 +25,30 @@ def _read_text_from_file(path: str) -> str:
             return f.read()
 
 
+def _open_text_file_for_writing(path: str) -> "t.ContextManager[t.TextIO]":
+    """Open a file, or use stdout, for writing text.
+
+    Args:
+        path: file path, or '-' for stdout
+
+    Returns:
+        file object to write to
+    """
+
+    import sys
+    import contextlib
+
+    @contextlib.contextmanager
+    def file():
+        f = sys.stdout if path == "-" else open(path, mode="w", encoding="utf-8")
+        yield f
+        if path == "-":
+            f.close()
+
+    # noinspection PyTypeChecker
+    return file()
+
+
 def _raw_as_sdk(x: "t.Any") -> "t.Any":
     """Convert raw built-in objects to match SDK.
 
@@ -171,20 +195,14 @@ def main(argv=None) -> None:
 
     def build_state() -> None:
         """Build execution state from its history."""
-
-        import sys
         import json
 
         state = _build_state(
             history=json.loads(_read_text_from_file(args.history_file)),
         )
 
-        f = sys.stdout if args.state_file == "-" else open(args.state_file, mode="w")
-        try:
+        with _open_text_file_for_writing(args.state_file) as f:
             json.dump(state, f, indent=2 if f.isatty() else None)
-        finally:
-            if args.state_file == "-":
-                f.close()
 
     def format_state() -> None:
         """Format execution state."""
