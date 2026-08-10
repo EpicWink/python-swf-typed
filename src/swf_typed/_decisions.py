@@ -500,7 +500,7 @@ def request_decision_task(
     task_list: str,
     domain: str,
     decider_identity: t.Union[str, None] = None,
-    no_tasks_callback: t.Union[t.Callable[[], None], None] = None,
+    no_tasks_callback: t.Callable[[], None] = lambda: None,
     client: t.Union["botocore.client.BaseClient", None] = None,
 ) -> DecisionTask:
     """Request (poll for) a decision task; blocks until task is received.

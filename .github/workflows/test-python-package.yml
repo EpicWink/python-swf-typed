@@ -13,18 +13,35 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11', '3.12']
+        os: [ubuntu-latest]
+        python-version:
+          - '3.8'
+          - '3.9'
+          - '3.10'
+          - '3.11'
+          - '3.12'
+          - '3.13'
+          - '3.14'
+        include:
+        - os: ubuntu-22.04
+          python-version: '3.7'
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
+        persist-credentials: false
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+      with:
+        cache: pip
         python-version: ${{ matrix.python-version }}
     - name: Install package
-      run: pip install .
+      run: pip install
+        --requirement ./tests/requirements.txt
+        pytest 'darker[isort,black]' .
     - name: Test package
-      run: python -c 'import swf_typed'
-    # TODO: add unit-testing (and linting?)
+      run: pytest -vvra
+    - name: Lint package
+      run: darker --verbose --check --diff --isort ./docs/src ./scripts ./src ./tests

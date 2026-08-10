@@ -5,11 +5,23 @@ Please follow the [code of conduct](./CODE_OF_CONDUCT.md).
 
 ## Development environment set-up
 ```shell
-pip install -e .
+pip install -r dev.requirements.txt
 ```
 
+This installs the package as editable
+
 ## Testing
-Run the example from the README and make sure the output looks correct.
+Use the tools in [scripts/tools](./scripts/tools), verifying output is as expected.
+
+Also run test suite:
+```shell
+pytest -vvra
+```
+
+## Styling
+```shell
+darker -i src/ tests/
+```
 
 ## Building documentation
 ```shell
