@@ -1,12 +1,11 @@
 """SWF workflow type management."""
 
+import typing as t
 import datetime
 import functools
 import dataclasses
-import typing as t
 
-from . import _common
-from . import _executions
+from . import _common, _executions
 
 if t.TYPE_CHECKING:
     import botocore.client

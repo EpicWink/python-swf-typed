@@ -2,9 +2,9 @@
 
 import abc
 import socket
+import typing as t
 import datetime
 import contextlib
-import typing as t
 import concurrent.futures
 
 from . import _exceptions
