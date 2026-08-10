@@ -28,6 +28,7 @@
 ### Fixes
 
 * Use correct workflow type undeprecation SDK method
+* Use correct workflow execution signalling SDK method
 * Use local concurrency executor in decision poll result history page iteration, fixing
   `AttributeError`
 * Execution open-counts are (mostly) not defaulted
