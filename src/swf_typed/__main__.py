@@ -175,11 +175,16 @@ def main(argv=None) -> None:
         import sys
         import json
 
-        json.dump(
-            _build_state(history=json.loads(_read_text_from_file(args.file))),
-            sys.stdout,
-            indent=2 if sys.stdout.isatty() else None,
+        state = _build_state(
+            history=json.loads(_read_text_from_file(args.history_file)),
         )
+
+        f = sys.stdout if args.state_file == "-" else open(args.state_file, mode="w")
+        try:
+            json.dump(state, f, indent=2 if f.isatty() else None)
+        finally:
+            if args.state_file == "-":
+                f.close()
 
     def format_state() -> None:
         """Format execution state."""
@@ -208,7 +213,10 @@ def main(argv=None) -> None:
         description=build_state.__doc__,
     )
     build_state_parser.add_argument(
-        "file", help="execution history file path; '-' for stdin"
+        "history_file", help="execution history file path; '-' for stdin"
+    )
+    build_state_parser.add_argument(
+        "state_file", help="output execution state file path; '-' for stdout"
     )
     build_state_parser.set_defaults(func=build_state)
 
