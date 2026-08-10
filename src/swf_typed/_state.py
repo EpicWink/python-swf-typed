@@ -365,7 +365,10 @@ class ChildExecutionState:
 
         state_dict = {
             "execution": {"id": self.execution.id, "runId": self.execution.run_id},
-            "workflow": {"name": self.workflow.name, "version": self.workflow.version},
+            "workflow": {
+                "name": self.workflow_type.name,
+                "version": self.workflow_type.version,
+            },
             "status": self.status.name.replace("_", "-"),
             "configuration": cd,
             "started": _common.serialise_datetime(self.started),
@@ -528,7 +531,7 @@ class MarkerState:
 class ExecutionState:
     """Workflow execution state."""
 
-    workflow: "_workflows.WorkflowId"
+    workflow: "_workflows.WorkflowTypeReference"
     """Child execution workflow."""
 
     status: "_executions.ExecutionStatus"
@@ -711,7 +714,7 @@ class _StateBuilder:
         # Execution
         elif isinstance(event, _history.WorkflowExecutionStartedEvent):
             self.execution = ExecutionState(
-                workflow=event.workflow,
+                workflow=event.workflow_type,
                 status=_executions.ExecutionStatus.started,
                 configuration=event.execution_configuration,
                 started=event.occured,
