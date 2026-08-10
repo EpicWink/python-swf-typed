@@ -5,10 +5,22 @@
 
 ## Unreleased
 
+### Deprecations
+
+* Timer state `duraction` attribute: use `duration` instead
+
 ### Features
 
 * Workflow and activity type deletion (type must be deprecated)
 * Execution state workflow type reference
+* Timer state `duration` attribute (replacing `duraction`)
+* State `to_dict`, converting to basic built-in types (eg for JSON serialisation).
+  Date-times and time-deltas are formatted as ISO 8601 (for dates: RFC 3339, with T
+  separator)
+* Add CLI by running the `swf_typed` module: `python -m swf_typed`. Includes two
+  subcommands:
+  * `build-state`: construct state from execution history JSON
+  * `format-state`: parse state JSON and extract pertinent details, outputting as YAML
 
 ### Fixes
 
@@ -19,11 +31,21 @@
   * Lambda task count is optional
 * Execution workflow ID and workflow type filter models are now concrete, not abstract
 
+### Improvements
+
+* Don't modify provided SWF client
+* Handle unknown AWS SDK client methods and exceptions
+* Made decision failure state `event` attribute type more specific
+* Sort imports
+* Document default values' types in type annotations (eg `x: str = None` -> `x: str |
+  None = None`)
+
 ### Miscellaneous
 
 * Move Python project metadata and configuration to [pyproject.toml](./pyproject.toml)
 * Add Trove classifiers to Python project
-* Require `setuptools` <81, to ensure legacy `license` metadata support
+* Require `setuptools` <85, to ensure legacy `license` metadata support
+* Unit-test common utilities
 
 ## 1.1.2 - 2024-06-11
 
