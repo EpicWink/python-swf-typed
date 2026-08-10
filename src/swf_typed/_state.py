@@ -397,6 +397,7 @@ class TimerState:
 
     @duraction.setter
     def duraction(self, value: datetime.timedelta) -> None:
+        warnings.warn("Use 'duration' instead", DeprecationWarning, stacklevel=2)
         self.duration = value
 
     def to_dict(self) -> t.Dict[str, t.Any]:
