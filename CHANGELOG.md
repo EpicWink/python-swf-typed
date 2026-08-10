@@ -17,6 +17,10 @@
 * State `to_dict`, converting to basic built-in types (eg for JSON serialisation).
   Date-times and time-deltas are formatted as ISO 8601 (for dates: RFC 3339, with T
   separator)
+* Add CLI by running the `swf_typed` module: `python -m swf_typed`. Includes two
+  subcommands:
+  * `build-state`: construct state from execution history JSON
+  * `format-state`: parse state JSON and extract pertinent details, outputting as YAML
 
 ### Fixes
 

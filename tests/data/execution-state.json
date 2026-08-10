@@ -1,0 +1,177 @@
+{
+  "cancelRequested": false,
+  "childExecutions": [],
+  "configuration": {
+    "childExecutionPolicyOnTermination": "ChildExecutionTerminationPolicy.terminate",
+    "decisionTaskList": "dectl",
+    "decisionTaskPriority": 0,
+    "decisionTaskTimeout": "PT60S",
+    "timeout": "P7D"
+  },
+  "decisionFailures": [],
+  "ended": "2026-08-07T03:33:52.331Z",
+  "failureReason": "task_failed",
+  "input": "wfinput",
+  "markers": [],
+  "signals": [],
+  "started": "2026-08-06T21:45:27.463Z",
+  "status": "failed",
+  "stopDetails": "wffaildetails",
+  "tasks": [
+    {
+      "activity": {"name": "act1", "version": "1.5.0"},
+      "cancelRequested": false,
+      "configuration": {
+        "heartbeatTimeout": null,
+        "priority": 0,
+        "runtimeTimeout": null,
+        "scheduleTimeout": null,
+        "taskList": "acttl2",
+        "totalTimeout": null
+      },
+      "ended": "2026-08-06T21:46:42.048Z",
+      "id": "task1",
+      "input": "task1input",
+      "result": "task1result",
+      "scheduled": "2026-08-06T21:45:27.600Z",
+      "started": "2026-08-06T21:45:27.617Z",
+      "status": "completed",
+      "workerIdentity": "worker2"
+    },
+    {
+      "activity": {"name": "act2", "version": "1.5.0"},
+      "cancelRequested": false,
+      "configuration": {
+        "heartbeatTimeout": null,
+        "priority": 0,
+        "runtimeTimeout": null,
+        "scheduleTimeout": null,
+        "taskList": "acttl3",
+        "totalTimeout": null
+      },
+      "ended": "2026-08-06T23:46:22.393Z",
+      "id": "task2",
+      "result": "task2result",
+      "scheduled": "2026-08-06T21:46:42.082Z",
+      "started": "2026-08-06T23:28:41.020Z",
+      "status": "completed",
+      "workerIdentity": "worker3"
+    },
+    {
+      "activity": {"name": "act3", "version": "1.5.0"},
+      "cancelRequested": false,
+      "configuration": {
+        "heartbeatTimeout": null,
+        "priority": 0,
+        "runtimeTimeout": null,
+        "scheduleTimeout": null,
+        "taskList": "acttl3",
+        "totalTimeout": null
+      },
+      "ended": "2026-08-07T00:41:43.682Z",
+      "id": "task3",
+      "input": "task3input",
+      "scheduled": "2026-08-06T23:46:22.439Z",
+      "started": "2026-08-07T00:37:22.625Z",
+      "status": "completed",
+      "workerIdentity": "worker3"
+    },
+    {
+      "activity": {"name": "act4", "version": "1.5.0"},
+      "cancelRequested": false,
+      "configuration": {
+        "heartbeatTimeout": null,
+        "priority": 0,
+        "runtimeTimeout": null,
+        "scheduleTimeout": null,
+        "taskList": "acttl1",
+        "totalTimeout": null
+      },
+      "ended": "2026-08-07T00:46:02.988Z",
+      "id": "task4",
+      "scheduled": "2026-08-07T00:41:43.727Z",
+      "started": "2026-08-07T00:44:54.683Z",
+      "status": "completed",
+      "workerIdentity": "worker1"
+    },
+    {
+      "activity": {"name": "act5", "version": "1.5.0"},
+      "cancelRequested": false,
+      "configuration": {
+        "heartbeatTimeout": null,
+        "priority": 0,
+        "runtimeTimeout": null,
+        "scheduleTimeout": null,
+        "taskList": "acttl1",
+        "totalTimeout": null
+      },
+      "ended": "2026-08-07T00:46:29.273Z",
+      "id": "task5",
+      "input": "task5input",
+      "result": "task5result",
+      "scheduled": "2026-08-07T00:46:03.029Z",
+      "started": "2026-08-07T00:46:28.942Z",
+      "status": "completed",
+      "workerIdentity": "worker1"
+    },
+    {
+      "activity": {"name": "act6", "version": "1.5.0"},
+      "cancelRequested": false,
+      "configuration": {
+        "heartbeatTimeout": null,
+        "priority": 0,
+        "runtimeTimeout": null,
+        "scheduleTimeout": null,
+        "taskList": "acttl1",
+        "totalTimeout": null
+      },
+      "ended": "2026-08-07T03:13:03.118Z",
+      "id": "task6",
+      "result": "task6result",
+      "scheduled": "2026-08-07T00:46:29.320Z",
+      "started": "2026-08-07T00:55:56.720Z",
+      "status": "completed",
+      "workerIdentity": "worker1"
+    },
+    {
+      "activity": {"name": "sitesact7", "version": "1.5.0"},
+      "cancelRequested": false,
+      "configuration": {
+        "heartbeatTimeout": null,
+        "priority": 0,
+        "runtimeTimeout": null,
+        "scheduleTimeout": null,
+        "taskList": "acttl1",
+        "totalTimeout": null
+      },
+      "ended": "2026-08-07T03:33:52.287Z",
+      "id": "task7",
+      "input": "task7input",
+      "scheduled": "2026-08-07T03:13:03.195Z",
+      "started": "2026-08-07T03:30:22.121Z",
+      "status": "timed-out",
+      "timeoutType": "heartbeat",
+      "workerIdentity": "worker1"
+    },
+    {
+      "activity": {"name": "act8", "version": "1.5.0"},
+      "cancelRequested": false,
+      "configuration": {
+        "heartbeatTimeout": null,
+        "priority": 0,
+        "runtimeTimeout": null,
+        "scheduleTimeout": null,
+        "taskList": "acttl1",
+        "totalTimeout": null
+      },
+      "ended": "2026-08-07T03:30:22.099Z",
+      "id": "task8",
+      "scheduled": "2026-08-07T03:13:03.195Z",
+      "started": "2026-08-07T03:30:04.263Z",
+      "status": "completed",
+      "workerIdentity": "worker1"
+    }
+  ],
+  "timers": [],
+  "workflow": {"name": "wf", "version": "1.5.0"}
+}
