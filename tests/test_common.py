@@ -157,6 +157,39 @@ def test_iter_paged() -> None:
     ]
 
 
+def test_iter_paged_get_page() -> None:
+    """Test ``iter_paged``'s result's ``get_page``."""
+
+    def side_effect(**kwargs) -> t.Dict[str, t.Any]:
+        time.sleep(0.01)
+        return responses[kwargs.get("nextPageToken")]
+
+    responses = {
+        None: {"foo": [{"x": 1}, {"x": 2}], "nextPageToken": "page-2"},
+        "page-2": {"foo": [{"x": 3}, {"x": 4}], "nextPageToken": "page-3"},
+        "page-3": {"foo": [{"x": 5}, {"x": 6}]},
+    }
+    call_mock = unittest.mock.Mock(side_effect=side_effect)
+
+    results_iter = swf_typed._common.iter_paged(
+        call=call_mock, model=lambda x: x["x"], data_key="foo"
+    )
+
+    assert iter(results_iter) is results_iter
+
+    assert results_iter.get_page(start_getting_next_page=False) == ([1, 2], "page-2")
+    assert call_mock.mock_calls == [unittest.mock.call()]
+
+    assert results_iter.get_page("page-2") == ([3, 4], "page-3")
+
+    assert results_iter.get_page("page-3") == ([5, 6], None)
+    assert call_mock.mock_calls == [
+        unittest.mock.call(),
+        unittest.mock.call(nextPageToken="page-2"),
+        unittest.mock.call(nextPageToken="page-3"),
+    ]
+
+
 def test_polling_socket_timeout() -> None:
     """Test ``polling_socket_timeout``."""
     original = socket.getdefaulttimeout()
