@@ -92,7 +92,7 @@ class ContinueAsNewWorkflowExecutionDecision(Decision):
     """Continuing execution workflow version."""
 
     execution_configuration: t.Union[
-        "_executions.PartialExecutionConfiguration",
+        "_executions.PartialWorkflowExecutionConfiguration",
         None,
     ] = None
     """Continuing execution configuration overrides."""
@@ -188,7 +188,10 @@ class RequestCancelExternalWorkflowExecutionDecision(Decision):
 
     type: t.ClassVar[str] = "RequestCancelExternalWorkflowExecution"
 
-    execution: t.Union["_executions.ExecutionId", "_executions.CurrentExecutionId"]
+    execution: t.Union[
+        "_executions.WorkflowExecutionReference",
+        "_executions.CurrentWorkflowExecutionReference",
+    ]
     """ID of execution to cancel."""
 
     control: t.Union[str, None] = None
@@ -292,7 +295,10 @@ class SignalExternalWorkflowExecutionDecision(Decision):
 
     type: t.ClassVar[str] = "SignalExternalWorkflowExecution"
 
-    execution: t.Union["_executions.ExecutionId", "_executions.CurrentExecutionId"]
+    execution: t.Union[
+        "_executions.WorkflowExecutionReference",
+        "_executions.CurrentWorkflowExecutionReference",
+    ]
     """ID of execution to signal."""
 
     signal: str
@@ -325,14 +331,14 @@ class StartChildWorkflowExecutionDecision(Decision):
     workflow_type: "_workflows.WorkflowTypeReference"
     """Child execution workflow."""
 
-    execution: "_executions.CurrentExecutionId"
+    execution: "_executions.CurrentWorkflowExecutionReference"
     """Child execution workflow-ID."""
 
     execution_input: t.Union[str, None] = None
     """Child execution input."""
 
     execution_configuration: t.Union[
-        "_executions.PartialExecutionConfiguration",
+        "_executions.PartialWorkflowExecutionConfiguration",
         None,
     ] = None
     """Child execution configuration overrides."""
@@ -398,7 +404,7 @@ class DecisionTask(_common.Deserialisable):
     token: str
     """Task token, provided by SWF."""
 
-    execution: "_executions.ExecutionId"
+    execution: "_executions.WorkflowExecutionReference"
     """Execution which decisions are being made for."""
 
     workflow_type: "_workflows.WorkflowTypeReference"
@@ -442,7 +448,9 @@ class DecisionTask(_common.Deserialisable):
 
         return cls(
             token=data["taskToken"],
-            execution=_executions.ExecutionId.from_api(data["workflowExecution"]),
+            execution=_executions.WorkflowExecutionReference.from_api(
+                data["workflowExecution"]
+            ),
             workflow_type=_workflows.WorkflowTypeReference.from_api(
                 data["workflowType"],
             ),

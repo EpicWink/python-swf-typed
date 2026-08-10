@@ -12,11 +12,11 @@ def list_executions(
     import swf_typed
 
     if workflow_version:
-        workflow_filter = swf_typed.WorkflowTypeExecutionFilter(
+        workflow_filter = swf_typed.WorkflowTypeWorkflowExecutionFilter(
             workflow=swf_typed.WorkflowId(name=workflow_name, version=workflow_version),
         )
     elif workflow_name:
-        workflow_filter = swf_typed.WorkflowTypeExecutionFilter(
+        workflow_filter = swf_typed.WorkflowTypeWorkflowExecutionFilter(
             workflow=swf_typed.WorkflowIdFilter(name=workflow_name),
         )
     else:
@@ -27,14 +27,14 @@ def list_executions(
             datetime.datetime.now(tz=datetime.timezone.utc)
             - datetime.timedelta(hours=24)
         )
-    time_filter = swf_typed.StartTimeExecutionFilter(earliest=earliest_started)
+    time_filter = swf_typed.StartTimeWorkflowExecutionFilter(earliest=earliest_started)
 
     if closed:
-        executions = swf_typed.list_closed_executions(
+        executions = swf_typed.list_closed_workflow_executions(
             domain=domain_name, time_filter=time_filter, property_filter=workflow_filter
         )
     else:
-        executions = swf_typed.list_open_executions(
+        executions = swf_typed.list_open_workflow_executions(
             domain=domain_name,
             started_filter=time_filter,
             property_filter=workflow_filter,

@@ -59,7 +59,7 @@ class WorkflowTypeInfo(_common.Deserialisable):
         )
 
 
-class DefaultExecutionConfiguration(_executions.PartialExecutionConfiguration):
+class DefaultExecutionConfiguration(_executions.PartialWorkflowExecutionConfiguration):
     """Default workflow execution configuration."""
 
     @classmethod

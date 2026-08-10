@@ -19,14 +19,14 @@ default_executions_list_time_range = datetime.timedelta(days=90)
 
 
 @dataclasses.dataclass
-class CurrentExecutionId(_common.Deserialisable, _common.Serialisable):
+class CurrentWorkflowExecutionReference(_common.Deserialisable, _common.Serialisable):
     """Current open workflow execution specifier."""
 
     id: str
     """Execution workflow-ID."""
 
     @classmethod
-    def from_api(cls, data) -> "CurrentExecutionId":
+    def from_api(cls, data) -> "CurrentWorkflowExecutionReference":
         return cls(id=data["workflowId"])
 
     def to_api(self):
@@ -34,14 +34,14 @@ class CurrentExecutionId(_common.Deserialisable, _common.Serialisable):
 
 
 @dataclasses.dataclass
-class ExecutionId(CurrentExecutionId):
+class WorkflowExecutionReference(CurrentWorkflowExecutionReference):
     """Workflow execution identifier."""
 
     run_id: str
     """Execution run-ID."""
 
     @classmethod
-    def from_api(cls, data) -> "ExecutionId":
+    def from_api(cls, data) -> "WorkflowExecutionReference":
         return cls(id=data["workflowId"], run_id=data["runId"])
 
     def to_api(self):
@@ -50,7 +50,7 @@ class ExecutionId(CurrentExecutionId):
         return data
 
 
-class ExecutionStatus(enum.Enum):
+class WorkflowExecutionStatus(enum.Enum):
     """Workflow execution status."""
 
     open = "OPEN"
@@ -79,11 +79,11 @@ class ExecutionStatus(enum.Enum):
 
 
 @dataclasses.dataclass
-class ExecutionInfo(_common.Deserialisable):
+class WorkflowExecutionInfo(_common.Deserialisable):
     """Workflow execution details."""
 
-    execution: ExecutionId
-    """Execution ID."""
+    execution: WorkflowExecutionReference
+    """Execution reference."""
 
     workflow_type: "_workflows.WorkflowTypeReference"
     """Execution workflow."""
@@ -91,7 +91,7 @@ class ExecutionInfo(_common.Deserialisable):
     started: datetime.datetime
     """Execution start-date."""
 
-    status: ExecutionStatus
+    status: WorkflowExecutionStatus
     """Execution status."""
 
     cancel_requested: bool
@@ -100,34 +100,37 @@ class ExecutionInfo(_common.Deserialisable):
     closed: t.Union[datetime.datetime, None] = None
     """Execution end-date."""
 
-    parent: t.Union[ExecutionId, None] = None
-    """Parent execution ID."""
+    parent: t.Union[WorkflowExecutionReference, None] = None
+    """Parent execution reference."""
 
     tags: t.Union[t.List[str], None] = None
     """Execution tags."""
 
     @classmethod
-    def from_api(cls, data) -> "ExecutionInfo":
+    def from_api(cls, data) -> "WorkflowExecutionInfo":
         from . import _workflows
 
         status_data = data["executionStatus"]
         if status_data == "CLOSED":
             status_data = data["closeStatus"]
         return cls(
-            execution=ExecutionId.from_api(data["execution"]),
+            execution=WorkflowExecutionReference.from_api(data["execution"]),
             workflow_type=_workflows.WorkflowTypeReference.from_api(
                 data["workflowType"],
             ),
             started=data["startTimestamp"],
-            status=ExecutionStatus(status_data),
+            status=WorkflowExecutionStatus(status_data),
             cancel_requested=data["cancelRequested"],
             closed=data.get("closeTimestamp"),
-            parent=data.get("parent") and ExecutionId.from_api(data["parent"]),
+            parent=(
+                data.get("parent")
+                and WorkflowExecutionReference.from_api(data["parent"])
+            ),
             tags=data.get("tagList"),
         )
 
 
-class ChildExecutionTerminationPolicy(str, enum.Enum):
+class ChildWorkflowExecutionTerminationPolicy(str, enum.Enum):
     """Child workflow execution ending policy on parent termination."""
 
     terminate = "TERMINATE"
@@ -141,7 +144,7 @@ class ChildExecutionTerminationPolicy(str, enum.Enum):
 
 
 @dataclasses.dataclass
-class ExecutionConfiguration(_common.Deserialisable):
+class WorkflowExecutionConfiguration(_common.Deserialisable):
     """Workflow execution configuration."""
 
     timeout: t.Union[datetime.timedelta, None]
@@ -153,7 +156,7 @@ class ExecutionConfiguration(_common.Deserialisable):
     decision_task_list: str
     """Decision task task-list."""
 
-    child_execution_policy_on_termination: ChildExecutionTerminationPolicy
+    child_execution_policy_on_termination: ChildWorkflowExecutionTerminationPolicy
     """Child workflow execution ending policy on termination."""
 
     decision_task_priority: t.Union[int, None] = None
@@ -163,8 +166,8 @@ class ExecutionConfiguration(_common.Deserialisable):
     """Execution IAM role ARN for Lambda invocations."""
 
     @classmethod
-    def from_api(cls, data) -> "ExecutionConfiguration":
-        child_policy = ChildExecutionTerminationPolicy(data["childPolicy"])
+    def from_api(cls, data) -> "WorkflowExecutionConfiguration":
+        child_policy = ChildWorkflowExecutionTerminationPolicy(data["childPolicy"])
         decision_task_timeout = _common.parse_timeout(data["taskStartToCloseTimeout"])
         return cls(
             timeout=_common.parse_timeout(data["executionStartToCloseTimeout"]),
@@ -179,8 +182,8 @@ class ExecutionConfiguration(_common.Deserialisable):
 
 
 @dataclasses.dataclass
-class PartialExecutionConfiguration(
-    ExecutionConfiguration, _common.SerialisableToArguments
+class PartialWorkflowExecutionConfiguration(
+    WorkflowExecutionConfiguration, _common.SerialisableToArguments
 ):
     """Partial workflow execution configuration."""
 
@@ -189,12 +192,12 @@ class PartialExecutionConfiguration(
     decision_task_list: t.Union[str, None] = None
     decision_task_priority: t.Union[int, None] = None
     child_execution_policy_on_termination: t.Union[
-        ChildExecutionTerminationPolicy,
+        ChildWorkflowExecutionTerminationPolicy,
         None,
     ] = None
 
     @classmethod
-    def from_api(cls, data) -> "PartialExecutionConfiguration":
+    def from_api(cls, data) -> "PartialWorkflowExecutionConfiguration":
         return cls(
             timeout=(
                 data.get("executionStartToCloseTimeout") and
@@ -209,8 +212,8 @@ class PartialExecutionConfiguration(
                 data.get("taskPriority") and int(data["taskPriority"])
             ),
             child_execution_policy_on_termination=(
-                data.get("childPolicy") and
-                ChildExecutionTerminationPolicy(data["childPolicy"])
+                data.get("childPolicy")
+                and ChildWorkflowExecutionTerminationPolicy(data["childPolicy"])
             ),
             lambda_iam_role_arn=data.get("lambdaRole"),
         )
@@ -249,7 +252,7 @@ class PartialExecutionConfiguration(
 
 
 @dataclasses.dataclass
-class ExecutionOpenCounts:
+class WorkflowExecutionOpenCounts:
     """Counts of workflow executions' open tasks/timers/children."""
 
     activity_tasks: int
@@ -268,7 +271,7 @@ class ExecutionOpenCounts:
     """Number of scheduled/started Lambda invocations."""
 
     @classmethod
-    def from_api(cls, data) -> "ExecutionOpenCounts":
+    def from_api(cls, data) -> "WorkflowExecutionOpenCounts":
         return cls(
             data["openActivityTasks"],
             data["openDecisionTasks"],
@@ -279,16 +282,16 @@ class ExecutionOpenCounts:
 
 
 @dataclasses.dataclass
-class ExecutionDetails:
+class WorkflowExecutionDetails:
     """Workflow execution details, configuration, open-counts and snapshot."""
 
-    info: ExecutionInfo
+    info: WorkflowExecutionInfo
     """Execution details."""
 
-    configuration: t.Union[ExecutionConfiguration, None] = None
+    configuration: t.Union[WorkflowExecutionConfiguration, None] = None
     """Execution configuration."""
 
-    n_open: t.Union[ExecutionOpenCounts, None] = None
+    n_open: t.Union[WorkflowExecutionOpenCounts, None] = None
     """Counts of open tasks/timers/children in execution."""
 
     latest_activity_task_scheduled: t.Union[datetime.datetime, None] = None
@@ -298,19 +301,19 @@ class ExecutionDetails:
     """Most recent decision's execution context."""
 
     @classmethod
-    def from_api(cls, data) -> "ExecutionDetails":
-        config = ExecutionConfiguration.from_api(data["executionConfiguration"])
+    def from_api(cls, data) -> "WorkflowExecutionDetails":
+        config = WorkflowExecutionConfiguration.from_api(data["executionConfiguration"])
         return cls(
-            info=ExecutionInfo.from_api(data["executionInfo"]),
+            info=WorkflowExecutionInfo.from_api(data["executionInfo"]),
             configuration=config,
-            n_open=ExecutionOpenCounts.from_api(data["openCounts"]),
+            n_open=WorkflowExecutionOpenCounts.from_api(data["openCounts"]),
             latest_activity_task_scheduled=data.get("latestActivityTaskTimestamp"),
             latest_context=data.get("latestExecutionContext"),
         )
 
 
 @dataclasses.dataclass
-class ExecutionFilter(_common.SerialisableToArguments, metaclass=abc.ABCMeta):
+class WorkflowExecutionFilter(_common.SerialisableToArguments, metaclass=abc.ABCMeta):
     """Workflow execution filter."""
 
     @abc.abstractmethod
@@ -336,7 +339,7 @@ class DateTimeFilter(_common.Serialisable):
 
 
 @dataclasses.dataclass
-class StartTimeExecutionFilter(DateTimeFilter, ExecutionFilter):
+class StartTimeWorkflowExecutionFilter(DateTimeFilter, WorkflowExecutionFilter):
     """Workflow execution filter on start-time."""
 
     def get_api_args(self):
@@ -344,7 +347,7 @@ class StartTimeExecutionFilter(DateTimeFilter, ExecutionFilter):
 
 
 @dataclasses.dataclass
-class CloseTimeExecutionFilter(DateTimeFilter, ExecutionFilter):
+class CloseTimeWorkflowExecutionFilter(DateTimeFilter, WorkflowExecutionFilter):
     """Workflow execution filter on close-time."""
 
     def get_api_args(self):
@@ -352,18 +355,18 @@ class CloseTimeExecutionFilter(DateTimeFilter, ExecutionFilter):
 
 
 @dataclasses.dataclass
-class IdExecutionFilter(ExecutionFilter):
+class IdWorkflowExecutionFilter(WorkflowExecutionFilter):
     """Workflow execution filter on execution workflow-ID."""
 
-    execution: CurrentExecutionId
-    """Execution ID."""
+    execution: CurrentWorkflowExecutionReference
+    """Execution reference."""
 
     def get_api_args(self):
         return {"executionFilter": self.execution.to_api()}
 
 
 @dataclasses.dataclass
-class WorkflowTypeExecutionFilter(ExecutionFilter):
+class WorkflowTypeWorkflowExecutionFilter(WorkflowExecutionFilter):
     """Workflow execution filter on execution workflow-type."""
 
     workflow_type: t.Union[
@@ -377,7 +380,7 @@ class WorkflowTypeExecutionFilter(ExecutionFilter):
 
 
 @dataclasses.dataclass
-class TagExecutionFilter(ExecutionFilter):
+class TagWorkflowExecutionFilter(WorkflowExecutionFilter):
     """Workflow execution filter on execution tags."""
 
     tag: str
@@ -388,7 +391,7 @@ class TagExecutionFilter(ExecutionFilter):
 
 
 @dataclasses.dataclass
-class CloseStatusExecutionFilter(ExecutionFilter):
+class CloseStatusWorkflowExecutionFilter(WorkflowExecutionFilter):
     """Workflow execution filter on execution close-status."""
 
     status: str
@@ -398,7 +401,9 @@ class CloseStatusExecutionFilter(ExecutionFilter):
         return {"closeStatusFilter": {"status": self.status}}
 
 
-TimeFilter = t.TypeVar("TimeFilter", StartTimeExecutionFilter, CloseTimeExecutionFilter)
+TimeFilter = t.TypeVar(
+    "TimeFilter", StartTimeWorkflowExecutionFilter, CloseTimeWorkflowExecutionFilter
+)
 
 
 def _default_time_filter(cls: t.Type[TimeFilter]) -> TimeFilter:
@@ -408,13 +413,16 @@ def _default_time_filter(cls: t.Type[TimeFilter]) -> TimeFilter:
 
 
 def _get_number_of_executions(
-    time_filter: t.Union[StartTimeExecutionFilter, CloseTimeExecutionFilter],
+    time_filter: t.Union[
+        StartTimeWorkflowExecutionFilter,
+        CloseTimeWorkflowExecutionFilter,
+    ],
     domain: str,
     property_filter: t.Union[
-        IdExecutionFilter,
-        WorkflowTypeExecutionFilter,
-        TagExecutionFilter,
-        CloseStatusExecutionFilter,
+        IdWorkflowExecutionFilter,
+        WorkflowTypeWorkflowExecutionFilter,
+        TagWorkflowExecutionFilter,
+        CloseStatusWorkflowExecutionFilter,
         None,
     ],
     client_method: t.Callable[..., t.Dict[str, t.Any]],
@@ -429,18 +437,18 @@ def _get_number_of_executions(
     return response["count"]
 
 
-def get_number_of_closed_executions(
+def get_number_of_closed_workflow_executions(
     domain: str,
     time_filter: t.Union[
-        StartTimeExecutionFilter,
-        CloseTimeExecutionFilter,
+        StartTimeWorkflowExecutionFilter,
+        CloseTimeWorkflowExecutionFilter,
         None,
     ] = None,
     property_filter: t.Union[
-        IdExecutionFilter,
-        WorkflowTypeExecutionFilter,
-        TagExecutionFilter,
-        CloseStatusExecutionFilter,
+        IdWorkflowExecutionFilter,
+        WorkflowTypeWorkflowExecutionFilter,
+        TagWorkflowExecutionFilter,
+        CloseStatusWorkflowExecutionFilter,
         None,
     ] = None,
     client: t.Union["botocore.client.BaseClient", None] = None,
@@ -463,19 +471,19 @@ def get_number_of_closed_executions(
     """
 
     client = _common.ensure_client(client)
-    time_filter = time_filter or _default_time_filter(CloseTimeExecutionFilter)
+    time_filter = time_filter or _default_time_filter(CloseTimeWorkflowExecutionFilter)
     return _get_number_of_executions(
         time_filter, domain, property_filter, client.count_closed_workflow_executions
     )
 
 
-def get_number_of_open_executions(
+def get_number_of_open_workflow_executions(
     domain: str,
-    started_filter: t.Union[StartTimeExecutionFilter, None] = None,
+    started_filter: t.Union[StartTimeWorkflowExecutionFilter, None] = None,
     property_filter: t.Union[
-        IdExecutionFilter,
-        WorkflowTypeExecutionFilter,
-        TagExecutionFilter,
+        IdWorkflowExecutionFilter,
+        WorkflowTypeWorkflowExecutionFilter,
+        TagWorkflowExecutionFilter,
         None,
     ] = None,
     client: t.Union["botocore.client.BaseClient", None] = None,
@@ -497,17 +505,19 @@ def get_number_of_open_executions(
     """
 
     client = _common.ensure_client(client)
-    started_filter = started_filter or _default_time_filter(StartTimeExecutionFilter)
+    started_filter = started_filter or _default_time_filter(
+        StartTimeWorkflowExecutionFilter,
+    )
     return _get_number_of_executions(
         started_filter, domain, property_filter, client.count_open_workflow_executions
     )
 
 
-def describe_execution(
-    execution: ExecutionId,
+def describe_workflow_execution(
+    execution: WorkflowExecutionReference,
     domain: str,
     client: t.Union["botocore.client.BaseClient", None] = None,
-) -> ExecutionDetails:
+) -> WorkflowExecutionDetails:
     """Describe a workflow execution.
 
     Args:
@@ -523,26 +533,26 @@ def describe_execution(
     response = client.describe_workflow_execution(
         domain=domain, execution=execution.to_api()
     )
-    return ExecutionDetails.from_api(response)
+    return WorkflowExecutionDetails.from_api(response)
 
 
-def list_closed_executions(
+def list_closed_workflow_executions(
     domain: str,
     time_filter: t.Union[
-        StartTimeExecutionFilter,
-        CloseTimeExecutionFilter,
+        StartTimeWorkflowExecutionFilter,
+        CloseTimeWorkflowExecutionFilter,
         None,
     ] = None,
     property_filter: t.Union[
-        IdExecutionFilter,
-        WorkflowTypeExecutionFilter,
-        TagExecutionFilter,
-        CloseStatusExecutionFilter,
+        IdWorkflowExecutionFilter,
+        WorkflowTypeWorkflowExecutionFilter,
+        TagWorkflowExecutionFilter,
+        CloseStatusWorkflowExecutionFilter,
         None,
     ] = None,
     reverse: bool = False,
     client: t.Union["botocore.client.BaseClient", None] = None,
-) -> _common.PageConsumer[ExecutionInfo]:
+) -> _common.PageConsumer[WorkflowExecutionInfo]:
     """List closed workflow executions; retrieved semi-lazily.
 
     Args:
@@ -559,7 +569,7 @@ def list_closed_executions(
     """
 
     client = _common.ensure_client(client)
-    time_filter = time_filter or _default_time_filter(CloseTimeExecutionFilter)
+    time_filter = time_filter or _default_time_filter(CloseTimeWorkflowExecutionFilter)
     kw = time_filter.get_api_args()
     if property_filter:
         kw.update(property_filter.get_api_args())
@@ -569,21 +579,21 @@ def list_closed_executions(
         reverseOrder=reverse,
         **kw,
     )
-    return _common.iter_paged(call, ExecutionInfo.from_api, "executionInfos")
+    return _common.iter_paged(call, WorkflowExecutionInfo.from_api, "executionInfos")
 
 
-def list_open_executions(
+def list_open_workflow_executions(
     domain: str,
-    started_filter: t.Union[StartTimeExecutionFilter, None] = None,
+    started_filter: t.Union[StartTimeWorkflowExecutionFilter, None] = None,
     property_filter: t.Union[
-        IdExecutionFilter,
-        WorkflowTypeExecutionFilter,
-        TagExecutionFilter,
+        IdWorkflowExecutionFilter,
+        WorkflowTypeWorkflowExecutionFilter,
+        TagWorkflowExecutionFilter,
         None,
     ] = None,
     reverse: bool = False,
     client: t.Union["botocore.client.BaseClient", None] = None,
-) -> _common.PageConsumer[ExecutionInfo]:
+) -> _common.PageConsumer[WorkflowExecutionInfo]:
     """List open workflow executions; retrieved semi-lazily.
 
     Args:
@@ -599,7 +609,9 @@ def list_open_executions(
     """
 
     client = _common.ensure_client(client)
-    started_filter = started_filter or _default_time_filter(StartTimeExecutionFilter)
+    started_filter = started_filter or _default_time_filter(
+        StartTimeWorkflowExecutionFilter,
+    )
     kw = {}
     if property_filter:
         kw.update(property_filter.get_api_args())
@@ -610,11 +622,11 @@ def list_open_executions(
         reverseOrder=reverse,
         **kw,
     )
-    return _common.iter_paged(call, ExecutionInfo.from_api, "executionInfos")
+    return _common.iter_paged(call, WorkflowExecutionInfo.from_api, "executionInfos")
 
 
-def request_cancel_execution(
-    execution: t.Union[CurrentExecutionId, ExecutionId],
+def request_cancel_workflow_execution(
+    execution: t.Union[CurrentWorkflowExecutionReference, WorkflowExecutionReference],
     domain: str,
     client: t.Union["botocore.client.BaseClient", None] = None,
 ) -> None:
@@ -628,15 +640,15 @@ def request_cancel_execution(
 
     client = _common.ensure_client(client)
     kw = {}
-    if isinstance(execution, ExecutionId):
+    if isinstance(execution, WorkflowExecutionReference):
         kw["runId"] = execution.run_id
     client.request_cancel_workflow_execution(
         domain=domain, workflowId=execution.id, **kw
     )
 
 
-def signal_execution(
-    execution: t.Union[CurrentExecutionId, ExecutionId],
+def signal_workflow_execution(
+    execution: t.Union[CurrentWorkflowExecutionReference, WorkflowExecutionReference],
     signal: str,
     domain: str,
     input_: t.Union[str, None] = None,
@@ -654,7 +666,7 @@ def signal_execution(
 
     client = _common.ensure_client(client)
     kw = {}
-    if isinstance(execution, ExecutionId):
+    if isinstance(execution, WorkflowExecutionReference):
         kw["runId"] = execution.run_id
     if input_ or input_ == "":
         kw["input"] = input_
@@ -666,15 +678,15 @@ def signal_execution(
     )
 
 
-def start_execution(
+def start_workflow_execution(
     workflow_type: "_workflows.WorkflowTypeReference",
-    execution: CurrentExecutionId,
+    execution: CurrentWorkflowExecutionReference,
     domain: str,
     input: t.Union[str, None] = None,
-    configuration: t.Union[PartialExecutionConfiguration, None] = None,
+    configuration: t.Union[PartialWorkflowExecutionConfiguration, None] = None,
     tags: t.Union[t.List[str], None] = None,
     client: t.Union["botocore.client.BaseClient", None] = None,
-) -> ExecutionId:
+) -> WorkflowExecutionReference:
     """Start a workflow execution.
 
     Args:
@@ -692,7 +704,7 @@ def start_execution(
     """
 
     client = _common.ensure_client(client)
-    configuration = configuration or PartialExecutionConfiguration()
+    configuration = configuration or PartialWorkflowExecutionConfiguration()
     kw = configuration.get_api_args()
     if input or input == "":
         kw["input"] = input
@@ -704,15 +716,18 @@ def start_execution(
         workflowType=workflow_type.to_api(),
         **kw,
     )
-    return ExecutionId(id=execution.id, run_id=response["runId"])
+    return WorkflowExecutionReference(id=execution.id, run_id=response["runId"])
 
 
-def terminate_execution(
-    execution: t.Union[CurrentExecutionId, ExecutionId],
+def terminate_workflow_execution(
+    execution: t.Union[CurrentWorkflowExecutionReference, WorkflowExecutionReference],
     domain: str,
     reason: t.Union[str, None] = None,
     details: t.Union[str, None] = None,
-    child_execution_policy: t.Union[ChildExecutionTerminationPolicy, None] = None,
+    child_execution_policy: t.Union[
+        ChildWorkflowExecutionTerminationPolicy,
+        None,
+    ] = None,
     client: t.Union["botocore.client.BaseClient", None] = None,
 ) -> None:
     """Terminate (immediately close) a workflow execution.
@@ -729,7 +744,7 @@ def terminate_execution(
 
     client = _common.ensure_client(client)
     kw = {}
-    if isinstance(execution, ExecutionId):
+    if isinstance(execution, WorkflowExecutionReference):
         kw["runId"] = execution.run_id
     if reason or reason == "":
         kw["reason"] = reason
