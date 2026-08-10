@@ -184,7 +184,10 @@ def register_workflow(
     workflow: WorkflowId,
     domain: str,
     description: t.Union[str, None] = None,
-    default_execution_configuration: t.Union[DefaultExecutionConfiguration, None] = None,
+    default_execution_configuration: t.Union[
+        DefaultExecutionConfiguration,
+        None,
+    ] = None,
     client: t.Union["botocore.client.BaseClient", None] = None,
 ) -> None:
     """Register a new workflow type.
