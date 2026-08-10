@@ -69,6 +69,34 @@ class DecisionFailure:
     is_new: bool = True
     """Most recent decision failed."""
 
+    def to_dict(self) -> t.Dict[str, t.Any]:
+        """Convert state to built-in types, eg for JSON serialisation.
+
+        Returns:
+            state dictionary
+        """
+
+        from . import _common, _history
+
+        state_dict = {
+            "event": {
+                "id": self.event.id,
+                "type": self.event.type,
+                "occured": _common.serialise_datetime(self.event.occured),
+                "decisionEventId": self.event.decision_event_id,
+            },
+            "isNew": self.is_new,
+        }  # type: t.Dict[str, t.Any]
+
+        if isinstance(self.event, _history.RecordMarkerFailedEvent):
+            state_dict["event"]["cause"] = getattr(
+                getattr(self.event, "cause", None), "name", "unauthorised"
+            )
+        else:
+            state_dict["event"]["cause"] = self.event.cause.name
+
+        return state_dict
+
 
 @dataclasses.dataclass
 class TaskState:
@@ -124,6 +152,65 @@ class TaskState:
         """Activity task has completed/failed/cancelled/timed-out."""
         return self.status not in (TaskStatus.scheduled, TaskStatus.started)
 
+    def to_dict(self) -> t.Dict[str, t.Any]:
+        """Convert state to built-in types, eg for JSON serialisation.
+
+        Returns:
+            state dictionary
+        """
+
+        from . import _common
+
+        def serialise_timedelta(
+            td: t.Union[datetime.timedelta, None],
+        ) -> t.Union[str, None]:
+            return None if td is None else _common.serialise_timedelta(td)
+
+        cd = {
+            "taskList": self.configuration.task_list,
+            "runtimeTimeout": serialise_timedelta(self.configuration.runtime_timeout),
+            "scheduleTimeout": serialise_timedelta(self.configuration.schedule_timeout),
+            "totalTimeout": serialise_timedelta(self.configuration.total_timeout),
+            "priority": self.configuration.priority,
+        }  # type: t.Dict[str, t.Any]
+
+        if self.configuration.heartbeat_timeout is not _common.unset:
+            cd["heartbeatTimeout"] = serialise_timedelta(
+                self.configuration.heartbeat_timeout,
+            )
+        if self.configuration.priority is not None:
+            cd["priority"] = self.configuration.priority
+
+        state_dict = {
+            "id": self.id,
+            "status": self.status.name.replace("_", "-"),
+            "activity": {"name": self.activity.name, "version": self.activity.version},
+            "configuration": cd,
+            "scheduled": _common.serialise_datetime(self.scheduled),
+            "cancelRequested": self.cancel_requested,
+        }  # type: t.Dict[str, t.Any]
+
+        if self.started is not None:
+            state_dict["started"] = _common.serialise_datetime(self.started)
+        if self.ended is not None:
+            state_dict["ended"] = _common.serialise_datetime(self.ended)
+        if self.input is not None:
+            state_dict["input"] = self.input
+        if self.worker_identity is not None:
+            state_dict["workerIdentity"] = self.worker_identity
+        if self.result is not None:
+            state_dict["result"] = self.result
+        if self.timeout_type is not None:
+            state_dict["timeoutType"] = self.timeout_type.name
+        if self.failure_reason is not None:
+            state_dict["failureReason"] = self.failure_reason
+        if self.stop_details is not None:
+            state_dict["stopDetails"] = self.stop_details
+        if self.decider_control is not None:
+            state_dict["deciderControl"] = self.decider_control
+
+        return state_dict
+
 
 @dataclasses.dataclass
 class LambdaTaskState:
@@ -170,6 +257,41 @@ class LambdaTaskState:
         """Lambda task has completed/failed/cancelled/timed-out."""
         return self.status not in (TaskStatus.scheduled, TaskStatus.started)
 
+    def to_dict(self) -> t.Dict[str, t.Any]:
+        """Convert state to built-in types, eg for JSON serialisation.
+
+        Returns:
+            state dictionary
+        """
+
+        from . import _common
+
+        state_dict = {
+            "id": self.id,
+            "status": self.status.name.replace("_", "-"),
+            "lambdaFunction": self.lambda_function,
+            "scheduled": _common.serialise_datetime(self.scheduled),
+        }  # type: t.Dict[str, t.Any]
+
+        if self.started is not None:
+            state_dict["started"] = _common.serialise_datetime(self.started)
+        if self.ended is not None:
+            state_dict["ended"] = _common.serialise_datetime(self.ended)
+        if self.timeout is not None:
+            state_dict["timeout"] = _common.serialise_timedelta(self.timeout)
+        if self.input is not None:
+            state_dict["input"] = self.input
+        if self.result is not None:
+            state_dict["result"] = self.result
+        if self.failure_reason is not None:
+            state_dict["failureReason"] = self.failure_reason
+        if self.stop_details is not None:
+            state_dict["stopDetails"] = self.stop_details
+        if self.decider_control is not None:
+            state_dict["deciderControl"] = self.decider_control
+
+        return state_dict
+
 
 @dataclasses.dataclass
 class ChildExecutionState:
@@ -211,6 +333,61 @@ class ChildExecutionState:
     decider_control: str = None
     """Message from decider attached to child execution."""
 
+    def to_dict(self) -> t.Dict[str, t.Any]:
+        """Convert state to built-in types, eg for JSON serialisation.
+
+        Returns:
+            state dictionary
+        """
+
+        from . import _common
+
+        def serialise_timedelta(
+            td: t.Union[datetime.timedelta, None],
+        ) -> t.Union[str, None]:
+            return None if td is None else _common.serialise_timedelta(td)
+
+        cd = {
+            "timeout": serialise_timedelta(self.configuration.timeout),
+            "decisionTaskTimeout": serialise_timedelta(
+                self.configuration.decision_task_timeout,
+            ),
+            "decisionTaskList": self.configuration.decision_task_list,
+            "childExecutionPolicyOnTermination": str(
+                self.configuration.child_execution_policy_on_termination,
+            ),
+        }  # type: t.Dict[str, t.Any]
+
+        if self.configuration.decision_task_priority is not None:
+            cd["decisionTaskPriority"] = self.configuration.decision_task_priority
+        if self.configuration.lambda_iam_role_arn is not None:
+            cd["lambdaIamRoleArn"] = self.configuration.lambda_iam_role_arn
+
+        state_dict = {
+            "execution": {"id": self.execution.id, "runId": self.execution.run_id},
+            "workflow": {"name": self.workflow.name, "version": self.workflow.version},
+            "status": self.status.name.replace("_", "-"),
+            "configuration": cd,
+            "started": _common.serialise_datetime(self.started),
+        }  # type: t.Dict[str, t.Any]
+
+        if self.ended is not None:
+            state_dict["ended"] = _common.serialise_datetime(self.ended)
+        if self.input is not None:
+            state_dict["input"] = self.input
+        if self.result is not None:
+            state_dict["result"] = self.result
+        if self.timeout_type is not None:
+            state_dict["timeoutType"] = self.timeout_type.name
+        if self.failure_reason is not None:
+            state_dict["failureReason"] = self.failure_reason
+        if self.stop_details is not None:
+            state_dict["stopDetails"] = self.stop_details
+        if self.decider_control is not None:
+            state_dict["deciderControl"] = self.decider_control
+
+        return state_dict
+
 
 @dataclasses.dataclass
 class TimerState:
@@ -247,6 +424,31 @@ class TimerState:
         warnings.warn("Use 'duration' instead", DeprecationWarning, stacklevel=2)
         self.duration = value
 
+    def to_dict(self) -> t.Dict[str, t.Any]:
+        """Convert state to built-in types, eg for JSON serialisation.
+
+        Returns:
+            state dictionary
+        """
+
+        from . import _common
+
+        state_dict = {
+            "id": self.id,
+            "status": self.status.name.replace("_", "-"),
+            "duration": _common.serialise_timedelta(self.duration),
+            "started": _common.serialise_datetime(self.started),
+        }  # type: t.Dict[str, t.Any]
+
+        if self.ended is not None:
+            state_dict["ended"] = _common.serialise_datetime(self.ended)
+        if self.input is not None:
+            state_dict["input"] = self.input
+        if self.decider_control is not None:
+            state_dict["deciderControl"] = self.decider_control
+
+        return state_dict
+
 
 @dataclasses.dataclass
 class SignalState:
@@ -264,6 +466,26 @@ class SignalState:
     is_new: bool = True
     """Execution was signalled after most recent decision."""
 
+    def to_dict(self) -> t.Dict[str, t.Any]:
+        """Convert state to built-in types, eg for JSON serialisation.
+
+        Returns:
+            state dictionary
+        """
+
+        from . import _common
+
+        state_dict = {
+            "name": self.name,
+            "received": _common.serialise_datetime(self.received),
+            "isNew": self.is_new,
+        }  # type: t.Dict[str, t.Any]
+
+        if self.input is not None:
+            state_dict["input"] = self.input
+
+        return state_dict
+
 
 @dataclasses.dataclass
 class MarkerState:
@@ -280,6 +502,26 @@ class MarkerState:
 
     is_new: bool = True
     """Marker was recorded after most recent decision."""
+
+    def to_dict(self) -> t.Dict[str, t.Any]:
+        """Convert state to built-in types, eg for JSON serialisation.
+
+        Returns:
+            state dictionary
+        """
+
+        from . import _common
+
+        state_dict = {
+            "name": self.name,
+            "recorded": _common.serialise_datetime(self.recorded),
+            "isNew": self.is_new,
+        }  # type: t.Dict[str, t.Any]
+
+        if self.details is not None:
+            state_dict["details"] = self.details
+
+        return state_dict
 
 
 @dataclasses.dataclass
@@ -340,6 +582,69 @@ class ExecutionState:
 
     continuing_execution_run_id: str = None
     """ID of execution continuing this execution."""
+
+    def to_dict(self) -> t.Dict[str, t.Any]:
+        """Convert state to built-in types, eg for JSON serialisation.
+
+        Returns:
+            state dictionary
+        """
+
+        from . import _common
+
+        def serialise_timedelta(
+            td: t.Union[datetime.timedelta, None],
+        ) -> t.Union[str, None]:
+            if td is None:
+                return None
+            return _common.serialise_timedelta(td)
+
+        cd = {
+            "decisionTaskList": self.configuration.decision_task_list,
+            "childExecutionPolicyOnTermination": str(
+                self.configuration.child_execution_policy_on_termination,
+            ),
+        }  # type: t.Dict[str, t.Any]
+
+        if self.configuration.timeout is not None:
+            cd["timeout"] = serialise_timedelta(self.configuration.timeout)
+        if self.configuration.decision_task_timeout is not None:
+            cd["decisionTaskTimeout"] = serialise_timedelta(
+                self.configuration.decision_task_timeout,
+            )
+        if self.configuration.decision_task_priority is not None:
+            cd["decisionTaskPriority"] = self.configuration.decision_task_priority
+        if self.configuration.lambda_iam_role_arn is not None:
+            cd["lambdaIamRoleArn"] = self.configuration.lambda_iam_role_arn
+
+        state_dict = {
+            "workflow": {"name": self.workflow.name, "version": self.workflow.version},
+            "status": self.status.name.replace("_", "-"),
+            "configuration": cd,
+            "started": _common.serialise_datetime(self.started),
+            "tasks": [x.to_dict() for x in self.tasks],
+            "childExecutions": [x.to_dict() for x in self.child_executions],
+            "timers": [x.to_dict() for x in self.timers],
+            "signals": [x.to_dict() for x in self.signals],
+            "markers": [x.to_dict() for x in self.markers],
+            "decisionFailures": [x.to_dict() for x in self.decision_failures],
+            "cancelRequested": self.cancel_requested,
+        }  # type: t.Dict[str, t.Any]
+
+        if self.ended is not None:
+            state_dict["ended"] = _common.serialise_datetime(self.ended)
+        if self.input is not None:
+            state_dict["input"] = self.input
+        if self.result is not None:
+            state_dict["result"] = self.result
+        if self.failure_reason is not None:
+            state_dict["failureReason"] = self.failure_reason
+        if self.stop_details is not None:
+            state_dict["stopDetails"] = self.stop_details
+        if self.continuing_execution_run_id is not None:
+            state_dict["continuingExecutionRunId"] = self.continuing_execution_run_id
+
+        return state_dict
 
 
 class _StateBuilder:
