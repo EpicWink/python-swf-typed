@@ -1,0 +1,13 @@
+# Development requirements
+
+# Runtime
+-e .
+
+# Testing
+-r ./tests/requirements.txt
+
+# Styling
+darker[isort,black]
+
+# Documentations
+-r ./docs/requirements.txt

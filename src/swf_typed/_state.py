@@ -2,6 +2,7 @@
 
 import enum
 import datetime
+import warnings
 import dataclasses
 import typing as t
 
@@ -52,7 +53,21 @@ class TimerStatus(enum.Enum):
 class DecisionFailure:
     """Decision failure event."""
 
-    event: "_history.Event"
+    event: t.Union[
+        "_history.CancelTimerFailedEvent",
+        "_history.CancelWorkflowExecutionFailedEvent",
+        "_history.CompleteWorkflowExecutionFailedEvent",
+        "_history.ContinueAsNewWorkflowExecutionFailedEvent",
+        "_history.FailWorkflowExecutionFailedEvent",
+        "_history.RecordMarkerFailedEvent",
+        "_history.RequestCancelActivityTaskFailedEvent",
+        "_history.RequestCancelExternalWorkflowExecutionFailedEvent",
+        "_history.ScheduleActivityTaskFailedEvent",
+        "_history.ScheduleLambdaFunctionFailedEvent",
+        "_history.SignalExternalWorkflowExecutionFailedEvent",
+        "_history.StartChildWorkflowExecutionFailedEvent",
+        "_history.StartTimerFailedEvent",
+    ]
     """History event for decision failure."""
 
     is_new: bool = True
@@ -211,7 +226,7 @@ class TimerState:
     status: TimerStatus
     """Timer status."""
 
-    duraction: datetime.timedelta
+    duration: datetime.timedelta
     """Timer duration."""
 
     started: datetime.datetime
@@ -225,6 +240,16 @@ class TimerState:
 
     decider_control: str = None
     """Message from decider attached to timer."""
+
+    @property
+    def duraction(self) -> datetime.timedelta:
+        warnings.warn("Use 'duration' instead", DeprecationWarning, stacklevel=2)
+        return self.duration
+
+    @duraction.setter
+    def duraction(self, value: datetime.timedelta) -> None:
+        warnings.warn("Use 'duration' instead", DeprecationWarning, stacklevel=2)
+        self.duration = value
 
 
 @dataclasses.dataclass
@@ -564,7 +589,7 @@ class _StateBuilder:
             timer = TimerState(
                 id=event.timer_id,
                 status=TimerStatus.started,
-                duraction=event.timer_duration,
+                duration=event.timer_duration,
                 started=event.occured,
                 decider_control=event.control,
             )

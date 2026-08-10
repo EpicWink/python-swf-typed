@@ -10,54 +10,9 @@ if t.TYPE_CHECKING:
 
 T = t.TypeVar("T")
 
-_swf_client_methods = (
-    "count_closed_workflow_executions",
-    "count_open_workflow_executions",
-    "count_pending_activity_tasks",
-    "count_pending_decision_tasks",
-    "deprecate_activity_type",
-    "deprecate_domain",
-    "deprecate_workflow_type",
-    "describe_activity_type",
-    "describe_domain",
-    "describe_workflow_execution",
-    "describe_workflow_type",
-    "generate_presigned_url",
-    "get_workflow_execution_history",
-    "list_activity_types",
-    "list_closed_workflow_executions",
-    "list_domains",
-    "list_open_workflow_executions",
-    "list_tags_for_resource",
-    "list_workflow_types",
-    "poll_for_activity_task",
-    "poll_for_decision_task",
-    "record_activity_task_heartbeat",
-    "register_activity_type",
-    "register_domain",
-    "register_workflow_type",
-    "request_cancel_workflow_execution",
-    "respond_activity_task_canceled",
-    "respond_activity_task_completed",
-    "respond_activity_task_failed",
-    "respond_decision_task_completed",
-    "signal_workflow_execution",
-    "start_workflow_execution",
-    "tag_resource",
-    "terminate_workflow_execution",
-    "undeprecate_activity_type",
-    "undeprecate_domain",
-    "undeprecate_workflow_type",
-    "untag_resource",
-)
-_pass_through_exceptions = (
-    "IncompleteSignature",
-    "InvalidAction",
-    "InvalidQueryParameter",
-    "MalformedQueryString",
-    "MissingAuthenticationToken",
-    "MissingParameter",
-)
+
+class _UnknownException(Exception):
+    pass
 
 
 class SwfError(Exception):
@@ -79,7 +34,10 @@ class SwfError(Exception):
         cls, exception: "botocore.exceptions.ClientError"
     ) -> "SwfError":
         error = exception.response["Error"]["Code"]
-        exception_class = cls._child_classes[error]
+        try:
+            exception_class = cls._child_classes[error]
+        except KeyError as e:
+            raise _UnknownException(error) from e
         return exception_class(exception.response["Error"].get("Message"))
 
 
@@ -223,22 +181,40 @@ class ExceptionRedirectMethodWrapper(t.Generic[T]):
         try:
             return self._f(*args, **kwargs)
         except botocore.exceptions.ClientError as e:
-            if e.response["Error"]["Code"] in _pass_through_exceptions:
-                raise
-            raise SwfError.from_botocore_exception(e) from None
+            try:
+                new_exception = SwfError.from_botocore_exception(e)
+            except _UnknownException:
+                pass
+            else:
+                raise new_exception from e.with_traceback(None)
+            raise
 
     def __getattr__(self, item: str):
         return getattr(self._f, item)
 
 
-def redirect_exceptions_in_swf_client(swf_client: "botocore.client.BaseClient") -> None:
+@dataclasses.dataclass
+class ExceptionRedirectClientWrapper:
+    __client: "botocore.client.BaseClient"
+
+    def __getattr__(self, item: str):
+        value = getattr(self.__client, item)
+        if item[:1] != "_" and hasattr(value, "__func__"):
+            value = ExceptionRedirectMethodWrapper(value)
+        setattr(self, item, value)  # cache
+        return value
+
+
+def redirect_exceptions_in_swf_client(
+    swf_client: "botocore.client.BaseClient",
+) -> ExceptionRedirectClientWrapper:
     """Redirect ``botocore`` client-error exceptions to custom exceptions.
 
     Args:
-        swf_client: client to redirect exceptions from, modified in-place
+        swf_client: client to redirect exceptions from
+
+    Returns:
+        wrapped client
     """
 
-    for name in _swf_client_methods:
-        attr = getattr(swf_client, name)
-        attr = ExceptionRedirectMethodWrapper(attr)
-        setattr(swf_client, name, attr)
+    return ExceptionRedirectClientWrapper(swf_client)
