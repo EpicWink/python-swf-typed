@@ -5,10 +5,15 @@
 
 ## Unreleased
 
+### Deprecations
+
+* Timer state `duraction` attribute: use `duration` instead
+
 ### Features
 
 * Workflow and activity type deletion (type must be deprecated)
 * Execution state workflow type reference
+* Timer state `duration` attribute (replacing `duraction`)
 
 ### Fixes
 
@@ -23,12 +28,13 @@
 
 * Don't modify provided SWF client
 * Handle unknown AWS SDK client methods and exceptions
+* Made decision failure state `event` attribute type more specific
 
 ### Miscellaneous
 
 * Move Python project metadata and configuration to [pyproject.toml](./pyproject.toml)
 * Add Trove classifiers to Python project
-* Require `setuptools` <81, to ensure legacy `license` metadata support
+* Require `setuptools` <85, to ensure legacy `license` metadata support
 * Unit-test common utilities
 
 ## 1.1.2 - 2024-06-11
