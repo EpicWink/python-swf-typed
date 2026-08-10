@@ -465,6 +465,20 @@ class DecisionTask(_common.Deserialisable):
         return self._execution_history_list
 
 
+class TaskListOverride:
+    """Decision task list override."""
+
+    name: str
+    """Decision task list name."""
+
+    timeout: t.Union[datetime.timedelta, None] = None
+    """Decision task start timeout.
+
+    Decision task will be re-scheduled on the original task list after
+    timeout.
+    """
+
+
 def get_number_of_pending_decision_tasks(
     task_list: str,
     domain: str,
@@ -547,7 +561,8 @@ def request_decision_task(
 def send_decisions(
     token: str,
     decisions: t.List[Decision],
-    context: t.Union[str, None] = None,
+    context: str = None,
+    task_list_override: t.Union[TaskListOverride, None] = None,
     client: t.Union["botocore.client.BaseClient", None] = None,
 ) -> None:
     """Make decisions for a workflow execution, completing decision task.
@@ -556,6 +571,7 @@ def send_decisions(
         token: decision task identifying token
         decisions: decisions to make
         context: workflow execution context to set
+        task_list_override: decision task list override configuration
         client: SWF client
     """
 
@@ -563,6 +579,11 @@ def send_decisions(
     kw = {}
     if context or context == "":
         kw["executonContext"] = context
+    if task_list_override:
+        kw["taskList"] = {"name": task_list_override.name}
+        timeout = task_list_override.timeout
+        if timeout or timeout == datetime.timedelta(0):
+            kw["taskListScheduleToStartTimeout"] = str(int(timeout.total_seconds()))
     decisions_data = [d.to_api() for d in decisions]
     client.respond_decision_task_completed(
         taskToken=token, decisions=decisions_data, **kw
