@@ -120,7 +120,7 @@ def _generate_api_docs() -> None:
         "",
         ".. autoclass:: swf_typed._common.PageConsumer(...)",
         "   :show-inheritance:",
-        "   :members: get_page",
+        "   :members: get_page, model, response",
     ]
 
     api_docs_rst = "\n".join(lines)

@@ -5,6 +5,7 @@ import socket
 import typing as t
 import datetime
 import contextlib
+import dataclasses
 import collections.abc
 import concurrent.futures
 
@@ -62,35 +63,28 @@ class SerialisableToArguments(metaclass=abc.ABCMeta):
         """Serialise to SWF API request arguments."""
 
 
+@dataclasses.dataclass
 class PageConsumer(collections.abc.Generator, t.Generic[T]):
     """Paged SWF API response iterator."""
 
-    _next_page_token_key = "nextPageToken"
+    _next_page_token_key: t.ClassVar[str] = "nextPageToken"
 
-    def __init__(
-        self,
-        api_call: t.Callable[..., t.Dict[str, t.Any]],
-        model: t.Callable[[t.Dict[str, t.Any]], T],
-        data_key: str,
-        response: t.Dict[str, t.Any],
-        executor: concurrent.futures.Executor,
-    ) -> None:
-        """Initialise iterator.
+    api_call: t.Callable[..., t.Dict[str, t.Any]]
+    """List AWS SWF API SDK function."""
 
-        Args:
-            api_call: AWS SWF API SDK function
-            model: response model (constructor)
-            data_key: response results key
-            response: first response
-            executor: concurrency executor
-        """
+    model: t.Callable[[t.Dict[str, t.Any]], T]
+    """``swf_typed`` model (constructor) for list result items."""
 
-        self.api_call = api_call
-        self.model = model
-        self.data_key = data_key
-        self.response = response
-        self.executor = executor
+    data_key: str
+    """List results key."""
 
+    response: t.Dict[str, t.Any]
+    """Current list API response."""
+
+    executor: concurrent.futures.Executor
+    """Concurrency executor."""
+
+    def __post_init__(self) -> None:
         self._i = 0
         self._future: t.Union[concurrent.futures.Future, None] = None
 
@@ -112,7 +106,7 @@ class PageConsumer(collections.abc.Generator, t.Generic[T]):
         if self._i >= len(self._items):
             if not self._future:
                 raise StopIteration
-            # Recieve next page
+            # Receive next page
             self.response = self._future.result()
             self._i = 0
             if self.response.get(self._next_page_token_key):
