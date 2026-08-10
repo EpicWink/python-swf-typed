@@ -1,17 +1,13 @@
 """SWF workflow execution state construction."""
 
 import enum
+import typing as t
 import datetime
 import warnings
 import dataclasses
-import typing as t
 
 if t.TYPE_CHECKING:
-    from . import _tasks
-    from . import _history
-    from . import _workflows
-    from . import _activities
-    from . import _executions
+    from . import _activities, _executions, _history, _tasks, _workflows
 
 
 class TaskStatus(enum.Enum):
@@ -378,8 +374,7 @@ class _StateBuilder:
 
     def _process_event(self, event: "_history.Event") -> None:
         """Update workflow execution state with event."""
-        from . import _history
-        from . import _executions
+        from . import _executions, _history
 
         # Decisions
         if isinstance(event, _history.DecisionTaskCompletedEvent):

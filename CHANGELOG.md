@@ -29,6 +29,7 @@
 * Don't modify provided SWF client
 * Handle unknown AWS SDK client methods and exceptions
 * Made decision failure state `event` attribute type more specific
+* Sort imports
 
 ### Miscellaneous
 
