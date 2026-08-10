@@ -107,6 +107,21 @@ def _generate_api_docs() -> None:
     ]
     lines += [f"   {n}" for n in module_rst_references]
     lines += [""]
+    lines += [
+        "Common",
+        "------",
+        "",
+        "Common models and methods.",
+        "",
+        ".. autosummary::",
+        "   :nosignatures:",
+        "",
+        "   _common.PageConsumer",
+        "",
+        ".. autoclass:: swf_typed._common.PageConsumer(...)",
+        "   :show-inheritance:",
+        "   :members: get_page",
+    ]
 
     api_docs_rst = "\n".join(lines)
 
