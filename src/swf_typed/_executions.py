@@ -653,7 +653,7 @@ def signal_execution(
         kw["runId"] = execution.run_id
     if input_ or input_ == "":
         kw["input"] = input_
-    client.request_cancel_workflow_execution(
+    client.signal_workflow_execution(
         domain=domain,
         workflowId=execution.id,
         signalName=signal,
