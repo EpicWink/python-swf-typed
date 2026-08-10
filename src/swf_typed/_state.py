@@ -52,7 +52,21 @@ class TimerStatus(enum.Enum):
 class DecisionFailure:
     """Decision failure event."""
 
-    event: "_history.Event"
+    event: t.Union[
+        "_history.CancelTimerFailedEvent",
+        "_history.CancelWorkflowExecutionFailedEvent",
+        "_history.CompleteWorkflowExecutionFailedEvent",
+        "_history.ContinueAsNewWorkflowExecutionFailedEvent",
+        "_history.FailWorkflowExecutionFailedEvent",
+        "_history.RecordMarkerFailedEvent",
+        "_history.RequestCancelActivityTaskFailedEvent",
+        "_history.RequestCancelExternalWorkflowExecutionFailedEvent",
+        "_history.ScheduleActivityTaskFailedEvent",
+        "_history.ScheduleLambdaFunctionFailedEvent",
+        "_history.SignalExternalWorkflowExecutionFailedEvent",
+        "_history.StartChildWorkflowExecutionFailedEvent",
+        "_history.StartTimerFailedEvent",
+    ]
     """History event for decision failure."""
 
     is_new: bool = True
