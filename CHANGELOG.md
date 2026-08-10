@@ -5,10 +5,15 @@
 
 ## Unreleased
 
+### Deprecations
+
+* Timer state `duraction` attribute: use `duration` instead
+
 ### Features
 
 * Workflow and activity type deletion (type must be deprecated)
 * Execution state workflow type reference
+* Timer state `duration` attribute (replacing `duraction`)
 
 ### Fixes
 
