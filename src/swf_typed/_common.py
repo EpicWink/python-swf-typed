@@ -75,7 +75,7 @@ class PageConsumer(collections.abc.Generator, t.Generic[T]):
         response: t.Dict[str, t.Any],
         executor: concurrent.futures.Executor,
     ) -> None:
-        """Initialise iteator.
+        """Initialise iterator.
 
         Args:
             api_call: AWS SWF API SDK function
