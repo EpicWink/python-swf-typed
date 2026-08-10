@@ -192,6 +192,7 @@ def main(argv=None) -> None:
         ):
             print(line)
 
+    # Common command-line arguments
     parser = argparse.ArgumentParser(
         description="Python interface to SWF command line app",
     )
@@ -200,6 +201,7 @@ def main(argv=None) -> None:
         title="subcommands", required=True, metavar="COMMAND", help="command to run"
     )
 
+    # Build-state subcommand
     build_state_parser = subparsers.add_parser(
         name="build-state",
         help="build execution state from its history",
@@ -210,6 +212,7 @@ def main(argv=None) -> None:
     )
     build_state_parser.set_defaults(func=build_state)
 
+    # Format-state subcommand
     format_state_parser = subparsers.add_parser(
         name="format-state",
         help="format execution state",
@@ -223,6 +226,7 @@ def main(argv=None) -> None:
     )
     format_state_parser.set_defaults(func=format_state)
 
+    # Parse command-line arguments, run subcommand
     args = parser.parse_args(argv)
     args.func()
 
