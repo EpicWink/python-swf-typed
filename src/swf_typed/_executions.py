@@ -97,13 +97,13 @@ class ExecutionInfo(_common.Deserialisable):
     cancel_requested: bool
     """Execution cancellation has been requested."""
 
-    closed: datetime.datetime = None
+    closed: t.Union[datetime.datetime, None] = None
     """Execution end-date."""
 
-    parent: ExecutionId = None
+    parent: t.Union[ExecutionId, None] = None
     """Parent execution ID."""
 
-    tags: t.List[str] = None
+    tags: t.Union[t.List[str], None] = None
     """Execution tags."""
 
     @classmethod
@@ -156,10 +156,10 @@ class ExecutionConfiguration(_common.Deserialisable):
     child_execution_policy_on_termination: ChildExecutionTerminationPolicy
     """Child workflow execution ending policy on termination."""
 
-    decision_task_priority: int = None
+    decision_task_priority: t.Union[int, None] = None
     """Decision task priority."""
 
-    lambda_iam_role_arn: str = None
+    lambda_iam_role_arn: t.Union[str, None] = None
     """Execution IAM role ARN for Lambda invocations."""
 
     @classmethod
@@ -186,9 +186,12 @@ class PartialExecutionConfiguration(
 
     timeout: t.Union[datetime.timedelta, None] = _common.unset
     decision_task_timeout: t.Union[datetime.timedelta, None] = _common.unset
-    decision_task_list: str = None
-    decision_task_priority: int = None
-    child_execution_policy_on_termination: ChildExecutionTerminationPolicy = None
+    decision_task_list: t.Union[str, None] = None
+    decision_task_priority: t.Union[int, None] = None
+    child_execution_policy_on_termination: t.Union[
+        ChildExecutionTerminationPolicy,
+        None,
+    ] = None
 
     @classmethod
     def from_api(cls, data) -> "PartialExecutionConfiguration":
@@ -261,7 +264,7 @@ class ExecutionOpenCounts:
     child_executions: int
     """Number of started child executions."""
 
-    lambda_tasks: int = None
+    lambda_tasks: t.Union[int, None] = None
     """Number of scheduled/started Lambda invocations."""
 
     @classmethod
@@ -282,16 +285,16 @@ class ExecutionDetails:
     info: ExecutionInfo
     """Execution details."""
 
-    configuration: ExecutionConfiguration = None
+    configuration: t.Union[ExecutionConfiguration, None] = None
     """Execution configuration."""
 
-    n_open: ExecutionOpenCounts = None
+    n_open: t.Union[ExecutionOpenCounts, None] = None
     """Counts of open tasks/timers/children in execution."""
 
-    latest_activity_task_scheduled: datetime.datetime = None
+    latest_activity_task_scheduled: t.Union[datetime.datetime, None] = None
     """Most recent activity task's scheduled's date."""
 
-    latest_context: str = None
+    latest_context: t.Union[str, None] = None
     """Most recent decision's execution context."""
 
     @classmethod
@@ -322,7 +325,7 @@ class DateTimeFilter(_common.Serialisable):
     earliest: datetime.datetime
     """Earliest date."""
 
-    latest: datetime.datetime = None
+    latest: t.Union[datetime.datetime, None] = None
     """Latest date."""
 
     def to_api(self):
@@ -428,14 +431,19 @@ def _get_number_of_executions(
 
 def get_number_of_closed_executions(
     domain: str,
-    time_filter: t.Union[StartTimeExecutionFilter, CloseTimeExecutionFilter] = None,
+    time_filter: t.Union[
+        StartTimeExecutionFilter,
+        CloseTimeExecutionFilter,
+        None,
+    ] = None,
     property_filter: t.Union[
         IdExecutionFilter,
         WorkflowTypeExecutionFilter,
         TagExecutionFilter,
         CloseStatusExecutionFilter,
+        None,
     ] = None,
-    client: "botocore.client.BaseClient" = None,
+    client: t.Union["botocore.client.BaseClient", None] = None,
 ) -> int:
     """Get the number of closed workflow executions.
 
@@ -463,13 +471,14 @@ def get_number_of_closed_executions(
 
 def get_number_of_open_executions(
     domain: str,
-    started_filter: StartTimeExecutionFilter = None,
+    started_filter: t.Union[StartTimeExecutionFilter, None] = None,
     property_filter: t.Union[
         IdExecutionFilter,
         WorkflowTypeExecutionFilter,
         TagExecutionFilter,
+        None,
     ] = None,
-    client: "botocore.client.BaseClient" = None,
+    client: t.Union["botocore.client.BaseClient", None] = None,
 ) -> int:
     """Get the number of open workflow executions.
 
@@ -497,7 +506,7 @@ def get_number_of_open_executions(
 def describe_execution(
     execution: ExecutionId,
     domain: str,
-    client: "botocore.client.BaseClient" = None,
+    client: t.Union["botocore.client.BaseClient", None] = None,
 ) -> ExecutionDetails:
     """Describe a workflow execution.
 
@@ -519,16 +528,21 @@ def describe_execution(
 
 def list_closed_executions(
     domain: str,
-    time_filter: t.Union[StartTimeExecutionFilter, CloseTimeExecutionFilter] = None,
+    time_filter: t.Union[
+        StartTimeExecutionFilter,
+        CloseTimeExecutionFilter,
+        None,
+    ] = None,
     property_filter: t.Union[
         IdExecutionFilter,
         WorkflowTypeExecutionFilter,
         TagExecutionFilter,
         CloseStatusExecutionFilter,
+        None,
     ] = None,
     reverse: bool = False,
-    client: "botocore.client.BaseClient" = None,
-) -> t.Generator[ExecutionInfo, None, None]:
+    client: t.Union["botocore.client.BaseClient", None] = None,
+) -> _common.PageConsumer[ExecutionInfo]:
     """List closed workflow executions; retrieved semi-lazily.
 
     Args:
@@ -560,15 +574,16 @@ def list_closed_executions(
 
 def list_open_executions(
     domain: str,
-    started_filter: StartTimeExecutionFilter = None,
+    started_filter: t.Union[StartTimeExecutionFilter, None] = None,
     property_filter: t.Union[
         IdExecutionFilter,
         WorkflowTypeExecutionFilter,
         TagExecutionFilter,
+        None,
     ] = None,
     reverse: bool = False,
-    client: "botocore.client.BaseClient" = None,
-) -> t.Generator[ExecutionInfo, None, None]:
+    client: t.Union["botocore.client.BaseClient", None] = None,
+) -> _common.PageConsumer[ExecutionInfo]:
     """List open workflow executions; retrieved semi-lazily.
 
     Args:
@@ -601,7 +616,7 @@ def list_open_executions(
 def request_cancel_execution(
     execution: t.Union[CurrentExecutionId, ExecutionId],
     domain: str,
-    client: "botocore.client.BaseClient" = None,
+    client: t.Union["botocore.client.BaseClient", None] = None,
 ) -> None:
     """Request the cancellation of a workflow execution.
 
@@ -624,8 +639,8 @@ def signal_execution(
     execution: t.Union[CurrentExecutionId, ExecutionId],
     signal: str,
     domain: str,
-    input_: str = None,
-    client: "botocore.client.BaseClient" = None,
+    input_: t.Union[str, None] = None,
+    client: t.Union["botocore.client.BaseClient", None] = None,
 ) -> None:
     """Send a signal to a workflow execution.
 
@@ -655,10 +670,10 @@ def start_execution(
     workflow_type: "_workflows.WorkflowTypeReference",
     execution: CurrentExecutionId,
     domain: str,
-    input: str = None,
-    configuration: PartialExecutionConfiguration = None,
-    tags: t.List[str] = None,
-    client: "botocore.client.BaseClient" = None,
+    input: t.Union[str, None] = None,
+    configuration: t.Union[PartialExecutionConfiguration, None] = None,
+    tags: t.Union[t.List[str], None] = None,
+    client: t.Union["botocore.client.BaseClient", None] = None,
 ) -> ExecutionId:
     """Start a workflow execution.
 
@@ -695,10 +710,10 @@ def start_execution(
 def terminate_execution(
     execution: t.Union[CurrentExecutionId, ExecutionId],
     domain: str,
-    reason: str = None,
-    details: str = None,
-    child_execution_policy: ChildExecutionTerminationPolicy = None,
-    client: "botocore.client.BaseClient" = None,
+    reason: t.Union[str, None] = None,
+    details: t.Union[str, None] = None,
+    child_execution_policy: t.Union[ChildExecutionTerminationPolicy, None] = None,
+    client: t.Union["botocore.client.BaseClient", None] = None,
 ) -> None:
     """Terminate (immediately close) a workflow execution.
 

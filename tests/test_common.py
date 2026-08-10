@@ -77,6 +77,58 @@ def test_parse_timeout(timeout_data: str, expected: t.Union[int, None]) -> None:
     assert swf_typed._common.parse_timeout(timeout_data) == expected
 
 
+@pytest.mark.parametrize(("dt", "expected"), [
+    pytest.param(
+        datetime.datetime(2026, 7, 1, 1, 2, 3, 4, tzinfo=datetime.timezone.utc),
+        "2026-07-01T01:02:03.000004Z",
+        id="UTC",
+    ),
+    pytest.param(
+        datetime.datetime(
+            2026, 7, 1, 1, 2, 3, 4,
+            tzinfo=datetime.timezone(datetime.timedelta(hours=10))
+        ),
+        "2026-07-01T01:02:03.000004+10:00",
+        id="AEST",
+    ),
+    pytest.param(
+        datetime.datetime(2026, 7, 1, 1, 2, 3, 4000, tzinfo=datetime.timezone.utc),
+        "2026-07-01T01:02:03.004Z",
+        id="UTC_ms",
+    ),
+    pytest.param(
+        datetime.datetime(2026, 7, 1, 1, 2, 3, tzinfo=datetime.timezone.utc),
+        "2026-07-01T01:02:03Z",
+        id="UTC_s",
+    ),
+])  # fmt: skip
+def test_serialise_datetime(dt: datetime.datetime, expected: str) -> None:
+    """Test ``serialise_datetime``."""
+    assert swf_typed._common.serialise_datetime(dt) == expected
+
+
+@pytest.mark.parametrize(("td", "expected"), [
+    pytest.param(datetime.timedelta(0), "P0D", id="zero"),
+    pytest.param(datetime.timedelta(days=42), "P42D", id="days"),
+    pytest.param(datetime.timedelta(seconds=42), "PT42S", id="seconds"),
+    pytest.param(datetime.timedelta(microseconds=42), "PT0.000042S", id="microseconds"),
+    pytest.param(datetime.timedelta(microseconds=42000), "PT0.042S", id="milliseconds"),
+    pytest.param(
+        datetime.timedelta(seconds=42, microseconds=500000),
+        "PT42.5S",
+        id="noninteger_seconds",
+    ),
+    pytest.param(
+        datetime.timedelta(days=42, seconds=42, microseconds=500000),
+        "P42DT42.5S",
+        id="full",
+    ),
+])  # fmt: skip
+def test_serialise_timedelta(td: datetime.timedelta, expected: str) -> None:
+    """Test ``serialise_timedelta``."""
+    assert swf_typed._common.serialise_timedelta(td) == expected
+
+
 def test_iter_paged() -> None:
     """Test ``iter_paged``."""
 
@@ -98,6 +150,39 @@ def test_iter_paged() -> None:
     assert iter(results_iter) is results_iter
     assert list(results_iter) == [1, 2, 3, 4, 5, 6]
 
+    assert call_mock.mock_calls == [
+        unittest.mock.call(),
+        unittest.mock.call(nextPageToken="page-2"),
+        unittest.mock.call(nextPageToken="page-3"),
+    ]
+
+
+def test_iter_paged_get_page() -> None:
+    """Test ``iter_paged``'s result's ``get_page``."""
+
+    def side_effect(**kwargs) -> t.Dict[str, t.Any]:
+        time.sleep(0.01)
+        return responses[kwargs.get("nextPageToken")]
+
+    responses = {
+        None: {"foo": [{"x": 1}, {"x": 2}], "nextPageToken": "page-2"},
+        "page-2": {"foo": [{"x": 3}, {"x": 4}], "nextPageToken": "page-3"},
+        "page-3": {"foo": [{"x": 5}, {"x": 6}]},
+    }
+    call_mock = unittest.mock.Mock(side_effect=side_effect)
+
+    results_iter = swf_typed._common.iter_paged(
+        call=call_mock, model=lambda x: x["x"], data_key="foo"
+    )
+
+    assert iter(results_iter) is results_iter
+
+    assert results_iter.get_page(start_getting_next_page=False) == ([1, 2], "page-2")
+    assert call_mock.mock_calls == [unittest.mock.call()]
+
+    assert results_iter.get_page("page-2") == ([3, 4], "page-3")
+
+    assert results_iter.get_page("page-3") == ([5, 6], None)
     assert call_mock.mock_calls == [
         unittest.mock.call(),
         unittest.mock.call(nextPageToken="page-2"),

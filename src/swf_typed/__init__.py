@@ -29,6 +29,7 @@ from ._decisions import (
     SignalExternalWorkflowExecutionDecision,
     StartChildWorkflowExecutionDecision,
     StartTimerDecision,
+    TaskListOverride,
     get_number_of_pending_decision_tasks,
     request_decision_task,
     send_decisions,
