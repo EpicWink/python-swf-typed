@@ -1,8 +1,8 @@
 """Explicit exceptions for SWF faults/errors."""
 
+import typing as t
 import functools
 import dataclasses
-import typing as t
 
 if t.TYPE_CHECKING:
     import botocore.client

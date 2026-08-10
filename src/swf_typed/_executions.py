@@ -2,16 +2,17 @@
 
 import abc
 import enum
+import typing as t
 import datetime
 import warnings
 import functools
 import dataclasses
-import typing as t
 
 from . import _common
 
 if t.TYPE_CHECKING:
     import botocore.client
+
     from . import _workflows
 
 default_executions_list_time_range = datetime.timedelta(days=90)

@@ -1,12 +1,11 @@
 """SWF activity type management."""
 
+import typing as t
 import datetime
 import functools
 import dataclasses
-import typing as t
 
-from . import _tasks
-from . import _common
+from . import _common, _tasks
 
 if t.TYPE_CHECKING:
     import botocore.client
