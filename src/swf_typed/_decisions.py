@@ -465,6 +465,20 @@ class DecisionTask(_common.Deserialisable):
         return self._execution_history_list
 
 
+class TaskListOverride:
+    """Decision task list override."""
+
+    name: str
+    """Decision task list name."""
+
+    timeout: t.Union[datetime.timedelta, None] = None
+    """Decision task start timeout.
+
+    Decision task will be re-scheduled on the original task list after
+    timeout.
+    """
+
+
 def get_number_of_pending_decision_tasks(
     task_list: str,
     domain: str,
@@ -542,20 +556,6 @@ def request_decision_task(
                 break
             no_tasks_callback()
     return DecisionTask.from_api(response, iter_history())
-
-
-class TaskListOverride:
-    """Decision task list override."""
-
-    name: str
-    """Decision task list name."""
-
-    timeout: t.Union[datetime.timedelta, None] = None
-    """Decision task start timeout.
-
-    Decision task will be re-scheduled on the original task list after
-    timeout.
-    """
 
 
 def send_decisions(
