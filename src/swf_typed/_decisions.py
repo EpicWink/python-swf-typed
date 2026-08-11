@@ -560,7 +560,7 @@ def request_decision_task(
 
 def send_decisions(
     token: str,
-    decisions: t.List[Decision],
+    decisions: t.Iterable[Decision],
     context: str = None,
     task_list_override: t.Union[TaskListOverride, None] = None,
     client: t.Union["botocore.client.BaseClient", None] = None,

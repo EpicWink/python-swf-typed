@@ -43,6 +43,7 @@
 * Sort imports
 * Document default values' types in type annotations (eg `x: str = None` -> `x: str |
   None = None`)
+* `send_decisions` requires iterable (not list) of decisions in type annotation
 
 ### Miscellaneous
 
