@@ -1,4 +1,4 @@
-"""SWF ```swf_typed`` clients."""
+"""SWF ``swf_typed`` clients."""
 
 import typing as t
 import dataclasses
