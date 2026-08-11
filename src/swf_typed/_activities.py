@@ -12,7 +12,7 @@ if t.TYPE_CHECKING:
 
 
 @dataclasses.dataclass
-class ActivityId(_common.Deserialisable, _common.Serialisable):
+class ActivityType(_common.Deserialisable, _common.Serialisable):
     """Activity type identifier."""
 
     name: str
@@ -22,7 +22,7 @@ class ActivityId(_common.Deserialisable, _common.Serialisable):
     """Activity version."""
 
     @classmethod
-    def from_api(cls, data) -> "ActivityId":
+    def from_api(cls, data) -> "ActivityType":
         return cls(data["name"], data["version"])
 
     def to_api(self) -> t.Dict[str, str]:
@@ -30,11 +30,11 @@ class ActivityId(_common.Deserialisable, _common.Serialisable):
 
 
 @dataclasses.dataclass
-class ActivityInfo(_common.Deserialisable):
+class ActivityTypeInfo(_common.Deserialisable):
     """Activity type details."""
 
-    activity: ActivityId
-    """Activity name/version."""
+    activity_type: ActivityType
+    """Activity type identifier."""
 
     is_deprecated: bool
     """Activity is deprecated and not active."""
@@ -49,9 +49,9 @@ class ActivityInfo(_common.Deserialisable):
     """Deprecation date."""
 
     @classmethod
-    def from_api(cls, data) -> "ActivityInfo":
+    def from_api(cls, data) -> "ActivityTypeInfo":
         return cls(
-            activity=ActivityId.from_api(data["activityType"]),
+            activity_type=ActivityType.from_api(data["activityType"]),
             is_deprecated=_common.is_deprecated_by_registration_status[data["status"]],
             created=data["creationDate"],
             description=data.get("description"),
@@ -73,25 +73,25 @@ class DefaultTaskConfiguration(_tasks.PartialTaskConfiguration):
 
 
 @dataclasses.dataclass
-class ActivityDetails(_common.Deserialisable):
+class ActivityTypeDetails(_common.Deserialisable):
     """Activity type details and default activity task configuration."""
 
-    info: ActivityInfo
-    """Activity details."""
+    info: ActivityTypeInfo
+    """Activity type info."""
 
     default_task_configuration: DefaultTaskConfiguration
     """Default task configuration, can be overriden when scheduling."""
 
     @classmethod
-    def from_api(cls, data) -> "ActivityDetails":
+    def from_api(cls, data) -> "ActivityTypeDetails":
         return cls(
-            info=ActivityInfo.from_api(data["typeInfo"]),
+            info=ActivityTypeInfo.from_api(data["typeInfo"]),
             default_task_configuration=DefaultTaskConfiguration.from_api(data),
         )
 
 
 @dataclasses.dataclass
-class ActivityIdFilter(_common.SerialisableToArguments):
+class ActivityTypeFilter(_common.SerialisableToArguments):
     """Activity type filter on activity name."""
 
     name: str
@@ -101,49 +101,49 @@ class ActivityIdFilter(_common.SerialisableToArguments):
         return {"name": self.name}
 
 
-def delete_activity(
-    activity: ActivityId,
+def delete_activity_type(
+    activity_type: ActivityType,
     domain: str,
     client: t.Union["botocore.client.BaseClient", None] = None,
 ) -> None:
     """Delete a (deprecated/inactive) activity type.
 
     Args:
-        activity: activity type to delete
+        activity_type: activity type to delete
         domain: domain of activity type
         client: SWF client
     """
 
     client = _common.ensure_client(client)
-    client.delete_activity_type(domain=domain, activityType=activity.to_api())
+    client.delete_activity_type(domain=domain, activityType=activity_type.to_api())
 
 
-def deprecate_activity(
-    activity: ActivityId,
+def deprecate_activity_type(
+    activity_type: ActivityType,
     domain: str,
     client: t.Union["botocore.client.BaseClient", None] = None,
 ) -> None:
     """Deprecate (deactivate) an activity type.
 
     Args:
-        activity: activity type to deprecate
+        activity_type: activity type to deprecate
         domain: domain of activity type
         client: SWF client
     """
 
     client = _common.ensure_client(client)
-    client.deprecate_activity_type(domain=domain, activityType=activity.to_api())
+    client.deprecate_activity_type(domain=domain, activityType=activity_type.to_api())
 
 
-def describe_activity(
-    activity: ActivityId,
+def describe_activity_type(
+    activity_type: ActivityType,
     domain: str,
     client: t.Union["botocore.client.BaseClient", None] = None,
-) -> ActivityDetails:
+) -> ActivityTypeDetails:
     """Describe an activity type.
 
     Args:
-        activity: activity type to describe
+        activity_type: activity type to describe
         domain: domain of activity type
         client: SWF client
 
@@ -153,25 +153,25 @@ def describe_activity(
 
     client = _common.ensure_client(client)
     response = client.describe_activity_type(
-        domain=domain, activityType=activity.to_api()
+        domain=domain, activityType=activity_type.to_api()
     )
-    return ActivityDetails.from_api(response)
+    return ActivityTypeDetails.from_api(response)
 
 
-def list_activities(
+def list_activity_types(
     domain: str,
     deprecated: bool = False,
-    activity_filter: t.Union[ActivityIdFilter, None] = None,
+    activity_type_filter: t.Union[ActivityTypeFilter, None] = None,
     reverse: bool = False,
     client: t.Union["botocore.client.BaseClient", None] = None,
-) -> _common.PageConsumer[ActivityInfo]:
+) -> _common.PageConsumer[ActivityTypeInfo]:
     """List activity types; retrieved semi-lazily.
 
     Args:
         domain: domain of activity types
         deprecated: list deprecated activity types instead of
             non-deprecated
-        activity_filter: filter returned activity types by name
+        activity_type_filter: filter returned activity types by name
         reverse: return results in reverse alphabetical order
         client: SWF client
 
@@ -181,8 +181,8 @@ def list_activities(
 
     client = _common.ensure_client(client)
     kw = {}
-    if activity_filter:
-        kw.update(activity_filter.get_api_args())
+    if activity_type_filter:
+        kw.update(activity_type_filter.get_api_args())
     call = functools.partial(
         client.list_activity_types,
         domain=domain,
@@ -190,11 +190,11 @@ def list_activities(
         reverseOrder=reverse,
         **kw,
     )
-    return _common.iter_paged(call, ActivityInfo.from_api, "typeInfos")
+    return _common.iter_paged(call, ActivityTypeInfo.from_api, "typeInfos")
 
 
-def register_activity(
-    activity: ActivityId,
+def register_activity_type(
+    activity_type: ActivityType,
     domain: str,
     description: t.Union[str, None] = None,
     default_task_configuration: t.Union[DefaultTaskConfiguration, None] = None,
@@ -203,7 +203,7 @@ def register_activity(
     """Register a new activity type.
 
     Args:
-        activity: activity type name and version
+        activity_type: activity type name and version
         domain: domain to register in
         description: activity type description
         default_task_configuration: default configuration for activity
@@ -220,24 +220,24 @@ def register_activity(
         kw["description"] = description
     client.register_activity_type(
         domain=domain,
-        name=activity.name,
-        version=activity.version,
+        name=activity_type.name,
+        version=activity_type.version,
         **kw,
     )
 
 
-def undeprecate_activity(
-    activity: ActivityId,
+def undeprecate_activity_type(
+    activity_type: ActivityType,
     domain: str,
     client: t.Union["botocore.client.BaseClient", None] = None,
 ) -> None:
     """Undeprecate (reactivate) an activity type.
 
     Args:
-        activity: activity type to undeprecate
+        activity_type: activity type to undeprecate
         domain: domain of activity type
         client: SWF client
     """
 
     client = _common.ensure_client(client)
-    client.undeprecate_activity_type(domain=domain, activityType=activity.to_api())
+    client.undeprecate_activity_type(domain=domain, activityType=activity_type.to_api())

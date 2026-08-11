@@ -35,11 +35,11 @@ See [the full documentation](https://python-swf-typed.readthedocs.io/).
 ```python
 import swf_typed
 
-execution = swf_typed.ExecutionId(id="spam", run_id="abcd1234")
-execution_details = swf_typed.describe_execution(execution, domain="eggs")
+execution = swf_typed.WorkflowExecution(workflow_id="spam", run_id="abcd1234")
+execution_details = swf_typed.describe_workflow_execution(execution, domain="eggs")
 print(execution_details.configuration)
 
-events = swf_typed.get_execution_history(execution, domain="eggs")
+events = swf_typed.get_workflow_execution_history(execution, domain="eggs")
 state = swf_typed.build_state(events)
 for task in state.tasks:
     print(task.status)
@@ -49,12 +49,6 @@ for task in state.tasks:
 
 This library has a slight change in terminology from AWS [SDKs](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/swf.html)/[APIs](https://docs.aws.amazon.com/amazonswf/latest/apireference/Welcome.html)/[docs](https://docs.aws.amazon.com/amazonswf/latest/developerguide/swf-welcome.html):
 
-* Workflow type -> workflow
-* Workflow execution -> execution
-* Workflow execution `workflowId` -> execution ID
-* Activity type -> activity
 * Activity task -> task
-* Activity worker -> worker
-* Activity task `activityId` -> task ID
 
 This is to simplify symbol names.

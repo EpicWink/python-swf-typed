@@ -108,7 +108,7 @@ class TaskState:
     status: TaskStatus
     """Task status."""
 
-    activity: "_activities.ActivityId"
+    activity: "_activities.ActivityType"
     """Task activity."""
 
     configuration: "_tasks.TaskConfiguration"
@@ -127,7 +127,7 @@ class TaskState:
     """Task input."""
 
     worker_identity: t.Union[str, None] = None
-    """Identity of worker which acquired task."""
+    """Identity of activity worker which acquired task."""
 
     cancel_requested: bool = False
     """Task cancellation has been requested."""
@@ -297,16 +297,16 @@ class LambdaTaskState:
 class ChildExecutionState:
     """Child workflow execution state."""
 
-    execution: "_executions.ExecutionId"
+    execution: "_executions.WorkflowExecution"
     """Child execution ID."""
 
-    workflow: "_workflows.WorkflowId"
+    workflow: "_workflows.WorkflowType"
     """Child execution workflow."""
 
-    status: "_executions.ExecutionStatus"
+    status: "_executions.WorkflowExecutionStatus"
     """Child execution status."""
 
-    configuration: "_executions.ExecutionConfiguration"
+    configuration: "_executions.WorkflowExecutionConfiguration"
     """Child execution configuration."""
 
     started: datetime.datetime
@@ -366,7 +366,10 @@ class ChildExecutionState:
             cd["lambdaIamRoleArn"] = self.configuration.lambda_iam_role_arn
 
         state_dict = {
-            "execution": {"id": self.execution.id, "runId": self.execution.run_id},
+            "execution": {
+                "id": self.execution.workflow_id,
+                "runId": self.execution.run_id,
+            },
             "workflow": {"name": self.workflow.name, "version": self.workflow.version},
             "status": self.status.name.replace("_", "-"),
             "configuration": cd,
@@ -530,13 +533,13 @@ class MarkerState:
 class ExecutionState:
     """Workflow execution state."""
 
-    workflow: "_workflows.WorkflowId"
+    workflow: "_workflows.WorkflowType"
     """Child execution workflow."""
 
-    status: "_executions.ExecutionStatus"
+    status: "_executions.WorkflowExecutionStatus"
     """Execution status."""
 
-    configuration: "_executions.ExecutionConfiguration"
+    configuration: "_executions.WorkflowExecutionConfiguration"
     """Execution configuration."""
 
     started: datetime.datetime
@@ -715,35 +718,35 @@ class _StateBuilder:
         # Execution
         elif isinstance(event, _history.WorkflowExecutionStartedEvent):
             self.execution = ExecutionState(
-                workflow=event.workflow,
-                status=_executions.ExecutionStatus.started,
+                workflow=event.workflow_type,
+                status=_executions.WorkflowExecutionStatus.started,
                 configuration=event.execution_configuration,
                 started=event.occured,
                 input=event.execution_input,
             )
         elif isinstance(event, _history.WorkflowExecutionCompletedEvent):
-            self.execution.status = _executions.ExecutionStatus.completed
+            self.execution.status = _executions.WorkflowExecutionStatus.completed
             self.execution.ended = event.occured
             self.execution.result = event.execution_result
         elif isinstance(event, _history.WorkflowExecutionFailedEvent):
-            self.execution.status = _executions.ExecutionStatus.failed
+            self.execution.status = _executions.WorkflowExecutionStatus.failed
             self.execution.ended = event.occured
             self.execution.failure_reason = event.reason
             self.execution.stop_details = event.details
         elif isinstance(event, _history.WorkflowExecutionCancelledEvent):
-            self.execution.status = _executions.ExecutionStatus.cancelled
+            self.execution.status = _executions.WorkflowExecutionStatus.cancelled
             self.execution.ended = event.occured
             self.execution.stop_details = event.details
         elif isinstance(event, _history.WorkflowExecutionTerminatedEvent):
-            self.execution.status = _executions.ExecutionStatus.terminated
+            self.execution.status = _executions.WorkflowExecutionStatus.terminated
             self.execution.ended = event.occured
             self.execution.failure_reason = event.reason
             self.execution.stop_details = event.details
         elif isinstance(event, _history.WorkflowExecutionTimedOutEvent):
-            self.execution.status = _executions.ExecutionStatus.timed_out
+            self.execution.status = _executions.WorkflowExecutionStatus.timed_out
             self.execution.ended = event.occured
         elif isinstance(event, _history.WorkflowExecutionContinuedAsNewEvent):
-            self.execution.status = _executions.ExecutionStatus.continued_as_new
+            self.execution.status = _executions.WorkflowExecutionStatus.continued_as_new
             self.execution.ended = event.occured
             self.execution.continuing_execution_run_id = event.execution_run_id
 
@@ -753,7 +756,7 @@ class _StateBuilder:
         # Tasks
         elif isinstance(event, _history.ActivityTaskScheduledEvent):
             task = TaskState(
-                id=event.task_id,
+                id=event.activity_id,
                 status=TaskStatus.scheduled,
                 activity=event.activity,
                 configuration=event.task_configuration,
@@ -767,7 +770,7 @@ class _StateBuilder:
             task = self._tasks[event.task_scheduled_event_id]
             task.status = TaskStatus.started
             task.started = event.occured
-            task.worker_identity = event.worker_identity
+            task.worker_identity = event.activity_worker_identity
         elif isinstance(event, _history.ActivityTaskCompletedEvent):
             task = self._tasks[event.task_scheduled_event_id]
             task.status = TaskStatus.completed
@@ -792,11 +795,13 @@ class _StateBuilder:
             task.stop_details = event.details
 
         elif isinstance(event, _history.ActivityTaskCancelRequestedEvent):
-            tasks = (task for task in self.execution.tasks if task.id == event.task_id)
+            tasks = (
+                task for task in self.execution.tasks if task.id == event.activity_id
+            )
             try:
                 task, = tasks
             except ValueError:
-                raise LookupError(event.task_id) from None
+                raise LookupError(event.activity_id) from None
             task.cancel_requested = True
 
         # elif isinstance(event, _history.StartActivityTaskFailedEvent):
@@ -854,8 +859,8 @@ class _StateBuilder:
 
             execution = ChildExecutionState(
                 execution=event.execution,
-                workflow=initiation_event.workflow,
-                status=_executions.ExecutionStatus.started,
+                workflow=initiation_event.workflow_type,
+                status=_executions.WorkflowExecutionStatus.started,
                 configuration=initiation_event.execution_configuration,
                 started=event.occured,
                 input=initiation_event.execution_input,
@@ -865,27 +870,27 @@ class _StateBuilder:
             self._child_executions[initiation_event.id] = execution
         elif isinstance(event, _history.ChildWorkflowExecutionCompletedEvent):
             execution = self._child_executions[event.initiated_event_id]
-            execution.status = _executions.ExecutionStatus.completed
+            execution.status = _executions.WorkflowExecutionStatus.completed
             execution.ended = event.occured
             execution.result = event.execution_result
         elif isinstance(event, _history.ChildWorkflowExecutionFailedEvent):
             execution = self._child_executions[event.initiated_event_id]
-            execution.status = _executions.ExecutionStatus.failed
+            execution.status = _executions.WorkflowExecutionStatus.failed
             execution.ended = event.occured
             execution.failure_reason = event.reason
             execution.stop_details = event.details
         elif isinstance(event, _history.ChildWorkflowExecutionCancelledEvent):
             execution = self._child_executions[event.initiated_event_id]
-            execution.status = _executions.ExecutionStatus.cancelled
+            execution.status = _executions.WorkflowExecutionStatus.cancelled
             execution.ended = event.occured
             execution.stop_details = event.details
         elif isinstance(event, _history.ChildWorkflowExecutionTerminatedEvent):
             execution = self._child_executions[event.initiated_event_id]
-            execution.status = _executions.ExecutionStatus.terminated
+            execution.status = _executions.WorkflowExecutionStatus.terminated
             execution.ended = event.occured
         elif isinstance(event, _history.ChildWorkflowExecutionTimedOutEvent):
             execution = self._child_executions[event.initiated_event_id]
-            execution.status = _executions.ExecutionStatus.terminated
+            execution.status = _executions.WorkflowExecutionStatus.terminated
             execution.ended = event.occured
 
         # Timers

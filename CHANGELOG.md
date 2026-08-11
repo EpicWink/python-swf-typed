@@ -5,6 +5,11 @@
 
 ## Unreleased
 
+### Changes
+
+* Rename most symbols to match AWS terminology
+  * Execution state models are unchanged
+
 ### Deprecations
 
 * Timer state `duraction` attribute: use `duration` instead
