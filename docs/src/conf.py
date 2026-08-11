@@ -5,6 +5,7 @@ import types
 import inspect
 import pathlib
 import datetime
+import warnings
 import importlib.metadata
 
 import swf_typed
@@ -37,6 +38,8 @@ def _generate_api_docs() -> None:
     swf_typed_modules = inspect.getmembers(
         swf_typed, lambda x: isinstance(x, types.ModuleType)
     )
+
+    unknown_module_paths = set(source_dir.glob("swf_typed.*.rst"))
 
     module_rst_references = []
     for module_name, module in swf_typed_modules:
@@ -94,6 +97,13 @@ def _generate_api_docs() -> None:
         module_path = source_dir / f"{module_rst_reference}.rst"
         if not module_path.is_file() or module_path.read_text() != module_rst:
             module_path.write_text(module_rst)
+
+        if module_path in unknown_module_paths:
+            unknown_module_paths.remove(module_path)
+
+    for path in unknown_module_paths:
+        warnings.warn(f"Removing unknown module doc RST: {path}")
+        path.unlink()
 
     lines = [
         r"swf\_typed",
