@@ -212,7 +212,7 @@ class ScheduleActivityTaskDecision(Decision):
 
     type: t.ClassVar[str] = "ScheduleActivityTask"
 
-    activity: "_activities.ActivityId"
+    activity: "_activities.ActivityType"
     """Task activity."""
 
     task_id: str

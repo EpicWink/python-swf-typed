@@ -108,7 +108,7 @@ class TaskState:
     status: TaskStatus
     """Task status."""
 
-    activity: "_activities.ActivityId"
+    activity: "_activities.ActivityType"
     """Task activity."""
 
     configuration: "_tasks.TaskConfiguration"

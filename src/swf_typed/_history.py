@@ -102,8 +102,8 @@ class StartChildExecutionFailureCause(str, enum.Enum):
 class ScheduleTaskFailureCause(str, enum.Enum):
     """Schedule activity task decision failure cause."""
 
-    activity_deprecated = "ACTIVITY_TYPE_DEPRECATED"
-    unknown_activity = "ACTIVITY_TYPE_DOES_NOT_EXIST"
+    activity_type_deprecated = "ACTIVITY_TYPE_DEPRECATED"
+    unknown_activity_type = "ACTIVITY_TYPE_DOES_NOT_EXIST"
     task_id_exists = "ACTIVITY_ID_ALREADY_IN_USE"
     open_tasks_limit_exceeded = "OPEN_ACTIVITIES_LIMIT_EXCEEDED"
     rate_exceeded = "ACTIVITY_CREATION_RATE_EXCEEDED"
@@ -287,7 +287,7 @@ class ActivityTaskScheduledEvent(Event):
     task_id: str
     """Scheduled task ID."""
 
-    activity: "_activities.ActivityId"
+    activity: "_activities.ActivityType"
     """Task activity type."""
 
     task_configuration: "_tasks.PartialTaskConfiguration"
@@ -311,7 +311,7 @@ class ActivityTaskScheduledEvent(Event):
             id=data["eventId"],
             occured=data["eventTimestamp"],
             task_id=attrs["activityId"],
-            activity=_activities.ActivityId.from_api(attrs["activityType"]),
+            activity=_activities.ActivityType.from_api(attrs["activityType"]),
             task_configuration=_tasks.PartialTaskConfiguration.from_api(attrs),
             decision_event_id=attrs["decisionTaskCompletedEventId"],
             task_input=attrs.get("input"),
@@ -1199,7 +1199,7 @@ class ScheduleActivityTaskFailedEvent(Event):
     task_id: str
     """ID of task to be scheduled."""
 
-    activity: "_activities.ActivityId"
+    activity: "_activities.ActivityType"
     """Task activity type."""
 
     cause: ScheduleTaskFailureCause
@@ -1217,7 +1217,7 @@ class ScheduleActivityTaskFailedEvent(Event):
             id=data["eventId"],
             occured=data["eventTimestamp"],
             task_id=attrs["activityId"],
-            activity=_activities.ActivityId.from_api(attrs["activityType"]),
+            activity=_activities.ActivityType.from_api(attrs["activityType"]),
             cause=ScheduleTaskFailureCause(attrs["cause"]),
             decision_event_id=attrs["decisionTaskCompletedEventId"],
         )

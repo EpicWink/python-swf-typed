@@ -1,17 +1,17 @@
 """Python interface to SWF."""
 
 from ._activities import (
-    ActivityDetails,
-    ActivityId,
-    ActivityIdFilter,
-    ActivityInfo,
+    ActivityType,
+    ActivityTypeDetails,
+    ActivityTypeFilter,
+    ActivityTypeInfo,
     DefaultTaskConfiguration,
-    delete_activity,
-    deprecate_activity,
-    describe_activity,
-    list_activities,
-    register_activity,
-    undeprecate_activity,
+    delete_activity_type,
+    deprecate_activity_type,
+    describe_activity_type,
+    list_activity_types,
+    register_activity_type,
+    undeprecate_activity_type,
 )
 from ._decisions import (
     CancelTimerDecision,
