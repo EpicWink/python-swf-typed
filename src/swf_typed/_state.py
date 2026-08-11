@@ -300,7 +300,7 @@ class ChildExecutionState:
     execution: "_executions.WorkflowExecution"
     """Child execution ID."""
 
-    workflow_type: "_workflows.WorkflowType"
+    workflow: "_workflows.WorkflowType"
     """Child execution workflow."""
 
     status: "_executions.WorkflowExecutionStatus"
@@ -370,10 +370,7 @@ class ChildExecutionState:
                 "id": self.execution.workflow_id,
                 "runId": self.execution.run_id,
             },
-            "workflow": {
-                "name": self.workflow_type.name,
-                "version": self.workflow_type.version,
-            },
+            "workflow": {"name": self.workflow.name, "version": self.workflow.version},
             "status": self.status.name.replace("_", "-"),
             "configuration": cd,
             "started": _common.serialise_datetime(self.started),
@@ -862,7 +859,7 @@ class _StateBuilder:
 
             execution = ChildExecutionState(
                 execution=event.execution,
-                workflow_type=initiation_event.workflow_type,
+                workflow=initiation_event.workflow_type,
                 status=_executions.WorkflowExecutionStatus.started,
                 configuration=initiation_event.execution_configuration,
                 started=event.occured,
