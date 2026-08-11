@@ -43,8 +43,8 @@ class ContinueAsNewWorkflowExecutionFailureCause(str, enum.Enum):
     """Continue as new workflow execution decision failure cause."""
 
     unhandled_decision = "UNHANDLED_DECISION"
-    workflow_deprecated = "WORKFLOW_TYPE_DEPRECATED"
-    unknown_workflow = "WORKFLOW_TYPE_DOES_NOT_EXIST"
+    workflow_type_deprecated = "WORKFLOW_TYPE_DEPRECATED"
+    unknown_workflow_type = "WORKFLOW_TYPE_DOES_NOT_EXIST"
     timeout_undefined = "DEFAULT_EXECUTION_START_TO_CLOSE_TIMEOUT_UNDEFINED"
     decision_task_timeout_undefined = "DEFAULT_TASK_START_TO_CLOSE_TIMEOUT_UNDEFINED"
     task_list_undefined = "DEFAULT_TASK_LIST_UNDEFINED"
@@ -86,8 +86,8 @@ class CancelTimerFailureCause(str, enum.Enum):
 class StartChildExecutionFailureCause(str, enum.Enum):
     """Start child workflow execution decision failure cause."""
 
-    unknown_workflow = "WORKFLOW_TYPE_DOES_NOT_EXIST"
-    workflow_deprecated = "WORKFLOW_TYPE_DEPRECATED"
+    unknown_workflow_type = "WORKFLOW_TYPE_DOES_NOT_EXIST"
+    workflow_type_deprecated = "WORKFLOW_TYPE_DEPRECATED"
     open_child_executions_limit_exceeded = "OPEN_CHILDREN_LIMIT_EXCEEDED"
     open_executions_limit_exceeded = "OPEN_WORKFLOWS_LIMIT_EXCEEDED"
     rate_exceeded = "CHILD_CREATION_RATE_EXCEEDED"
