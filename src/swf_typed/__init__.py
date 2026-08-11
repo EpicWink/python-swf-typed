@@ -13,6 +13,11 @@ from ._activities import (
     register_activity,
     undeprecate_activity,
 )
+from ._clients import (
+    DomainClient,
+    SWFClient,
+    TaskClient,
+)
 from ._decisions import (
     CancelTimerDecision,
     CancelWorkflowExecutionDecision,
