@@ -52,7 +52,7 @@ Example
 
    import swf_typed
 
-   execution = swf_typed.WorkflowExecutionId(id="spam", run_id="abcd1234")
+   execution = swf_typed.WorkflowExecution(id="spam", run_id="abcd1234")
    execution_details = swf_typed.describe_workflow_execution(execution, domain="eggs")
    print(execution_details.configuration)
 
