@@ -8,7 +8,7 @@ def get_execution_state(
 ) -> t.Tuple[str, str, str, str, t.Generator[t.Tuple[str, str, str], None, None]]:
     import swf_typed
 
-    ref = swf_typed.WorkflowExecutionReference(workflow_id=workflow_id, run_id=run_id)
+    ref = swf_typed.WorkflowExecution(workflow_id=workflow_id, run_id=run_id)
     events = swf_typed.get_execution_history(ref, domain=domain_name)
     state = swf_typed.build_state(events)
     return (

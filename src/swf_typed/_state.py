@@ -297,10 +297,10 @@ class LambdaTaskState:
 class ChildExecutionState:
     """Child workflow execution state."""
 
-    execution: "_executions.WorkflowExecutionReference"
+    execution: "_executions.WorkflowExecution"
     """Child execution ID."""
 
-    workflow_type: "_workflows.WorkflowTypeReference"
+    workflow_type: "_workflows.WorkflowType"
     """Child execution workflow."""
 
     status: "_executions.WorkflowExecutionStatus"
@@ -536,7 +536,7 @@ class MarkerState:
 class ExecutionState:
     """Workflow execution state."""
 
-    workflow: "_workflows.WorkflowTypeReference"
+    workflow: "_workflows.WorkflowType"
     """Child execution workflow."""
 
     status: "_executions.WorkflowExecutionStatus"

@@ -431,10 +431,10 @@ class ChildWorkflowExecutionCancelledEvent(Event):
 
     type: t.ClassVar[str] = "ChildWorkflowExecutionCanceled"
 
-    execution: "_executions.WorkflowExecutionReference"
+    execution: "_executions.WorkflowExecution"
     """Cancelled execution."""
 
-    workflow_type: "_workflows.WorkflowTypeReference"
+    workflow_type: "_workflows.WorkflowType"
     """Child execution workflow type."""
 
     initiated_event_id: int
@@ -454,12 +454,10 @@ class ChildWorkflowExecutionCancelledEvent(Event):
         return cls(
             id=data["eventId"],
             occured=data["eventTimestamp"],
-            execution=_executions.WorkflowExecutionReference.from_api(
+            execution=_executions.WorkflowExecution.from_api(
                 attrs["workflowExecution"],
             ),
-            workflow_type=_workflows.WorkflowTypeReference.from_api(
-                attrs["workflowType"],
-            ),
+            workflow_type=_workflows.WorkflowType.from_api(attrs["workflowType"]),
             initiated_event_id=attrs["initiatedEventId"],
             execution_started_event_id=attrs["startedEventId"],
             details=attrs.get("details"),
@@ -472,10 +470,10 @@ class ChildWorkflowExecutionCompletedEvent(Event):
 
     type: t.ClassVar[str] = "ChildWorkflowExecutionCompleted"
 
-    execution: "_executions.WorkflowExecutionReference"
+    execution: "_executions.WorkflowExecution"
     """Completed execution."""
 
-    workflow_type: "_workflows.WorkflowTypeReference"
+    workflow_type: "_workflows.WorkflowType"
     """Child execution workflow type."""
 
     initiated_event_id: int
@@ -495,12 +493,10 @@ class ChildWorkflowExecutionCompletedEvent(Event):
         return cls(
             id=data["eventId"],
             occured=data["eventTimestamp"],
-            execution=_executions.WorkflowExecutionReference.from_api(
+            execution=_executions.WorkflowExecution.from_api(
                 attrs["workflowExecution"],
             ),
-            workflow_type=_workflows.WorkflowTypeReference.from_api(
-                attrs["workflowType"],
-            ),
+            workflow_type=_workflows.WorkflowType.from_api(attrs["workflowType"]),
             initiated_event_id=attrs["initiatedEventId"],
             execution_started_event_id=attrs["startedEventId"],
             execution_result=attrs.get("result"),
@@ -513,10 +509,10 @@ class ChildWorkflowExecutionFailedEvent(Event):
 
     type: t.ClassVar[str] = "ChildWorkflowExecutionFailed"
 
-    execution: "_executions.WorkflowExecutionReference"
+    execution: "_executions.WorkflowExecution"
     """Failed execution."""
 
-    workflow_type: "_workflows.WorkflowTypeReference"
+    workflow_type: "_workflows.WorkflowType"
     """Child execution workflow type."""
 
     initiated_event_id: int
@@ -539,12 +535,10 @@ class ChildWorkflowExecutionFailedEvent(Event):
         return cls(
             id=data["eventId"],
             occured=data["eventTimestamp"],
-            execution=_executions.WorkflowExecutionReference.from_api(
+            execution=_executions.WorkflowExecution.from_api(
                 attrs["workflowExecution"],
             ),
-            workflow_type=_workflows.WorkflowTypeReference.from_api(
-                attrs["workflowType"],
-            ),
+            workflow_type=_workflows.WorkflowType.from_api(attrs["workflowType"]),
             initiated_event_id=attrs["initiatedEventId"],
             execution_started_event_id=attrs["startedEventId"],
             reason=attrs.get("reason"),
@@ -558,10 +552,10 @@ class ChildWorkflowExecutionStartedEvent(Event):
 
     type: t.ClassVar[str] = "ChildWorkflowExecutionStarted"
 
-    execution: "_executions.WorkflowExecutionReference"
+    execution: "_executions.WorkflowExecution"
     """Started execution."""
 
-    workflow_type: "_workflows.WorkflowTypeReference"
+    workflow_type: "_workflows.WorkflowType"
     """Child execution workflow type."""
 
     initiated_event_id: int
@@ -575,12 +569,10 @@ class ChildWorkflowExecutionStartedEvent(Event):
         return cls(
             id=data["eventId"],
             occured=data["eventTimestamp"],
-            execution=_executions.WorkflowExecutionReference.from_api(
+            execution=_executions.WorkflowExecution.from_api(
                 attrs["workflowExecution"],
             ),
-            workflow_type=_workflows.WorkflowTypeReference.from_api(
-                attrs["workflowType"],
-            ),
+            workflow_type=_workflows.WorkflowType.from_api(attrs["workflowType"]),
             initiated_event_id=attrs["initiatedEventId"],
         )
 
@@ -591,10 +583,10 @@ class ChildWorkflowExecutionTerminatedEvent(Event):
 
     type: t.ClassVar[str] = "ChildWorkflowExecutionTerminated"
 
-    execution: "_executions.WorkflowExecutionReference"
+    execution: "_executions.WorkflowExecution"
     """Terminated execution."""
 
-    workflow_type: "_workflows.WorkflowTypeReference"
+    workflow_type: "_workflows.WorkflowType"
     """Child execution workflow type."""
 
     initiated_event_id: int
@@ -611,12 +603,10 @@ class ChildWorkflowExecutionTerminatedEvent(Event):
         return cls(
             id=data["eventId"],
             occured=data["eventTimestamp"],
-            execution=_executions.WorkflowExecutionReference.from_api(
+            execution=_executions.WorkflowExecution.from_api(
                 attrs["workflowExecution"],
             ),
-            workflow_type=_workflows.WorkflowTypeReference.from_api(
-                attrs["workflowType"],
-            ),
+            workflow_type=_workflows.WorkflowType.from_api(attrs["workflowType"]),
             initiated_event_id=attrs["initiatedEventId"],
             execution_started_event_id=attrs["startedEventId"],
         )
@@ -628,10 +618,10 @@ class ChildWorkflowExecutionTimedOutEvent(Event):
 
     type: t.ClassVar[str] = "ChildWorkflowExecutionTimedOut"
 
-    execution: "_executions.WorkflowExecutionReference"
+    execution: "_executions.WorkflowExecution"
     """Timed-out execution."""
 
-    workflow_type: "_workflows.WorkflowTypeReference"
+    workflow_type: "_workflows.WorkflowType"
     """Child execution workflow type."""
 
     initiated_event_id: int
@@ -649,12 +639,10 @@ class ChildWorkflowExecutionTimedOutEvent(Event):
         return cls(
             id=data["eventId"],
             occured=data["eventTimestamp"],
-            execution=_executions.WorkflowExecutionReference.from_api(
+            execution=_executions.WorkflowExecution.from_api(
                 attrs["workflowExecution"],
             ),
-            workflow_type=_workflows.WorkflowTypeReference.from_api(
-                attrs["workflowType"],
-            ),
+            workflow_type=_workflows.WorkflowType.from_api(attrs["workflowType"]),
             initiated_event_id=attrs["initiatedEventId"],
             execution_started_event_id=attrs["startedEventId"],
         )
@@ -830,7 +818,7 @@ class ExternalWorkflowExecutionCancelRequestedEvent(Event):
 
     type: t.ClassVar[str] = "ExternalWorkflowExecutionCancelRequested"
 
-    execution: "_executions.WorkflowExecutionReference"
+    execution: "_executions.WorkflowExecution"
     """Execution whose cancellation is requested."""
 
     initiated_event_id: int
@@ -844,7 +832,7 @@ class ExternalWorkflowExecutionCancelRequestedEvent(Event):
         return cls(
             id=data["eventId"],
             occured=data["eventTimestamp"],
-            execution=_executions.WorkflowExecutionReference.from_api(
+            execution=_executions.WorkflowExecution.from_api(
                 attrs["workflowExecution"],
             ),
             initiated_event_id=attrs["initiatedEventId"],
@@ -857,7 +845,7 @@ class ExternalWorkflowExecutionSignaledEvent(Event):
 
     type: t.ClassVar[str] = "ExternalWorkflowExecutionSignaled"
 
-    execution: "_executions.WorkflowExecutionReference"
+    execution: "_executions.WorkflowExecution"
     """Signalled execution."""
 
     initiated_event_id: int
@@ -871,7 +859,7 @@ class ExternalWorkflowExecutionSignaledEvent(Event):
         return cls(
             id=data["eventId"],
             occured=data["eventTimestamp"],
-            execution=_executions.WorkflowExecutionReference.from_api(
+            execution=_executions.WorkflowExecution.from_api(
                 attrs["workflowExecution"],
             ),
             initiated_event_id=attrs["initiatedEventId"],
@@ -1141,7 +1129,7 @@ class RequestCancelExternalWorkflowExecutionFailedEvent(Event):
 
     type: t.ClassVar[str] = "RequestCancelExternalWorkflowExecutionFailed"
 
-    execution: "_executions.WorkflowExecutionReference"
+    execution: "_executions.WorkflowExecution"
     """Execution whose cancellation was requested."""
 
     cause: CancelExecutionFailureCause
@@ -1179,8 +1167,8 @@ class RequestCancelExternalWorkflowExecutionInitiatedEvent(Event):
     type: t.ClassVar[str] = "RequestCancelExternalWorkflowExecutionInitiated"
 
     execution: t.Union[
-        "_executions.WorkflowExecutionReference",
-        "_executions.CurrentWorkflowExecutionReference",
+        "_executions.WorkflowExecution",
+        "_executions.CurrentWorkflowExecution",
     ]
     """Execution whose cancellation was requested."""
 
@@ -1275,8 +1263,8 @@ class SignalExternalWorkflowExecutionFailedEvent(Event):
     type: t.ClassVar[str] = "SignalExternalWorkflowExecutionFailed"
 
     execution: t.Union[
-        "_executions.WorkflowExecutionReference",
-        "_executions.CurrentWorkflowExecutionReference",
+        "_executions.WorkflowExecution",
+        "_executions.CurrentWorkflowExecution",
     ]
     """Execution to be signalled."""
 
@@ -1315,8 +1303,8 @@ class SignalExternalWorkflowExecutionInitiatedEvent(Event):
     type: t.ClassVar[str] = "SignalExternalWorkflowExecutionInitiated"
 
     execution: t.Union[
-        "_executions.WorkflowExecutionReference",
-        "_executions.CurrentWorkflowExecutionReference",
+        "_executions.WorkflowExecution",
+        "_executions.CurrentWorkflowExecution",
     ]
     """Execution to be signalled."""
 
@@ -1409,10 +1397,10 @@ class StartChildWorkflowExecutionFailedEvent(Event):
 
     type: t.ClassVar[str] = "StartChildWorkflowExecutionFailed"
 
-    execution: "_executions.CurrentWorkflowExecutionReference"
+    execution: "_executions.CurrentWorkflowExecution"
     """Execution to be started."""
 
-    workflow_type: "_workflows.WorkflowTypeReference"
+    workflow_type: "_workflows.WorkflowType"
     """Child execution workflow type."""
 
     cause: StartChildExecutionFailureCause
@@ -1435,10 +1423,8 @@ class StartChildWorkflowExecutionFailedEvent(Event):
         return cls(
             id=data["eventId"],
             occured=data["eventTimestamp"],
-            execution=_executions.CurrentWorkflowExecutionReference.from_api(attrs),
-            workflow_type=_workflows.WorkflowTypeReference.from_api(
-                attrs["workflowType"],
-            ),
+            execution=_executions.CurrentWorkflowExecution.from_api(attrs),
+            workflow_type=_workflows.WorkflowType.from_api(attrs["workflowType"]),
             cause=StartChildExecutionFailureCause(attrs["cause"]),
             initiated_event_id=attrs["initiatedEventId"],
             decision_event_id=attrs["decisionTaskCompletedEventId"],
@@ -1454,10 +1440,10 @@ class StartChildWorkflowExecutionInitiatedEvent(Event):
 
     type: t.ClassVar[str] = "StartChildWorkflowExecutionInitiated"
 
-    execution: "_executions.CurrentWorkflowExecutionReference"
+    execution: "_executions.CurrentWorkflowExecution"
     """Execution to be started."""
 
-    workflow_type: "_workflows.WorkflowTypeReference"
+    workflow_type: "_workflows.WorkflowType"
     """Child execution workflow type."""
 
     execution_configuration: "_executions.PartialWorkflowExecutionConfiguration"
@@ -1486,10 +1472,8 @@ class StartChildWorkflowExecutionInitiatedEvent(Event):
         return cls(
             id=data["eventId"],
             occured=data["eventTimestamp"],
-            execution=_executions.CurrentWorkflowExecutionReference.from_api(attrs),
-            workflow_type=_workflows.WorkflowTypeReference.from_api(
-                attrs["workflowType"],
-            ),
+            execution=_executions.CurrentWorkflowExecution.from_api(attrs),
+            workflow_type=_workflows.WorkflowType.from_api(attrs["workflowType"]),
             execution_configuration=config,
             decision_event_id=attrs["decisionTaskCompletedEventId"],
             execution_input=attrs.get("input"),
@@ -1617,7 +1601,7 @@ class WorkflowExecutionCancelRequestedEvent(Event):
     cause: t.Union[ExecutionTerminationCause, None] = None
     """Cancellation request cause."""
 
-    cancelling_execution: t.Union["_executions.WorkflowExecutionReference", None] = None
+    cancelling_execution: t.Union["_executions.WorkflowExecution", None] = None
     """Execution which requested the cancellation."""
 
     cancel_decision_event_id: t.Union[int, None] = None
@@ -1637,7 +1621,7 @@ class WorkflowExecutionCancelRequestedEvent(Event):
             cause=attrs.get("cause") and ExecutionTerminationCause(attrs["cause"]),
             cancelling_execution=(
                 attrs.get("externalWorkflowExecution")
-                and _executions.WorkflowExecutionReference.from_api(
+                and _executions.WorkflowExecution.from_api(
                     attrs["externalWorkflowExecution"],
                 )
             ),
@@ -1705,7 +1689,7 @@ class WorkflowExecutionContinuedAsNewEvent(Event):
     guaranteed).
     """
 
-    workflow_type: "_workflows.WorkflowTypeReference"
+    workflow_type: "_workflows.WorkflowType"
     """New execution workflow type."""
 
     decision_event_id: int
@@ -1728,9 +1712,7 @@ class WorkflowExecutionContinuedAsNewEvent(Event):
             occured=data["eventTimestamp"],
             execution_run_id=attrs["newExecutionRunId"],
             execution_configuration=config,
-            workflow_type=_workflows.WorkflowTypeReference.from_api(
-                attrs["workflowType"],
-            ),
+            workflow_type=_workflows.WorkflowType.from_api(attrs["workflowType"]),
             decision_event_id=attrs["decisionTaskCompletedEventId"],
             execution_input=attrs.get("input"),
             execution_tags=attrs.get("tagList"),
@@ -1776,7 +1758,7 @@ class WorkflowExecutionSignaledEvent(Event):
     signal_input: t.Union[str, None] = None
     """Attached signal data."""
 
-    signalling_execution: t.Union["_executions.WorkflowExecutionReference", None] = None
+    signalling_execution: t.Union["_executions.WorkflowExecution", None] = None
     """Execution which sent the signal."""
 
     signal_decision_event_id: t.Union[int, None] = None
@@ -1792,7 +1774,7 @@ class WorkflowExecutionSignaledEvent(Event):
             signal_input=attrs.get("input"),
             signalling_execution=(
                 attrs.get("externalWorkflowExecution")
-                and _executions.WorkflowExecutionReference.from_api(
+                and _executions.WorkflowExecution.from_api(
                     attrs["externalWorkflowExecution"],
                 )
             ),
@@ -1806,7 +1788,7 @@ class WorkflowExecutionStartedEvent(Event):
 
     type: t.ClassVar[str] = "WorkflowExecutionStarted"
 
-    workflow_type: "_workflows.WorkflowTypeReference"
+    workflow_type: "_workflows.WorkflowType"
     """Execution workflow type."""
 
     execution_configuration: "_executions.PartialWorkflowExecutionConfiguration"
@@ -1823,7 +1805,7 @@ class WorkflowExecutionStartedEvent(Event):
     continued_execution_run_id: t.Union[str, None] = None
     """Run ID of execution which this execution continues from."""
 
-    parent_execution: t.Union["_executions.WorkflowExecutionReference", None] = None
+    parent_execution: t.Union["_executions.WorkflowExecution", None] = None
     """Parent execution (which started this execution)."""
 
     parent_initiated_event_id: t.Union[int, None] = None
@@ -1839,16 +1821,14 @@ class WorkflowExecutionStartedEvent(Event):
         return cls(
             id=data["eventId"],
             occured=data["eventTimestamp"],
-            workflow_type=_workflows.WorkflowTypeReference.from_api(
-                attrs["workflowType"],
-            ),
+            workflow_type=_workflows.WorkflowType.from_api(attrs["workflowType"]),
             execution_configuration=config,
             execution_input=attrs.get("input"),
             execution_tags=attrs.get("tagList"),
             continued_execution_run_id=attrs.get("continuedExecutionRunId"),
             parent_execution=(
                 attrs.get("parentWorkflowExecution")
-                and _executions.WorkflowExecutionReference.from_api(
+                and _executions.WorkflowExecution.from_api(
                     attrs["parentWorkflowExecution"],
                 )
             ),
@@ -1923,20 +1903,20 @@ class WorkflowExecutionTimedOutEvent(Event):
 def _get_execution_from_partial_id(
     data: t.Dict[str, t.Any],
 ) -> t.Union[
-    "_executions.WorkflowExecutionReference",
-    "_executions.CurrentWorkflowExecutionReference",
+    "_executions.WorkflowExecution",
+    "_executions.CurrentWorkflowExecution",
 ]:
     """Get workflow execution identifier from SWF API response data."""
     from . import _executions
 
-    execution_cls = _executions.CurrentWorkflowExecutionReference
+    execution_cls = _executions.CurrentWorkflowExecution
     if data.get("runId"):
-        execution_cls = _executions.WorkflowExecutionReference
+        execution_cls = _executions.WorkflowExecution
     return execution_cls.from_api(data)
 
 
 def get_execution_history(
-    execution: "_executions.WorkflowExecutionReference",
+    execution: "_executions.WorkflowExecution",
     domain: str,
     reverse: bool = False,
     client: t.Union["botocore.client.BaseClient", None] = None,
@@ -1964,7 +1944,7 @@ def get_execution_history(
 
 
 def get_last_execution_history_event(
-    execution: "_executions.WorkflowExecutionReference",
+    execution: "_executions.WorkflowExecution",
     domain: str,
     client: t.Union["botocore.client.BaseClient", None] = None,
 ) -> Event:

@@ -119,7 +119,7 @@ class WorkerTask(_common.Deserialisable):
     activity: "_activities.ActivityId"
     """Task activity."""
 
-    execution: "_executions.WorkflowExecutionReference"
+    execution: "_executions.WorkflowExecution"
     """Task execution."""
 
     task_started_execution_history_event_id: int
@@ -136,9 +136,7 @@ class WorkerTask(_common.Deserialisable):
             token=data["taskToken"],
             id=data["activityId"],
             activity=_activities.ActivityId.from_api(data["activityType"]),
-            execution=_executions.WorkflowExecutionReference.from_api(
-                data["workflowExecution"],
-            ),
+            execution=_executions.WorkflowExecution.from_api(data["workflowExecution"]),
             task_started_execution_history_event_id=data["startedEventId"],
             input=data.get("input"),
         )

@@ -189,8 +189,8 @@ class RequestCancelExternalWorkflowExecutionDecision(Decision):
     type: t.ClassVar[str] = "RequestCancelExternalWorkflowExecution"
 
     execution: t.Union[
-        "_executions.WorkflowExecutionReference",
-        "_executions.CurrentWorkflowExecutionReference",
+        "_executions.WorkflowExecution",
+        "_executions.CurrentWorkflowExecution",
     ]
     """ID of execution to cancel."""
 
@@ -296,8 +296,8 @@ class SignalExternalWorkflowExecutionDecision(Decision):
     type: t.ClassVar[str] = "SignalExternalWorkflowExecution"
 
     execution: t.Union[
-        "_executions.WorkflowExecutionReference",
-        "_executions.CurrentWorkflowExecutionReference",
+        "_executions.WorkflowExecution",
+        "_executions.CurrentWorkflowExecution",
     ]
     """ID of execution to signal."""
 
@@ -328,10 +328,10 @@ class StartChildWorkflowExecutionDecision(Decision):
 
     type: t.ClassVar[str] = "StartChildWorkflowExecution"
 
-    workflow_type: "_workflows.WorkflowTypeReference"
+    workflow_type: "_workflows.WorkflowType"
     """Child execution workflow."""
 
-    execution: "_executions.CurrentWorkflowExecutionReference"
+    execution: "_executions.CurrentWorkflowExecution"
     """Child execution workflow-ID."""
 
     execution_input: t.Union[str, None] = None
@@ -404,10 +404,10 @@ class DecisionTask(_common.Deserialisable):
     token: str
     """Task token, provided by SWF."""
 
-    execution: "_executions.WorkflowExecutionReference"
+    execution: "_executions.WorkflowExecution"
     """Execution which decisions are being made for."""
 
-    workflow_type: "_workflows.WorkflowTypeReference"
+    workflow_type: "_workflows.WorkflowType"
     """Execution workflow."""
 
     _execution_history_iter: t.Iterable["_history.Event"]
@@ -448,12 +448,8 @@ class DecisionTask(_common.Deserialisable):
 
         return cls(
             token=data["taskToken"],
-            execution=_executions.WorkflowExecutionReference.from_api(
-                data["workflowExecution"]
-            ),
-            workflow_type=_workflows.WorkflowTypeReference.from_api(
-                data["workflowType"],
-            ),
+            execution=_executions.WorkflowExecution.from_api(data["workflowExecution"]),
+            workflow_type=_workflows.WorkflowType.from_api(data["workflowType"]),
             _execution_history_iter=execution_history_iter,
             decision_task_started_execution_history_event_id=data["startedEventId"],
             previous_decision_task_started_execution_history_event_id=data.get(
