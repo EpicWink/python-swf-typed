@@ -52,11 +52,14 @@ Example
 
    import swf_typed
 
+   client = swf_typed.SWFClient.new()
+   domain_client = client.get_domain_client(domain="eggs")
+
    execution = swf_typed.ExecutionId(id="spam", run_id="abcd1234")
-   execution_details = swf_typed.describe_execution(execution, domain="eggs")
+   execution_details = domain_client.describe_execution(execution)
    print(execution_details.configuration)
 
-   events = swf_typed.get_execution_history(execution, domain="eggs")
+   events = domain_client.get_execution_history(execution)
    state = swf_typed.build_state(events)
    for task in state.tasks:
        print(task.status)
