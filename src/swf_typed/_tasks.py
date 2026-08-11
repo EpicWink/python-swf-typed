@@ -107,7 +107,7 @@ class PartialTaskConfiguration(TaskConfiguration, _common.SerialisableToArgument
 
 
 @dataclasses.dataclass
-class WorkerTask(_common.Deserialisable):
+class ActivityWorkerTask(_common.Deserialisable):
     """Activity worker activity task."""
 
     token: str
@@ -129,7 +129,7 @@ class WorkerTask(_common.Deserialisable):
     """Task input."""
 
     @classmethod
-    def from_api(cls, data) -> "WorkerTask":
+    def from_api(cls, data) -> "ActivityWorkerTask":
         from . import _activities, _executions
 
         return cls(
@@ -172,17 +172,17 @@ def get_number_of_pending_tasks(
 def request_task(
     task_list: str,
     domain: str,
-    worker_identity: t.Union[str, None] = None,
+    activity_worker_identity: t.Union[str, None] = None,
     no_tasks_callback: t.Union[t.Callable[[], None], None] = None,
     client: t.Union["botocore.client.BaseClient", None] = None,
-) -> WorkerTask:
+) -> ActivityWorkerTask:
     """Request (poll for) an activity task; blocks until task is received.
 
     Args:
         task_list: activity task-list to request from
         domain: domain of task-list
-        worker_identity: activity worker identity, recorded in execution
-            history
+        activity_worker_identity: activity worker identity, recorded in
+            execution history
         no_tasks_callback: called after no tasks were provided by SWF
         client: SWF client
 
@@ -192,8 +192,8 @@ def request_task(
 
     client = _common.ensure_client(client)
     kw = {}
-    if worker_identity or worker_identity == "":
-        kw["identity"] = worker_identity
+    if activity_worker_identity or activity_worker_identity == "":
+        kw["identity"] = activity_worker_identity
     with _common.polling_socket_timeout():
         while True:
             response = client.poll_for_activity_task(
@@ -202,7 +202,7 @@ def request_task(
             if response["taskToken"]:
                 break
             no_tasks_callback()
-    return WorkerTask.from_api(response)
+    return ActivityWorkerTask.from_api(response)
 
 
 def send_heartbeat(

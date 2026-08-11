@@ -328,8 +328,8 @@ class ActivityTaskStartedEvent(Event):
     task_scheduled_event_id: int
     """Task schedule event ID."""
 
-    worker_identity: t.Union[str, None] = None
-    """Identity of worker which acquired task."""
+    activity_worker_identity: t.Union[str, None] = None
+    """Identity of activity worker which acquired task."""
 
     @classmethod
     def from_api(cls, data):
@@ -338,7 +338,7 @@ class ActivityTaskStartedEvent(Event):
             id=data["eventId"],
             occured=data["eventTimestamp"],
             task_scheduled_event_id=attrs["scheduledEventId"],
-            worker_identity=attrs.get("identity"),
+            activity_worker_identity=attrs.get("identity"),
         )
 
 
@@ -358,7 +358,9 @@ class ActivityTaskTimedOutEvent(Event):
     """Task start event ID."""
 
     details: t.Union[str, None] = None
-    """Most recent progress message from worker (see ``send_heartbeat``)."""
+    """Most recent progress message from activity worker (see
+    ``send_heartbeat``).
+    """
 
     @classmethod
     def from_api(cls, data):

@@ -69,6 +69,5 @@ This library has a slight change in terminology from AWS `SDKs
 <https://docs.aws.amazon.com/amazonswf/latest/apireference/Welcome.html>`_/`docs <https://docs.aws.amazon.com/amazonswf/latest/developerguide/swf-welcome.html>`_:
 
 * Activity task -> task
-* Activity worker -> worker
 
 This is to simplify symbol names.

@@ -178,10 +178,10 @@ from ._state import (
     build_state,
 )
 from ._tasks import (
+    ActivityWorkerTask,
     Cancelled,
     PartialTaskConfiguration,
     TaskConfiguration,
-    WorkerTask,
     cancel_task,
     complete_task,
     fail_task,

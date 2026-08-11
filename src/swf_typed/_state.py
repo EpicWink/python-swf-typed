@@ -127,7 +127,7 @@ class TaskState:
     """Task input."""
 
     worker_identity: t.Union[str, None] = None
-    """Identity of worker which acquired task."""
+    """Identity of activity worker which acquired task."""
 
     cancel_requested: bool = False
     """Task cancellation has been requested."""
@@ -773,7 +773,7 @@ class _StateBuilder:
             task = self._tasks[event.task_scheduled_event_id]
             task.status = TaskStatus.started
             task.started = event.occured
-            task.worker_identity = event.worker_identity
+            task.worker_identity = event.activity_worker_identity
         elif isinstance(event, _history.ActivityTaskCompletedEvent):
             task = self._tasks[event.task_scheduled_event_id]
             task.status = TaskStatus.completed
