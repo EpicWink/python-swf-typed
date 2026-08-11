@@ -22,6 +22,7 @@ classifiers = [
 ]
 dependencies = [
     "boto3 ~= 1.18",
+    "botocore ~= 1.0",
 ]
 description = "Typed Python interface to AWS Simple Workflow service"
 keywords = ["swf", "typed"]
