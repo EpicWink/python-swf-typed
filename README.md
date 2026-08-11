@@ -39,7 +39,7 @@ execution = swf_typed.WorkflowExecution(workflow_id="spam", run_id="abcd1234")
 execution_details = swf_typed.describe_workflow_execution(execution, domain="eggs")
 print(execution_details.configuration)
 
-events = swf_typed.get_execution_history(execution, domain="eggs")
+events = swf_typed.get_workflow_execution_history(execution, domain="eggs")
 state = swf_typed.build_state(events)
 for task in state.tasks:
     print(task.status)

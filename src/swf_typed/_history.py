@@ -1917,7 +1917,7 @@ def _get_execution_from_partial_id(
     return execution_cls.from_api(data)
 
 
-def get_execution_history(
+def get_workflow_execution_history(
     execution: "_executions.WorkflowExecution",
     domain: str,
     reverse: bool = False,
@@ -1945,7 +1945,7 @@ def get_execution_history(
     return _common.iter_paged(call, Event.from_api, "events")
 
 
-def get_last_execution_history_event(
+def get_last_workflow_execution_history_event(
     execution: "_executions.WorkflowExecution",
     domain: str,
     client: t.Union["botocore.client.BaseClient", None] = None,

@@ -161,8 +161,8 @@ from ._history import (
     WorkflowExecutionStartedEvent,
     WorkflowExecutionTerminatedEvent,
     WorkflowExecutionTimedOutEvent,
-    get_execution_history,
-    get_last_execution_history_event,
+    get_last_workflow_execution_history_event,
+    get_workflow_execution_history,
 )
 from ._state import (
     ChildExecutionState,

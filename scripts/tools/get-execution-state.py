@@ -9,7 +9,7 @@ def get_execution_state(
     import swf_typed
 
     ref = swf_typed.WorkflowExecution(workflow_id=workflow_id, run_id=run_id)
-    events = swf_typed.get_execution_history(ref, domain=domain_name)
+    events = swf_typed.get_workflow_execution_history(ref, domain=domain_name)
     state = swf_typed.build_state(events)
     return (
         state.status.value,
