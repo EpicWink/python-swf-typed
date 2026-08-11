@@ -51,6 +51,5 @@ This library has a slight change in terminology from AWS [SDKs](https://boto3.am
 
 * Activity task -> task
 * Activity worker -> worker
-* Activity task `activityId` -> task ID
 
 This is to simplify symbol names.

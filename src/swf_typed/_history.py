@@ -104,7 +104,7 @@ class ScheduleTaskFailureCause(str, enum.Enum):
 
     activity_type_deprecated = "ACTIVITY_TYPE_DEPRECATED"
     unknown_activity_type = "ACTIVITY_TYPE_DOES_NOT_EXIST"
-    task_id_exists = "ACTIVITY_ID_ALREADY_IN_USE"
+    activity_id_exists = "ACTIVITY_ID_ALREADY_IN_USE"
     open_tasks_limit_exceeded = "OPEN_ACTIVITIES_LIMIT_EXCEEDED"
     rate_exceeded = "ACTIVITY_CREATION_RATE_EXCEEDED"
     total_timeout_undefined = "DEFAULT_SCHEDULE_TO_CLOSE_TIMEOUT_UNDEFINED"
@@ -172,7 +172,7 @@ class ActivityTaskCancelRequestedEvent(Event):
 
     type: t.ClassVar[str] = "ActivityTaskCancelRequested"
 
-    task_id: str
+    activity_id: str
     """ID of task whose cancellation was requested."""
 
     decision_event_id: int
@@ -184,7 +184,7 @@ class ActivityTaskCancelRequestedEvent(Event):
         return cls(
             id=data["eventId"],
             occured=data["eventTimestamp"],
-            task_id=attrs["activityId"],
+            activity_id=attrs["activityId"],
             decision_event_id=attrs["decisionTaskCompletedEventId"],
         )
 
@@ -284,7 +284,7 @@ class ActivityTaskScheduledEvent(Event):
 
     type: t.ClassVar[str] = "ActivityTaskScheduled"
 
-    task_id: str
+    activity_id: str
     """Scheduled task ID."""
 
     activity: "_activities.ActivityType"
@@ -310,7 +310,7 @@ class ActivityTaskScheduledEvent(Event):
         return cls(
             id=data["eventId"],
             occured=data["eventTimestamp"],
-            task_id=attrs["activityId"],
+            activity_id=attrs["activityId"],
             activity=_activities.ActivityType.from_api(attrs["activityType"]),
             task_configuration=_tasks.PartialTaskConfiguration.from_api(attrs),
             decision_event_id=attrs["decisionTaskCompletedEventId"],
@@ -1100,7 +1100,7 @@ class RequestCancelActivityTaskFailedEvent(Event):
 
     type: t.ClassVar[str] = "RequestCancelActivityTaskFailed"
 
-    task_id: str
+    activity_id: str
     """ID of task whose cancellation was requested."""
 
     cause: CancelTaskFailureCause
@@ -1115,7 +1115,7 @@ class RequestCancelActivityTaskFailedEvent(Event):
         return cls(
             id=data["eventId"],
             occured=data["eventTimestamp"],
-            task_id=attrs["activityId"],
+            activity_id=attrs["activityId"],
             cause=CancelTaskFailureCause(attrs["cause"]),
             decision_event_id=attrs["decisionTaskCompletedEventId"],
         )
@@ -1196,7 +1196,7 @@ class ScheduleActivityTaskFailedEvent(Event):
 
     type: t.ClassVar[str] = "ScheduleActivityTaskFailed"
 
-    task_id: str
+    activity_id: str
     """ID of task to be scheduled."""
 
     activity: "_activities.ActivityType"
@@ -1216,7 +1216,7 @@ class ScheduleActivityTaskFailedEvent(Event):
         return cls(
             id=data["eventId"],
             occured=data["eventTimestamp"],
-            task_id=attrs["activityId"],
+            activity_id=attrs["activityId"],
             activity=_activities.ActivityType.from_api(attrs["activityType"]),
             cause=ScheduleTaskFailureCause(attrs["cause"]),
             decision_event_id=attrs["decisionTaskCompletedEventId"],
@@ -1340,7 +1340,7 @@ class StartActivityTaskFailedEvent(Event):
 
     type: t.ClassVar[str] = "StartActivityTaskFailed"
 
-    task_id: t.Union[str, None] = None
+    activity_id: t.Union[str, None] = None
     """ID of task to be started."""
 
     cause: t.Union[str, None] = None
@@ -1356,7 +1356,7 @@ class StartActivityTaskFailedEvent(Event):
         return cls(
             id=data["eventId"],
             occured=data["eventTimestamp"],
-            task_id=attrs.get("activityId"),
+            activity_id=attrs.get("activityId"),
             cause=attrs.get("cause"),
             task_scheduled_event_id=attrs.get("scheduledEventId"),
         )

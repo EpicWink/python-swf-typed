@@ -759,7 +759,7 @@ class _StateBuilder:
         # Tasks
         elif isinstance(event, _history.ActivityTaskScheduledEvent):
             task = TaskState(
-                id=event.task_id,
+                id=event.activity_id,
                 status=TaskStatus.scheduled,
                 activity=event.activity,
                 configuration=event.task_configuration,
@@ -798,11 +798,13 @@ class _StateBuilder:
             task.stop_details = event.details
 
         elif isinstance(event, _history.ActivityTaskCancelRequestedEvent):
-            tasks = (task for task in self.execution.tasks if task.id == event.task_id)
+            tasks = (
+                task for task in self.execution.tasks if task.id == event.activity_id
+            )
             try:
                 task, = tasks
             except ValueError:
-                raise LookupError(event.task_id) from None
+                raise LookupError(event.activity_id) from None
             task.cancel_requested = True
 
         # elif isinstance(event, _history.StartActivityTaskFailedEvent):

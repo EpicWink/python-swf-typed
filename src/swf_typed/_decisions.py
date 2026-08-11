@@ -171,13 +171,13 @@ class RequestCancelActivityTaskDecision(Decision):
 
     type: t.ClassVar[str] = "RequestCancelActivityTask"
 
-    task_id: str
+    activity_id: str
     """ID of task to cancel."""
 
     def to_api(self):
         data = super().to_api()
         data["requestCancelActivityTaskDecisionAttributes"] = {
-            "activityId": self.task_id,
+            "activityId": self.activity_id,
         }
         return data
 
@@ -215,7 +215,7 @@ class ScheduleActivityTaskDecision(Decision):
     activity: "_activities.ActivityType"
     """Task activity."""
 
-    task_id: str
+    activity_id: str
     """Task ID."""
 
     task_input: t.Union[str, None] = None
@@ -231,7 +231,7 @@ class ScheduleActivityTaskDecision(Decision):
         data = super().to_api()
         data["scheduleActivityTaskDecisionAttributes"] = decision_attributes = {
             "activityType": self.activity.to_api(),
-            "activityId": self.task_id,
+            "activityId": self.activity_id,
         }
 
         if self.task_input or self.task_input == "":
@@ -256,7 +256,7 @@ class ScheduleLambdaFunctionDecision(Decision):
     lambda_function: str
     """Lambda function name or ARN (latest/version/alias) to invoke."""
 
-    task_id: str
+    activity_id: str
     """Task ID."""
 
     task_input: t.Union[str, None] = None
@@ -272,7 +272,7 @@ class ScheduleLambdaFunctionDecision(Decision):
         data = super().to_api()
         data["scheduleLambdaFunctionDecisionAttributes"] = decision_attributes = {
             "lambda": self.lambda_function,
-            "id": self.task_id,
+            "id": self.activity_id,
         }
 
         if self.task_input or self.task_input == "":
