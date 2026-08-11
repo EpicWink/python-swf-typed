@@ -83,7 +83,7 @@ class WorkflowExecutionInfo(_common.Deserialisable):
     """Workflow execution details."""
 
     execution: WorkflowExecutionReference
-    """Execution reference."""
+    """Execution identifier."""
 
     workflow_type: "_workflows.WorkflowTypeReference"
     """Execution workflow."""
@@ -101,7 +101,7 @@ class WorkflowExecutionInfo(_common.Deserialisable):
     """Execution end-date."""
 
     parent: t.Union[WorkflowExecutionReference, None] = None
-    """Parent execution reference."""
+    """Parent execution identifier."""
 
     tags: t.Union[t.List[str], None] = None
     """Execution tags."""
@@ -359,7 +359,7 @@ class IdWorkflowExecutionFilter(WorkflowExecutionFilter):
     """Workflow execution filter on execution workflow-ID."""
 
     execution: CurrentWorkflowExecutionReference
-    """Execution reference."""
+    """Execution identifier."""
 
     def get_api_args(self):
         return {"executionFilter": self.execution.to_api()}
