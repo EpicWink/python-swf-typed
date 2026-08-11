@@ -13,7 +13,7 @@ from ._activities import (
     register_activity,
     undeprecate_activity,
 )
-from ._client import (
+from ._clients import (
     DomainClient,
     SWFClient,
     TaskClient,
