@@ -24,6 +24,8 @@
 * List functions (eg `list_domains`, `list_workflows`) now return an iterator with a
   `get_page` method which gets a list results page
 * Option to override future decision tasks in an execution when sending decisions
+* Convenience clients, to reduce code duplication and automatically re-use HTTP
+  connections
 
 ### Fixes
 
