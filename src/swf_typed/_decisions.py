@@ -92,7 +92,7 @@ class ContinueAsNewWorkflowExecutionDecision(Decision):
     """Continuing execution workflow version."""
 
     execution_configuration: t.Union[
-        "_executions.PartialExecutionConfiguration",
+        "_executions.PartialWorkflowExecutionConfiguration",
         None,
     ] = None
     """Continuing execution configuration overrides."""
@@ -171,13 +171,13 @@ class RequestCancelActivityTaskDecision(Decision):
 
     type: t.ClassVar[str] = "RequestCancelActivityTask"
 
-    task_id: str
+    activity_id: str
     """ID of task to cancel."""
 
     def to_api(self):
         data = super().to_api()
         data["requestCancelActivityTaskDecisionAttributes"] = {
-            "activityId": self.task_id,
+            "activityId": self.activity_id,
         }
         return data
 
@@ -188,7 +188,10 @@ class RequestCancelExternalWorkflowExecutionDecision(Decision):
 
     type: t.ClassVar[str] = "RequestCancelExternalWorkflowExecution"
 
-    execution: t.Union["_executions.ExecutionId", "_executions.CurrentExecutionId"]
+    execution: t.Union[
+        "_executions.WorkflowExecution",
+        "_executions.CurrentWorkflowExecution",
+    ]
     """ID of execution to cancel."""
 
     control: t.Union[str, None] = None
@@ -209,10 +212,10 @@ class ScheduleActivityTaskDecision(Decision):
 
     type: t.ClassVar[str] = "ScheduleActivityTask"
 
-    activity: "_activities.ActivityId"
+    activity: "_activities.ActivityType"
     """Task activity."""
 
-    task_id: str
+    activity_id: str
     """Task ID."""
 
     task_input: t.Union[str, None] = None
@@ -228,7 +231,7 @@ class ScheduleActivityTaskDecision(Decision):
         data = super().to_api()
         data["scheduleActivityTaskDecisionAttributes"] = decision_attributes = {
             "activityType": self.activity.to_api(),
-            "activityId": self.task_id,
+            "activityId": self.activity_id,
         }
 
         if self.task_input or self.task_input == "":
@@ -253,7 +256,7 @@ class ScheduleLambdaFunctionDecision(Decision):
     lambda_function: str
     """Lambda function name or ARN (latest/version/alias) to invoke."""
 
-    task_id: str
+    activity_id: str
     """Task ID."""
 
     task_input: t.Union[str, None] = None
@@ -269,7 +272,7 @@ class ScheduleLambdaFunctionDecision(Decision):
         data = super().to_api()
         data["scheduleLambdaFunctionDecisionAttributes"] = decision_attributes = {
             "lambda": self.lambda_function,
-            "id": self.task_id,
+            "id": self.activity_id,
         }
 
         if self.task_input or self.task_input == "":
@@ -292,7 +295,10 @@ class SignalExternalWorkflowExecutionDecision(Decision):
 
     type: t.ClassVar[str] = "SignalExternalWorkflowExecution"
 
-    execution: t.Union["_executions.ExecutionId", "_executions.CurrentExecutionId"]
+    execution: t.Union[
+        "_executions.WorkflowExecution",
+        "_executions.CurrentWorkflowExecution",
+    ]
     """ID of execution to signal."""
 
     signal: str
@@ -322,17 +328,17 @@ class StartChildWorkflowExecutionDecision(Decision):
 
     type: t.ClassVar[str] = "StartChildWorkflowExecution"
 
-    workflow: "_workflows.WorkflowId"
+    workflow_type: "_workflows.WorkflowType"
     """Child execution workflow."""
 
-    execution: "_executions.CurrentExecutionId"
+    execution: "_executions.CurrentWorkflowExecution"
     """Child execution workflow-ID."""
 
     execution_input: t.Union[str, None] = None
     """Child execution input."""
 
     execution_configuration: t.Union[
-        "_executions.PartialExecutionConfiguration",
+        "_executions.PartialWorkflowExecutionConfiguration",
         None,
     ] = None
     """Child execution configuration overrides."""
@@ -346,8 +352,8 @@ class StartChildWorkflowExecutionDecision(Decision):
     def to_api(self):
         data = super().to_api()
         data["startChildWorkflowExecutionDecisionAttributes"] = decision_attributes = {
-            "workflowType": self.workflow.to_api(),
-            "workflowId": self.execution.id,
+            "workflowType": self.workflow_type.to_api(),
+            "workflowId": self.execution.workflow_id,
         }
 
         if self.execution_input or self.execution_input == "":
@@ -398,10 +404,10 @@ class DecisionTask(_common.Deserialisable):
     token: str
     """Task token, provided by SWF."""
 
-    execution: "_executions.ExecutionId"
+    execution: "_executions.WorkflowExecution"
     """Execution which decisions are being made for."""
 
-    workflow: "_workflows.WorkflowId"
+    workflow_type: "_workflows.WorkflowType"
     """Execution workflow."""
 
     _execution_history_iter: t.Iterable["_history.Event"]
@@ -442,8 +448,8 @@ class DecisionTask(_common.Deserialisable):
 
         return cls(
             token=data["taskToken"],
-            execution=_executions.ExecutionId.from_api(data["workflowExecution"]),
-            workflow=_workflows.WorkflowId.from_api(data["workflowType"]),
+            execution=_executions.WorkflowExecution.from_api(data["workflowExecution"]),
+            workflow_type=_workflows.WorkflowType.from_api(data["workflowType"]),
             _execution_history_iter=execution_history_iter,
             decision_task_started_execution_history_event_id=data["startedEventId"],
             previous_decision_task_started_execution_history_event_id=data.get(

@@ -147,7 +147,7 @@ def _format_state(
 
     if (
         output_results
-        and state["status"] == _executions.ExecutionStatus.completed.value
+        and state["status"] == _executions.WorkflowExecutionStatus.completed.value
     ):
         yield f"result: {json.dumps(state.get('result'))}"
     elif state.get("failure_reason") or (output_results and state.get("stop_details")):
